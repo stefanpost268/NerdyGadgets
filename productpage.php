@@ -14,8 +14,6 @@
    <p>
       Product Price: €<?php print(round($item["SellPrice"], 2)); ?>
    </p>
-
-
 </div>
 <?php
 include __DIR__ . "/footer.php";

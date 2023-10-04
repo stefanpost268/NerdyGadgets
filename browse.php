@@ -141,7 +141,7 @@ if (isset($amount)) {
                         </div>
                     </div>
                     <h1 class="StockItemID">Artikelnummer: <?php print $row["StockItemID"]; ?></h1>
-                    <p class="StockItemName"><?php print $row["StockItemName"]; ?></p>
+                    <a href="productpage.php?id=<?php echo $row['StockItemID']; ?>" class="StockItemName"><?php echo $row["StockItemName"]; ?></a>
                     <p class="StockItemComments"><?php print $row["MarketingComments"]; ?></p>
                     <h4 class="ItemQuantity"><?php print getVoorraadTekst($row["QuantityOnHand"]); ?></h4>
                 </div>
