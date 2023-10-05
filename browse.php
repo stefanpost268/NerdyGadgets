@@ -30,9 +30,14 @@ if (isset($_GET['page_number'])) {
     $PageNumber = 0;
 }
 
+if(isset($_GET['order_by'])) {
+    $orderBy = $_GET['order_by'] == "DESC" ? "DESC" : "ASC";
+} else { 
+    $orderBy = "ASC";
+}
+
 // code deel 1 van User story: Zoeken producten
 // <voeg hier de code in waarin de zoekcriteria worden opgebouwd>
-
 
 
 // <einde van de code voor zoekcriteria>
@@ -68,7 +73,7 @@ $Query = "
            JOIN stockgroups ON stockitemstockgroups.StockGroupID = stockgroups.StockGroupID
            WHERE " . $queryBuildResult . " ? IN (SELECT StockGroupID from stockitemstockgroups WHERE StockItemID = SI.StockItemID)
            GROUP BY StockItemID
-           ORDER BY " . $Sort . "
+           ORDER BY " . $Sort . " $orderBy
            LIMIT ? OFFSET ?";
 
     $Statement = mysqli_prepare($databaseConnection, $Query);
@@ -112,8 +117,14 @@ if (isset($amount)) {
 
 <!-- einde zoekresultaten die links van de zoekbalk staan -->
 <!-- einde code deel 3 van User story: Zoeken producten  -->
-
 <div id="ResultsArea" class="Browse">
+    <form action="browse.php" method="get" >
+        <input class="invisible" name="category_id" value="<?php print($CategoryID)?>" />
+        <select name="order_by" onchange="this.form.submit()">
+            <option <?php print($orderBy === "ASC" ? "selected" : ""); ?>>ASC</option>
+            <option <?php print($orderBy === "ASC" ? "" : "selected"); ?>>DESC</option>
+        </select>
+    </form>
     <?php
     if (isset($ReturnableResult) && count($ReturnableResult) > 0) {
         foreach ($ReturnableResult as $row) {
