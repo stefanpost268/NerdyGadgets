@@ -1,12 +1,12 @@
 <!-- dit is het bestand dat wordt geladen zodra je naar de website gaat -->
 <?php
    include __DIR__ . "/header.php";
+
+   $imagePath = null;
    $imageUrl = getStockItemImage($_GET['id'], $databaseConnection);
    $item = getStockItem($_GET['id'], $databaseConnection);
    if (count($imageUrl) > 0) {
       $imagePath = $imageUrl[0]['ImagePath'];
-   } else {
-      $imagePath = null;
    }
 ?>
 
@@ -26,7 +26,7 @@
          if($imagePath != null) {
             print("Public/StockItemIMG/" . $imagePath);
          } else {
-            print("Public/StockGroupIMG/Toys.jpg");
+            print("Public/StockGroupIMG/". $item['BackupImagePath']);
          }
          
          ?>" />
