@@ -114,13 +114,13 @@ if (isset($amount)) {
     <form id="sideBar">
         <p id="sideBarTitle">Filteren</p>
 
-        <div>
+        <div class="m-1">
             <label for="search">Zoeken:</label>
             <input type="text" name="search" id="search" value="<?php if (isset($_GET['search'])) {
                 print ($_GET['search']);
             } ?>">
 
-            <label for="order_by">Sorteer op:</label>
+            <label class="pt-3" for="order_by">Sorteer op:</label>
             <select name="order_by" id="order_by" onchange="this.form.submit()">
                 <option value="price-ASC" <?php print($_GET['order_by'] == "price-ASC" ? "selected" : ""); ?> >Prijs oplopend</option>
                 <option value="price-DESC" <?php print($_GET['order_by'] == "price-DESC" ? "selected" : ""); ?> >Prijs aflopend</option>
@@ -190,7 +190,9 @@ if (isset($amount)) {
         } else {
             ?>
             <h2 id="NoSearchResults">
-                Yarr, er zijn geen resultaten gevonden.
+                Helaas, uw zoek opdracht voor
+                <u><?php print (isset($_GET['search'])) ? $_GET['search'] : ""; ?></u>
+                heeft geen resultaten opgeleverd.
             </h2>
             <?php
         }
