@@ -2,7 +2,12 @@
 <?php
    include __DIR__ . "/header.php";
 
+   $imagePath = null;
+   $imageUrl = getStockItemImage($_GET['id'], $databaseConnection);
    $item = getStockItem($_GET['id'], $databaseConnection);
+   if (count($imageUrl) > 0) {
+      $imagePath = $imageUrl[0]['ImagePath'];
+   }
 ?>
 
 <div class="container">
@@ -15,6 +20,16 @@
          <p>Product prijs: €<?php print(round($item["SellPrice"], 2)); ?></p>
          <p><?php print($item["QuantityOnHand"]); ?></p>
       </div>
+      <div>
+      <div class="warning">
+         <img width='300px' height='300px' src="<?php 
+         if($imagePath != null) {
+            print("Public/StockItemIMG/" . $imagePath);
+         } else {
+            print("Public/StockGroupIMG/". $item['BackupImagePath']);
+         }
+         
+         ?>" />
    </div>
 </div>
 
