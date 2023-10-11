@@ -28,11 +28,6 @@ if (isset($_GET['page_number'])) {
     $PageNumber = 0;
 }
 
-// ORDER BY
-if(!isset($_GET['order_by'])) {
-    $orderByLabel = "price-ASC";
-}
-
 switch($_GET['order_by']) {
     case "price-ASC":
         $orderBy = "ASC";
@@ -42,15 +37,13 @@ switch($_GET['order_by']) {
         $orderBy = "DESC";
         $Sort = "SellPrice";
         break;
-    case "name-ASC":
-        $orderBy = "ASC";
-        $Sort = "StockItemName";
-        break;
     case "name-DESC":
         $orderBy = "DESC";
         $Sort = "StockItemName";
         break;
-        
+    default:
+        $orderBy = "ASC";
+        $Sort = "StockItemName";
 }
 
 $Offset = $PageNumber * $ProductsOnPage;
