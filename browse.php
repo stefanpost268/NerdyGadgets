@@ -30,9 +30,14 @@ if (isset($_GET['page_number'])) {
     $PageNumber = 0;
 }
 
+if(isset($_GET['order_by'])) {
+    $orderBy = $_GET['order_by'] == "DESC" ? "DESC" : "ASC";
+} else { 
+    $orderBy = "ASC";
+}
+
 // code deel 1 van User story: Zoeken producten
 // <voeg hier de code in waarin de zoekcriteria worden opgebouwd>
-
 
 
 // <einde van de code voor zoekcriteria>
@@ -68,7 +73,7 @@ $Query = "
            JOIN stockgroups ON stockitemstockgroups.StockGroupID = stockgroups.StockGroupID
            WHERE " . $queryBuildResult . " ? IN (SELECT StockGroupID from stockitemstockgroups WHERE StockItemID = SI.StockItemID)
            GROUP BY StockItemID
-           ORDER BY " . $Sort . "
+           ORDER BY " . $Sort . " $orderBy
            LIMIT ? OFFSET ?";
 
     $Statement = mysqli_prepare($databaseConnection, $Query);
@@ -86,6 +91,7 @@ $Query = "
     mysqli_stmt_execute($Statement);
     $Result = mysqli_stmt_get_result($Statement);
     $Result = mysqli_fetch_all($Result, MYSQLI_ASSOC);
+
 }
 $amount = $Result[0];
 if (isset($amount)) {
@@ -112,7 +118,6 @@ if (isset($amount)) {
 
 <!-- einde zoekresultaten die links van de zoekbalk staan -->
 <!-- einde code deel 3 van User story: Zoeken producten  -->
-
 <div id="ResultsArea" class="Browse">
     <?php
     if (isset($ReturnableResult) && count($ReturnableResult) > 0) {
@@ -191,6 +196,32 @@ if (isset($amount)) {
     }
     ?>
 </div>
+
+<h1>
+    The select element
+</h1>
+<p>
+    The select element is used to create a drop-down list.
+</p>
+<form action="browse.php" method="get" >
+        <input class="invisible" name="category_id" value="<?php print($CategoryID)?>" />
+        <select name="order_by" onchange="this.form.submit()">
+            <option <?php print($orderBy === "ASC" ? "selected" : ""); ?> >ASC</option>
+            <option <?php print($orderBy === "ASC" ? "" : "selected"); ?> >DESC</option>
+        </select>
+        <label for="products_on_page">Selecteer het aantal producten:</label>
+        <select name="products_on_page" onchange="this.form.submit()">
+            <option value="25" <?php print($ProductsOnPage == 25 ? "selected" : "") ?> >25</option>
+            <option value="50" <?php print($ProductsOnPage == 50 ? "selected" : "") ?>>50</option>
+            <option value="75" <?php print($ProductsOnPage == 75 ? "selected" : "") ?>>75</option>
+            <option value="100" <?php print($ProductsOnPage == 100 ? "selected" : "") ?>>100</option>
+        </select>
+        
+       
+</form>
+
+</body>
+</html>
 
 <?php
 include __DIR__ . "/footer.php";
