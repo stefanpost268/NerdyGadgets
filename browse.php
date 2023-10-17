@@ -117,6 +117,9 @@ if (isset($amount)) {
 <div class="d-flex">
     <form id="sideBar">
         <p id="sideBarTitle">Filteren</p>
+        <input type="hidden" name="category_id" id="category_id" value="<?php if (isset($_GET['category_id'])) {
+            print ($_GET['category_id']);
+        } ?>">
 
         <div class="m-1">
             <label for="search">Zoeken:</label>
@@ -124,20 +127,21 @@ if (isset($amount)) {
                 print ($_GET['search']);
             } ?>">
 
-            <label class="pt-3" for="order_by">Sorteer op:</label>
-            <select name="order_by" id="order_by" onchange="this.form.submit()">
-                <option value="price-ASC" <?php print($orderBy == "price-ASC" ? "selected" : ""); ?> >Prijs oplopend</option>
-                <option value="price-DESC" <?php print($orderBy == "price-DESC" ? "selected" : ""); ?> >Prijs aflopend</option>
-                <option value="name-ASC" <?php print($orderBy== "name-ASC" ? "selected" : ""); ?> >Naam oplopend</option>
-                <option value="name-DESC" <?php print($orderBy == "name-DESC" ? "selected" : ""); ?> >Naam aflopend</option>
-            </select>
-            
-            <input type="hidden" name="category_id" id="category_id" value="<?php if (isset($_GET['category_id'])) {
-                print ($_GET['category_id']);
-            } ?>">
-        </div>
+        <label class="pt-3" for="order_by">Sorteer op:</label>
+        <select name="order_by" id="order_by" onchange="this.form.submit()">
+            <option value="price-ASC" <?php print($orderBy == "price-ASC" ? "selected" : ""); ?> >Prijs oplopend</option>
+            <option value="price-DESC" <?php print($orderBy == "price-DESC" ? "selected" : ""); ?> >Prijs aflopend</option>
+            <option value="name-ASC" <?php print($orderBy== "name-ASC" ? "selected" : ""); ?> >Naam oplopend</option>
+            <option value="name-DESC" <?php print($orderBy == "name-DESC" ? "selected" : ""); ?> >Naam aflopend</option>
+        </select>
     </form>
-    <div id="ResultsArea" class="Browse">
+</div>
+
+
+<!-- einde zoekresultaten die links van de zoekbalk staan -->
+<!-- einde code deel 3 van User story: Zoeken producten  -->
+
+<div id="ResultsArea" class="Browse">
     
         <?php
         if (isset($ReturnableResult) && count($ReturnableResult) > 0) {
@@ -161,7 +165,7 @@ if (isset($amount)) {
                             </div>
                         </div>
                         <h1 class="StockItemID">Artikelnummer: <?php print $row["StockItemID"]; ?></h1>
-                        <p class="StockItemName"><?php print $row["StockItemName"]; ?></p>
+                        <a href="productpage.php?id=<?php echo $row['StockItemID']; ?>" class="StockItemName"><?php echo $row["StockItemName"]; ?></a>
                         <p class="StockItemComments"><?php print $row["MarketingComments"]; ?></p>
                         <h4 class="ItemQuantity"><?php print getVoorraadTekst($row["QuantityOnHand"]); ?></h4>
                     </div>
@@ -202,8 +206,18 @@ if (isset($amount)) {
         }
         ?>
     </div>
-</div>
 
 <?php
 include __DIR__ . "/footer.php";
 ?>
+
+<style>
+    #ResultsArea {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+
+    #ResultsArea::-webkit-scrollbar {
+        display: none;
+    }
+</style>
