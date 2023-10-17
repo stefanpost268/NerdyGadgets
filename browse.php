@@ -91,6 +91,7 @@ $Query = "
     mysqli_stmt_execute($Statement);
     $Result = mysqli_stmt_get_result($Statement);
     $Result = mysqli_fetch_all($Result, MYSQLI_ASSOC);
+
 }
 $amount = $Result[0];
 if (isset($amount)) {
@@ -202,6 +203,32 @@ if (isset($amount)) {
     }
     ?>
 </div>
+
+<h1>
+    The select element
+</h1>
+<p>
+    The select element is used to create a drop-down list.
+</p>
+<form action="browse.php" method="get" >
+        <input class="invisible" name="category_id" value="<?php print($CategoryID)?>" />
+        <select name="order_by" onchange="this.form.submit()">
+            <option <?php print($orderBy === "ASC" ? "selected" : ""); ?> >ASC</option>
+            <option <?php print($orderBy === "ASC" ? "" : "selected"); ?> >DESC</option>
+        </select>
+        <label for="products_on_page">Selecteer het aantal producten:</label>
+        <select name="products_on_page" onchange="this.form.submit()">
+            <option value="25" <?php print($ProductsOnPage == 25 ? "selected" : "") ?> >25</option>
+            <option value="50" <?php print($ProductsOnPage == 50 ? "selected" : "") ?>>50</option>
+            <option value="75" <?php print($ProductsOnPage == 75 ? "selected" : "") ?>>75</option>
+            <option value="100" <?php print($ProductsOnPage == 100 ? "selected" : "") ?>>100</option>
+        </select>
+        
+       
+</form>
+
+</body>
+</html>
 
 <?php
 include __DIR__ . "/footer.php";
