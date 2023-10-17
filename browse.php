@@ -28,7 +28,9 @@ if (isset($_GET['page_number'])) {
     $PageNumber = 0;
 }
 
-switch($_GET['order_by']) {
+$orderBy = $_GET['order_by'] ?? "name-ASC";
+
+switch($orderBy) {
     case "price-ASC":
         $orderBy = "ASC";
         $Sort = "SellPrice";
@@ -86,7 +88,9 @@ $Query = "
     $Result = mysqli_stmt_get_result($Statement);
     $Result = mysqli_fetch_all($Result, MYSQLI_ASSOC);
 }
-$amount = $Result[0];
+
+$amount = $Result[0] ?? null;
+
 if (isset($amount)) {
     $AmountOfPages = ceil($amount["count(*)"] / $ProductsOnPage);
 }
@@ -109,10 +113,10 @@ if (isset($amount)) {
         <div>
             </label for="order_by">Sorteer op:</label>
             <select name="order_by" id="order_by" onchange="this.form.submit()">
-                <option value="price-ASC" <?php print($_GET['order_by'] == "price-ASC" ? "selected" : ""); ?> >Prijs oplopend</option>
-                <option value="price-DESC" <?php print($_GET['order_by'] == "price-DESC" ? "selected" : ""); ?> >Prijs aflopend</option>
-                <option value="name-ASC" <?php print($_GET['order_by'] == "name-ASC" ? "selected" : ""); ?> >Naam oplopend</option>
-                <option value="name-DESC" <?php print($_GET['order_by'] == "name-DESC" ? "selected" : ""); ?> >Naam aflopend</option>
+                <option value="price-ASC" <?php print($orderBy == "price-ASC" ? "selected" : ""); ?> >Prijs oplopend</option>
+                <option value="price-DESC" <?php print($orderBy == "price-DESC" ? "selected" : ""); ?> >Prijs aflopend</option>
+                <option value="name-ASC" <?php print($orderBy== "name-ASC" ? "selected" : ""); ?> >Naam oplopend</option>
+                <option value="name-DESC" <?php print($orderBy == "name-DESC" ? "selected" : ""); ?> >Naam aflopend</option>
             </select>
             
             <input type="hidden" name="category_id" id="category_id" value="<?php if (isset($_GET['category_id'])) {
