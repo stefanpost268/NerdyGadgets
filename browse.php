@@ -48,6 +48,12 @@ switch($orderBy) {
         $Sort = "StockItemName";
 }
 
+if(isset($_GET['search'])) {
+    $search = $_GET['search'];
+} else {
+    $search = "";
+}
+
 $Offset = $PageNumber * $ProductsOnPage;
 
 if ($CategoryID != "") { 
@@ -57,7 +63,7 @@ if ($CategoryID != "") {
 }
 
 if ($CategoryID !== "") {
-$Query = "
+    $Query = "
            SELECT SI.StockItemID, SI.StockItemName, SI.MarketingComments, TaxRate, RecommendedRetailPrice,
            ROUND(SI.TaxRate * SI.RecommendedRetailPrice / 100 + SI.RecommendedRetailPrice,2) as SellPrice,
            QuantityOnHand,
@@ -68,9 +74,11 @@ $Query = "
            JOIN stockitemstockgroups USING(StockItemID)
            JOIN stockgroups ON stockitemstockgroups.StockGroupID = stockgroups.StockGroupID
            WHERE " . $queryBuildResult . " ? IN (SELECT StockGroupID from stockitemstockgroups WHERE StockItemID = SI.StockItemID)
+           " . (empty($search) ? "" : "AND SI.StockItemName LIKE '%".$search."%'") . "
            GROUP BY StockItemID
            ORDER BY " . $Sort . " " . $orderBy . "
-           LIMIT ? OFFSET ?";
+           LIMIT ? OFFSET ?
+    ";
 
     $Statement = mysqli_prepare($databaseConnection, $Query);
     mysqli_stmt_bind_param($Statement, "iii", $CategoryID, $ProductsOnPage, $Offset);
@@ -110,8 +118,13 @@ if (isset($amount)) {
     <form id="sideBar">
         <p id="sideBarTitle">Filteren</p>
 
-        <div>
-            </label for="order_by">Sorteer op:</label>
+        <div class="m-1">
+            <label for="search">Zoeken:</label>
+            <input type="text" name="search" id="search" value="<?php if (isset($_GET['search'])) {
+                print ($_GET['search']);
+            } ?>">
+
+            <label class="pt-3" for="order_by">Sorteer op:</label>
             <select name="order_by" id="order_by" onchange="this.form.submit()">
                 <option value="price-ASC" <?php print($orderBy == "price-ASC" ? "selected" : ""); ?> >Prijs oplopend</option>
                 <option value="price-DESC" <?php print($orderBy == "price-DESC" ? "selected" : ""); ?> >Prijs aflopend</option>
@@ -181,7 +194,9 @@ if (isset($amount)) {
         } else {
             ?>
             <h2 id="NoSearchResults">
-                Yarr, er zijn geen resultaten gevonden.
+                Helaas, uw zoek opdracht voor
+                <u><?php print (isset($_GET['search'])) ? $_GET['search'] : ""; ?></u>
+                heeft geen resultaten opgeleverd.
             </h2>
             <?php
         }
