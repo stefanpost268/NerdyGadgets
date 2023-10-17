@@ -23,7 +23,7 @@ $StockItemImage = getStockItemImage($_GET['id'], $databaseConnection);
 
     <div id="ArticleHeader">
         <?php
-        if (isset($StockItemImage)) {
+        if (!empty($StockItemImage)) {
             // Show a single image
             if (count($StockItemImage) == 1) {
         ?>
