@@ -95,6 +95,7 @@ if ($CategoryID !== "") {
     mysqli_stmt_execute($Statement);
     $Result = mysqli_stmt_get_result($Statement);
     $Result = mysqli_fetch_all($Result, MYSQLI_ASSOC);
+
 }
 
 $amount = $Result[0] ?? null;
@@ -134,13 +135,19 @@ if (isset($amount)) {
             <option value="name-ASC" <?php print($orderBy== "name-ASC" ? "selected" : ""); ?> >Naam oplopend</option>
             <option value="name-DESC" <?php print($orderBy == "name-DESC" ? "selected" : ""); ?> >Naam aflopend</option>
         </select>
+
+        <label class="pt-3" for="products_on_page">Selecteer het aantal producten:</label>
+        <select name="products_on_page" onchange="this.form.submit()">
+            <option value="25" <?php print($ProductsOnPage == 25 ? "selected" : "") ?> >25</option>
+            <option value="50" <?php print($ProductsOnPage == 50 ? "selected" : "") ?>>50</option>
+            <option value="100" <?php print($ProductsOnPage == 100 ? "selected" : "") ?>>100</option>
+        </select>
     </form>
 </div>
 
 
 <!-- einde zoekresultaten die links van de zoekbalk staan -->
 <!-- einde code deel 3 van User story: Zoeken producten  -->
-
 <div id="ResultsArea" class="Browse">
     
         <?php
@@ -206,6 +213,8 @@ if (isset($amount)) {
         }
         ?>
     </div>
+</body>
+</html>
 
 <?php
 include __DIR__ . "/footer.php";
