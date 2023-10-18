@@ -28,9 +28,9 @@ if (isset($_GET['page_number'])) {
     $PageNumber = 0;
 }
 
-$orderBy = $_GET['order_by'] ?? "name-ASC";
+$orderByLabel = $_GET['order_by'] ?? "name-ASC";
 
-switch($orderBy) {
+switch($orderByLabel) {
     case "price-ASC":
         $orderBy = "ASC";
         $Sort = "SellPrice";
@@ -130,10 +130,10 @@ if (isset($amount)) {
 
         <label class="pt-3" for="order_by">Sorteer op:</label>
         <select name="order_by" id="order_by" onchange="this.form.submit()">
-            <option value="price-ASC" <?php print($orderBy == "price-ASC" ? "selected" : ""); ?> >Prijs oplopend</option>
-            <option value="price-DESC" <?php print($orderBy == "price-DESC" ? "selected" : ""); ?> >Prijs aflopend</option>
-            <option value="name-ASC" <?php print($orderBy== "name-ASC" ? "selected" : ""); ?> >Naam oplopend</option>
-            <option value="name-DESC" <?php print($orderBy == "name-DESC" ? "selected" : ""); ?> >Naam aflopend</option>
+            <option value="price-ASC" <?php print($orderByLabel == "price-ASC" ? "selected" : ""); ?> >Prijs oplopend</option>
+            <option value="price-DESC" <?php print($orderByLabel == "price-DESC" ? "selected" : ""); ?> >Prijs aflopend</option>
+            <option value="name-ASC" <?php print($orderByLabel== "name-ASC" ? "selected" : ""); ?> >Naam oplopend</option>
+            <option value="name-DESC" <?php print($orderByLabel == "name-DESC" ? "selected" : ""); ?> >Naam aflopend</option>
         </select>
 
         <label class="pt-3" for="products_on_page">Selecteer het aantal producten:</label>
