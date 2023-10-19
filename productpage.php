@@ -1,13 +1,39 @@
 <!-- This file contains all the code for the page that displays a single product -->
-
 <?php
-include __DIR__ . "/header.php";
+    include __DIR__ . "/header.php";
 
-$StockItem = getStockItem($_GET['id'], $databaseConnection);
-$StockItemImage = getStockItemImage($_GET['id'], $databaseConnection);
+    
+
+    // Add to shopping bag
+    if (isset($_POST["articleid"]) && isset($_POST["amount"])){
+        if(!isset($_SESSION["shoppingcart"])) {
+            $_SESSION["shoppingcart"] = array();
+        }
+
+        $id = $_POST["articleid"];
+
+
+        $updated = $_SESSION["shoppingcart"][$id] = intval($_POST["amount"]);
+    } else {
+        $id = $_GET['id'];
+    }
+
+    $StockItem = getStockItem($id, $databaseConnection);
+    $StockItemImage = getStockItemImage($id, $databaseConnection);
 ?>
 
 <div id="CenteredContent">
+    <?php if(isset($updated)) { ?>
+        <?php if($updated) { ?>
+            <div class="alert alert-success" role="alert">
+                Uw product is in de winkelmand gezet!
+            </div>
+        <?php } else { ?>
+            <div class="alert alert-danger" role="alert">
+                Helaas, we kunnen dit product niet in uw winkelmand zetten!
+            </div>
+        <?php } ?>
+    <?php } ?>
     <?php
     if ($StockItem != null) {
     ?>
@@ -44,7 +70,9 @@ $StockItemImage = getStockItemImage($_GET['id'], $databaseConnection);
                 <!-- Slideshow -->
                 <div class="carousel-inner">
                     <?php for ($i = 0; $i < count($StockItemImage); $i++) { ?>
-                    <div class="carousel-item <?php echo ($i == 0) ? 'active' : ''; ?>">
+                    <div
+                        class="carousel-item <?php echo ($i == 0) ? 'active' : ''; ?>"
+                    >
                         <img src="Public/StockItemIMG/<?php echo $StockItemImage[$i]['ImagePath']; ?>">
                     </div>
                     <?php } ?>
@@ -128,6 +156,16 @@ $StockItemImage = getStockItemImage($_GET['id'], $databaseConnection);
         }
         ?>
     </div>
+
+    <div id="addToShoppingCart">
+        <form method="post" action="productpage.php"> 
+        <input type="hidden" name="articleid" value="<?php print($id);?>"> 
+        <input type="number" id="amount" name="amount" value="1" min="1" max="100">
+        <br><br> 
+        <input type="submit" value="In Winkelwagen"> 
+        </form> 
+    </div>
+        
     <?php
     } else {
     ?>
