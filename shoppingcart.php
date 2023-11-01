@@ -66,7 +66,9 @@ if (isset($_SESSION["shoppingcart"])) {
                                     </div>
                                 </td>
                                 <td>€<?php echo number_format($product["item"]["SellPrice"], 2); ?></td>
-                                <td><?php echo $product["amount"]; ?></td>
+                                <td>
+                                    <input name="amount" value="<?php print($product['amount']) ?>"/>
+                                </td>
                                 <td>€ <?php echo number_format($product["subtotal"], 2); ?></td>
                             </tr>
                         <?php endforeach; ?>
