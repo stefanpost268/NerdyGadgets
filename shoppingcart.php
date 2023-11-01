@@ -48,20 +48,31 @@ if (isset($_SESSION["shoppingcart"])) {
             </tr>
         </thead>
         <tbody>
-            <?php if (!empty($products)) : ?>
-                <?php foreach ($products as $product) : ?>
-                    <tr>
-                        <td><img width='100' src='<?php echo $product["image"]; ?>'></td>
-                        <td>€ <?php echo number_format($product["item"]["SellPrice"], 2); ?></td>
-                        <td><?php echo $product["amount"]; ?></td>
-                        <td>€ <?php echo number_format($product["subtotal"], 2); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else : ?>
+        <?php if (!empty($products)) : ?>
+            <?php foreach ($products as $product) : ?>
                 <tr>
-                    <td colspan='2'>Shopping cart is empty</td>
+                    <td>
+                        <div style="display: flex; align-items: center;">
+                            <img width='100' src='<?php echo $product["image"]; ?>'>
+                            <div style="margin-left: 10px;">
+                                <?php 
+                                echo $product["item"]["StockItemName"];
+                                echo "<br>";
+                                echo "Article ID: " . $product["item"]["StockItemID"];
+                                ?>
+                            </div>
+                        </div>
+                    </td>
+                    <td>€ <?php echo number_format($product["item"]["SellPrice"], 2); ?></td>
+                    <td><?php echo $product["amount"]; ?></td>
+                    <td>€ <?php echo number_format($product["subtotal"], 2); ?></td>
                 </tr>
-            <?php endif; ?>
+            <?php endforeach; ?>
+        <?php else : ?>
+            <tr>
+                <td colspan='2'>Shopping cart is empty</td>
+            </tr>
+        <?php endif; ?>
         </tbody>
     </table>
 
