@@ -8,6 +8,13 @@ if (isset($_POST['clear_session'])) {
     session_unset();
 }
 
+$products = [];
+if(isset($_SESSION["shoppingcart"])) {
+    foreach($_SESSION["shoppingcart"] as $id => $amount) {
+        $products[] = getStockItem($id, $databaseConnection);
+    }
+}
+
 ?>
 
 <h1>This is product shopping cart list (DEV)</h1>
@@ -16,15 +23,17 @@ if (isset($_POST['clear_session'])) {
         <tr>
             <th>Product ID</th>
             <th>Product Amount</th>
+            <th>Product Name</th>
         </tr>
     </thead>
     <tbody>
         <?php
-        if (isset($_SESSION["shoppingcart"])) {
-            foreach ($_SESSION["shoppingcart"] as $productID => $productAmount) {
+        if (!empty($products)) {
+            foreach ($products as $product) {
                 echo "<tr>";
-                echo "<td>" . htmlspecialchars($productID) . "</td>";
-                echo "<td>" . htmlspecialchars($productAmount) . "</td>";
+                echo "<td>" . ($product["StockItemID"]) . "</td>";
+                echo "<td>" . round($product["SellPrice"]) . "</td>";
+                echo "<td>" . ($product["StockItemName"]) . "</td>";
                 echo "</tr>";
             }
         } else {
