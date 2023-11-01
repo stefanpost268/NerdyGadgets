@@ -12,6 +12,12 @@ function getProductImage($id, $databaseConnection, $item): string
     }
 }
 
+if(isset($_POST["productAmount"])) {
+    if($_POST["productAmount"] != $_SESSION["shoppingcart"]) {
+        $_SESSION["shoppingcart"] = $_POST["productAmount"];
+    }
+}
+
 // Check if the "Clear Session" button was clicked
 if (isset($_POST['clear_session'])) {
     // Clear the session
@@ -43,6 +49,7 @@ if (isset($_SESSION["shoppingcart"])) {
 <h1 class="pb-5">Winkelwagen</h1>
     <div class="row">
         <div class="col-lg-7">
+            <form method="POST">
             <table class="table" style="color:white;">
                 <thead>
                     <tr>
@@ -67,7 +74,14 @@ if (isset($_SESSION["shoppingcart"])) {
                                 </td>
                                 <td>€<?php echo number_format($product["item"]["SellPrice"], 2); ?></td>
                                 <td>
-                                    <input name="amount" value="<?php print($product['amount']) ?>"/>
+                                    <input
+                                        type="number"
+                                        max="100"
+                                        min="0"
+                                        name="productAmount[<?php print($product["item"]["StockItemID"]); ?>]"
+                                        value="<?php print($product['amount']) ?>"
+                                        onchange="this.form.submit()"
+                                    />
                                 </td>
                                 <td>€ <?php echo number_format($product["subtotal"], 2); ?></td>
                             </tr>
@@ -79,6 +93,7 @@ if (isset($_SESSION["shoppingcart"])) {
                     <?php endif; ?>
                 </tbody>
             </table>
+            </form>
         </div>
 
         <div class="col-lg-5">
