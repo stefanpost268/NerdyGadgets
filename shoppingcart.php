@@ -5,13 +5,12 @@ function getProductImage($id, $databaseConnection, $item): string
 {
     $stockImage = getStockItemImage($id, $databaseConnection);
 
-    if(isset($stockImage[0]["ImagePath"])) {
-        return "Public/StockItemIMG/".getStockItemImage($id, $databaseConnection)[0]["ImagePath"];
+    if (isset($stockImage[0]["ImagePath"])) {
+        return "Public/StockItemIMG/" . getStockItemImage($id, $databaseConnection)[0]["ImagePath"];
     } else {
-        return "Public/StockGroupIMG/".$item["BackupImagePath"];
+        return "Public/StockGroupIMG/" . $item["BackupImagePath"];
     }
 }
-
 
 // Check if the "Clear Session" button was clicked
 if (isset($_POST['clear_session'])) {
@@ -20,20 +19,22 @@ if (isset($_POST['clear_session'])) {
 }
 
 $products = [];
-if(isset($_SESSION["shoppingcart"])) {
-    foreach($_SESSION["shoppingcart"] as $id => $amount) {
+
+if (isset($_SESSION["shoppingcart"])) {
+    foreach ($_SESSION["shoppingcart"] as $id => $amount) {
         $item = getStockItem($id, $databaseConnection);
-        $products[] = array(
+        $imagePath = getProductImage($id, $databaseConnection, $item);
+        $subtotal = round($amount * $item['SellPrice'], 2);
+
+        $products[] = [
             "item" => $item,
-            "image" => getProductImage($id, $databaseConnection, $item),
+            "image" => $imagePath,
             "amount" => $amount,
-            'subtotal' => round($amount * $item['SellPrice'], 2) 
-        );
+            'subtotal' => $subtotal,
+        ];
     }
 }
-
 ?>
-
 
 <div style="padding: 25px;">
     <h1>Winkelwagen</h1>
@@ -47,20 +48,20 @@ if(isset($_SESSION["shoppingcart"])) {
             </tr>
         </thead>
         <tbody>
-            <?php
-            if (!empty($products)) {
-                foreach ($products as $product) {
-                    echo "<tr>";
-                    echo "<td><img width='100' src='".$product["image"]."'>";
-                    echo "<td> € " . round($product["item"]["SellPrice"], 2) . "</td>";
-                    echo "<td>".$product["amount"]."</td>";
-                    echo "<td> € " . ($product["subtotal"]) . "</td>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr><td colspan='2'>Shopping cart is empty</td></tr>";
-            }
-            ?>
+            <?php if (!empty($products)) : ?>
+                <?php foreach ($products as $product) : ?>
+                    <tr>
+                        <td><img width='100' src='<?php echo $product["image"]; ?>'></td>
+                        <td>€ <?php echo number_format($product["item"]["SellPrice"], 2); ?></td>
+                        <td><?php echo $product["amount"]; ?></td>
+                        <td>€ <?php echo number_format($product["subtotal"], 2); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else : ?>
+                <tr>
+                    <td colspan='2'>Shopping cart is empty</td>
+                </tr>
+            <?php endif; ?>
         </tbody>
     </table>
 
@@ -68,4 +69,3 @@ if(isset($_SESSION["shoppingcart"])) {
         <button type="submit" name="clear_session">Clear Session</button>
     </form>
 </div>
-
