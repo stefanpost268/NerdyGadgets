@@ -14,7 +14,14 @@ function getProductImage($id, $databaseConnection, $item): string
 
 if(isset($_POST["productAmount"])) {
     if($_POST["productAmount"] != $_SESSION["shoppingcart"]) {
-        $_SESSION["shoppingcart"] = $_POST["productAmount"];
+        $items = $_POST["productAmount"];
+        foreach($items as $id => $amount) {
+            if($amount == 0) {
+                unset($_SESSION["shoppingcart"][$id]);
+            } else {
+                $_SESSION["shoppingcart"][$id] = $amount;
+            }
+        }
     }
 }
 
