@@ -1,5 +1,4 @@
 <?php
-session_start();
 include 'header.php';
 
 function getProductImage($id, $databaseConnection, $item): string
@@ -27,7 +26,8 @@ if(isset($_SESSION["shoppingcart"])) {
         $products[] = array(
             "item" => $item,
             "image" => getProductImage($id, $databaseConnection, $item),
-            "amount" => $amount
+            "amount" => $amount,
+            'subtotal' => round($amount * $item['SellPrice'], 2) 
         );
     }
 }
@@ -52,9 +52,9 @@ if(isset($_SESSION["shoppingcart"])) {
                 foreach ($products as $product) {
                     echo "<tr>";
                     echo "<td><img width='100' src='".$product["image"]."'>";
-                    echo "<td> €" . round($product["item"]["SellPrice"], 2) . "</td>";
+                    echo "<td> € " . round($product["item"]["SellPrice"], 2) . "</td>";
                     echo "<td>".$product["amount"]."</td>";
-                    echo "<td>" . ($product["item"]["StockItemName"]) . "</td>";
+                    echo "<td> € " . ($product["subtotal"]) . "</td>";
                     echo "</tr>";
                 }
             } else {
