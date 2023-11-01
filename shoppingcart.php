@@ -80,16 +80,17 @@ if (isset($_SESSION["shoppingcart"])) {
             </tbody>
         </table>
 
-        <form method="post">
-        <button type="submit" name="clear_session">Clear Session</button>
-        </form>
+        
     </div>
 
     <div class="card-right" style="width: 40%">
         <div style="border-style: solid; border-color:blue">
             <h2>Overzicht van je bestelling</h2>
-            <div style="border-style: solid; border-color:red">
+            <div style="border-style: solid; border-color:red; margin:10px;">
                 <h3>Totaal: € <?php print($totalPrice); ?></h3>
+                <form method="post">
+                    <button type="submit" name="clear_session">Legen Winkelmand</button>
+                </form>
             </div>
         </div>
     </div>
