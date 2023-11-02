@@ -19,7 +19,7 @@ if(isset($_POST["productAmount"])) {
             if($amount == 0) {
                 unset($_SESSION["shoppingcart"][$id]);
             } else if(is_numeric($amount)) {
-                $_SESSION["shoppingcart"][$id] = $amount;
+                $_SESSION["shoppingcart"][$id] = round($amount);
             } else {
                 $_SESSION["shoppingcart"][$id] = 0;
             }
