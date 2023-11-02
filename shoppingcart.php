@@ -18,8 +18,10 @@ if(isset($_POST["productAmount"])) {
         foreach($items as $id => $amount) {
             if($amount == 0) {
                 unset($_SESSION["shoppingcart"][$id]);
-            } else {
+            } else if(is_numeric($amount)) {
                 $_SESSION["shoppingcart"][$id] = $amount;
+            } else {
+                $_SESSION["shoppingcart"][$id] = 0;
             }
         }
     }
