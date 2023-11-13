@@ -98,10 +98,9 @@ ul#ul-class-navigation li {
     padding: 20px;
 }
 #ResultsArea.Browse  {
-    width: 78%;
-    margin-left: 21%;
-    float: left;
-    position: sticky;
+    width: 75%;
+    height: 70vh;
+    overflow: scroll;
 }
 #ProductFrame {
     width: 100%;
@@ -235,12 +234,6 @@ ul#ul-class-navigation li {
     width: 100%;
     position: absolute;
 }
-#LogoImage {
-    background-image: url("../ProductIMGHighRes/NerdyGadgetsLogo.png");
-    width: 250px;
-    height: 90px;
-    margin: 55px 55px 55px 10%;
-}
 ul#ul-class li {
     display: inline;
     color: white;
@@ -248,6 +241,11 @@ ul#ul-class li {
     font-size: 18px;
     text-decoration: none;
     line-height: 200px;
+}
+#LogoImage {
+    padding: 50px;
+    max-width: 300px;
+    max-height: 250px;
 }
 ul#ul-class-price li {
     display: inline;
@@ -477,4 +475,19 @@ ul#ul-class-price li {
     background: rgb(36, 41, 143);
     border: 1px rgb(98, 158, 255) solid;
     color: #fff;
+}
+
+#sideBar {
+    margin: 25px;
+    width: 250px;
+    height: 65vh;
+    border: 1px solid #fff;
+    background-color: rgba(35, 40, 47, 0.8);
+}
+
+#sideBarTitle {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    margin: 5px;
 }
