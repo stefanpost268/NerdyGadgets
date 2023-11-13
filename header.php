@@ -49,6 +49,11 @@ $databaseConnection = connectToDatabase();
                 <li>
                     <a href="categories.php" class="HrefDecoration">Alle categorieën</a>
                 </li>
+                <li>
+                    <a href="shoppingcart.php" class="HrefDecoration">
+                        Shopping Cart
+                    </a>
+                </li>
             </ul>
         </div>
 <!-- code voor US3: zoeken -->
