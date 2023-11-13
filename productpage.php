@@ -2,8 +2,6 @@
 <?php
     include __DIR__ . "/header.php";
 
-    
-
     // Add to shopping bag
     if (isset($_POST["articleid"]) && isset($_POST["amount"])){
         if(!isset($_SESSION["shoppingcart"])) {
