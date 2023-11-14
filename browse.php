@@ -2,33 +2,29 @@
 <?php
 include __DIR__ . "/header.php";
 
-$ReturnableResult = null;
+function getVoorraadTekst($actueleVoorraad) {
+    if ($actueleVoorraad > 1000) {
+        return "Ruime voorraad beschikbaar.";
+    } else {
+        return "Voorraad: $actueleVoorraad";
+    }
+}
 
-$AmountOfPages = 0;
+function berekenVerkoopPrijs($adviesPrijs, $btw) {
+    return $btw * $adviesPrijs / 100 + $adviesPrijs;
+}
+
+$returnableResult = null;
+
+$amountOfPages = 0;
 $queryBuildResult = "";
 
-if (isset($_GET['category_id'])) {
-    $CategoryID = $_GET['category_id'];
-} else {
-    $CategoryID = "";
-}
-if (isset($_GET['products_on_page'])) {
-    $ProductsOnPage = $_GET['products_on_page'];
-    $_SESSION['products_on_page'] = $_GET['products_on_page'];
-} else if (isset($_SESSION['products_on_page'])) {
-    $ProductsOnPage = $_SESSION['products_on_page'];
-} else {
-    $ProductsOnPage = 25;
-    $_SESSION['products_on_page'] = 25;
-}
-
-if (isset($_GET['page_number'])) {
-    $PageNumber = $_GET['page_number'];
-} else {
-    $PageNumber = 0;
-}
-
+$ProductsOnPage = getProductsOnPage();
+$categoryID = isset($_GET['category_id']) ? $_GET['category_id'] : "";
+$pageNumber = isset($_GET['page_number']) ? $_GET['page_number'] : 0;
 $orderByLabel = $_GET['order_by'] ?? "name-ASC";
+$search = $_GET['search'] ?? "";
+$offset = $pageNumber * $ProductsOnPage;
 
 switch($orderByLabel) {
     case "price-ASC":
@@ -48,21 +44,14 @@ switch($orderByLabel) {
         $Sort = "StockItemName";
 }
 
-if(isset($_GET['search'])) {
-    $search = $_GET['search'];
-} else {
-    $search = "";
-}
 
-$Offset = $PageNumber * $ProductsOnPage;
-
-if ($CategoryID != "") { 
+if ($categoryID != "") { 
     if ($queryBuildResult != "") {
     $queryBuildResult .= " AND ";
     }
 }
 
-if ($CategoryID !== "") {
+if ($categoryID !== "") {
     $Query = "
            SELECT SI.StockItemID, SI.StockItemName, SI.MarketingComments, TaxRate, RecommendedRetailPrice,
            ROUND(SI.TaxRate * SI.RecommendedRetailPrice / 100 + SI.RecommendedRetailPrice,2) as SellPrice,
@@ -81,17 +70,17 @@ if ($CategoryID !== "") {
     ";
 
     $Statement = mysqli_prepare($databaseConnection, $Query);
-    mysqli_stmt_bind_param($Statement, "iii", $CategoryID, $ProductsOnPage, $Offset);
+    mysqli_stmt_bind_param($Statement, "iii", $categoryID, $ProductsOnPage, $offset);
     mysqli_stmt_execute($Statement);
-    $ReturnableResult = mysqli_stmt_get_result($Statement);
-    $ReturnableResult = mysqli_fetch_all($ReturnableResult, MYSQLI_ASSOC);
+    $returnableResult = mysqli_stmt_get_result($Statement);
+    $returnableResult = mysqli_fetch_all($returnableResult, MYSQLI_ASSOC);
 
     $Query = "
                 SELECT count(*)
                 FROM stockitems SI
                 WHERE " . $queryBuildResult . " ? IN (SELECT SS.StockGroupID from stockitemstockgroups SS WHERE SS.StockItemID = SI.StockItemID)";
     $Statement = mysqli_prepare($databaseConnection, $Query);
-    mysqli_stmt_bind_param($Statement, "i", $CategoryID);
+    mysqli_stmt_bind_param($Statement, "i", $categoryID);
     mysqli_stmt_execute($Statement);
     $Result = mysqli_stmt_get_result($Statement);
     $Result = mysqli_fetch_all($Result, MYSQLI_ASSOC);
@@ -101,18 +90,8 @@ if ($CategoryID !== "") {
 $amount = $Result[0] ?? null;
 
 if (isset($amount)) {
-    $AmountOfPages = ceil($amount["count(*)"] / $ProductsOnPage);
+    $amountOfPages = ceil($amount["count(*)"] / $ProductsOnPage);
 }
-    function getVoorraadTekst($actueleVoorraad) {
-        if ($actueleVoorraad > 1000) {
-            return "Ruime voorraad beschikbaar.";
-        } else {
-            return "Voorraad: $actueleVoorraad";
-        }
-    }
-    function berekenVerkoopPrijs($adviesPrijs, $btw) {
-		return $btw * $adviesPrijs / 100 + $adviesPrijs;
-    }
 ?>
 
 <div class="d-flex">
@@ -151,8 +130,8 @@ if (isset($amount)) {
 <div id="ResultsArea" class="Browse">
     
         <?php
-        if (isset($ReturnableResult) && count($ReturnableResult) > 0) {
-            foreach ($ReturnableResult as $row) {
+        if (isset($returnableResult) && count($returnableResult) > 0) {
+            foreach ($returnableResult as $row) {
                 ?>
                     <div id="ProductFrame">
                         <?php
@@ -188,9 +167,9 @@ if (isset($amount)) {
                     value="<?php print ($_SESSION['products_on_page']); ?>">
 
                 <?php
-                if ($AmountOfPages > 0) {
-                    for ($i = 1; $i <= $AmountOfPages; $i++) {
-                        if ($PageNumber == ($i - 1)) {
+                if ($amountOfPages > 0) {
+                    for ($i = 1; $i <= $amountOfPages; $i++) {
+                        if ($pageNumber == ($i - 1)) {
                             ?>
                             <div id="SelectedPage"><?php print $i; ?></div><?php
                         } else { ?>
