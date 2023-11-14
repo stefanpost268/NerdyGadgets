@@ -95,3 +95,76 @@ function getStockItemImage($id, $databaseConnection) {
 
     return $R;
 }
+
+function getProductsOnPage() {
+    if (isset($_GET['products_on_page'])) {
+        $ProductsOnPage = $_GET['products_on_page'];
+        $_SESSION['products_on_page'] = $_GET['products_on_page'];
+    } else if (isset($_SESSION['products_on_page'])) {
+        $ProductsOnPage = $_SESSION['products_on_page'];
+    } else {
+        $ProductsOnPage = 25;
+        $_SESSION['products_on_page'] = 25;
+    }
+
+    return $ProductsOnPage;
+}
+
+function getProducts($databaseConnection, $categoryID, $queryBuildResult, $search, $Sort, $orderBy, $ProductsOnPage, $offset) {
+    $whereClause = empty($categoryID) ? "1=1" : $queryBuildResult . " ? IN (SELECT StockGroupID from stockitemstockgroups WHERE StockItemID = SI.StockItemID)";
+
+    $query = "
+        SELECT SI.StockItemID, SI.StockItemName, SI.MarketingComments, TaxRate, RecommendedRetailPrice,
+        ROUND(SI.TaxRate * SI.RecommendedRetailPrice / 100 + SI.RecommendedRetailPrice, 2) as SellPrice,
+        QuantityOnHand,
+        (SELECT ImagePath FROM stockitemimages WHERE StockItemID = SI.StockItemID LIMIT 1) as ImagePath,
+        (SELECT ImagePath FROM stockgroups JOIN stockitemstockgroups USING(StockGroupID) WHERE StockItemID = SI.StockItemID LIMIT 1) as BackupImagePath
+        FROM stockitems SI
+        JOIN stockitemholdings SIH USING(stockitemid)
+        JOIN stockitemstockgroups USING(StockItemID)
+        JOIN stockgroups ON stockitemstockgroups.StockGroupID = stockgroups.StockGroupID
+        WHERE {$whereClause}
+        " . (empty($search) ? "" : "AND SI.StockItemName LIKE '%" . $search . "%'") . "
+        GROUP BY StockItemID
+        ORDER BY " . $Sort . " " . $orderBy . "
+        LIMIT ? OFFSET ?
+    ";
+
+    $statement = mysqli_prepare($databaseConnection, $query);
+    if (!empty($categoryID)) {
+        mysqli_stmt_bind_param($statement, "iii", $categoryID, $ProductsOnPage, $offset);
+    } else {
+        mysqli_stmt_bind_param($statement, "ii", $ProductsOnPage, $offset);
+    }
+    mysqli_stmt_execute($statement);
+    $returnableResult = mysqli_stmt_get_result($statement);
+    $returnableResult = mysqli_fetch_all($returnableResult, MYSQLI_ASSOC);
+
+    if(!empty($returnableResult)) {
+        $countQuery = "
+            SELECT count(*)
+            FROM stockitems SI
+            WHERE {$whereClause}
+        ";
+
+        $countQuery = $countQuery.(empty($search) ? "" : " AND SI.StockItemName LIKE '%" . $search . "%'");
+
+        $countStatement = mysqli_prepare($databaseConnection, $countQuery);
+        if (!empty($categoryID)) {
+            mysqli_stmt_bind_param($countStatement, "i", $categoryID);
+        }
+
+        mysqli_stmt_execute($countStatement);
+        $countResult = mysqli_stmt_get_result($countStatement);
+        $countResult = mysqli_fetch_all($countResult, MYSQLI_ASSOC);
+
+        $count = $countResult[0]['count(*)'];
+    } else {
+        $count = 0;
+    }
+
+    return [
+        'data' => $returnableResult,
+        'count' => $count
+    ];
+}
