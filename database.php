@@ -109,3 +109,44 @@ function getProductsOnPage() {
 
     return $ProductsOnPage;
 }
+
+function getProductsByCategory($databaseConnection, $categoryID, $queryBuildResult, $search = '', $Sort = 'StockItemID', $orderBy = 'ASC', $ProductsOnPage = 25, $offset = 0) {
+    $query = "
+        SELECT SI.StockItemID, SI.StockItemName, SI.MarketingComments, TaxRate, RecommendedRetailPrice,
+        ROUND(SI.TaxRate * SI.RecommendedRetailPrice / 100 + SI.RecommendedRetailPrice, 2) as SellPrice,
+        QuantityOnHand,
+        (SELECT ImagePath FROM stockitemimages WHERE StockItemID = SI.StockItemID LIMIT 1) as ImagePath,
+        (SELECT ImagePath FROM stockgroups JOIN stockitemstockgroups USING(StockGroupID) WHERE StockItemID = SI.StockItemID LIMIT 1) as BackupImagePath
+        FROM stockitems SI
+        JOIN stockitemholdings SIH USING(stockitemid)
+        JOIN stockitemstockgroups USING(StockItemID)
+        JOIN stockgroups ON stockitemstockgroups.StockGroupID = stockgroups.StockGroupID
+        WHERE " . $queryBuildResult . " ? IN (SELECT StockGroupID from stockitemstockgroups WHERE StockItemID = SI.StockItemID)
+        " . (empty($search) ? "" : "AND SI.StockItemName LIKE '%" . $search . "%'") . "
+        GROUP BY StockItemID
+        ORDER BY " . $Sort . " " . $orderBy . "
+        LIMIT ? OFFSET ?
+    ";
+
+    $statement = mysqli_prepare($databaseConnection, $query);
+    mysqli_stmt_bind_param($statement, "iii", $categoryID, $ProductsOnPage, $offset);
+    mysqli_stmt_execute($statement);
+    $returnableResult = mysqli_stmt_get_result($statement);
+    $returnableResult = mysqli_fetch_all($returnableResult, MYSQLI_ASSOC);
+
+    $countQuery = "
+        SELECT count(*)
+        FROM stockitems SI
+        WHERE " . $queryBuildResult . " ? IN (SELECT SS.StockGroupID from stockitemstockgroups SS WHERE SS.StockItemID = SI.StockItemID)
+    ";
+    $countStatement = mysqli_prepare($databaseConnection, $countQuery);
+    mysqli_stmt_bind_param($countStatement, "i", $categoryID);
+    mysqli_stmt_execute($countStatement);
+    $countResult = mysqli_stmt_get_result($countStatement);
+    $countResult = mysqli_fetch_all($countResult, MYSQLI_ASSOC);
+
+    return [
+        'data' => $returnableResult,
+        'count' => $countResult[0]['count(*)']
+    ];
+}
