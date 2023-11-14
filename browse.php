@@ -16,7 +16,6 @@ function berekenVerkoopPrijs($adviesPrijs, $btw) {
 
 $returnableResult = null;
 
-$amountOfPages = 0;
 $queryBuildResult = "";
 
 $ProductsOnPage = getProductsOnPage();
@@ -47,51 +46,23 @@ switch($orderByLabel) {
 
 if ($categoryID != "") { 
     if ($queryBuildResult != "") {
-    $queryBuildResult .= " AND ";
+        $queryBuildResult .= " AND ";
     }
+
+    $Result = getProductsByCategory(
+        $databaseConnection,
+        $categoryID,
+        $queryBuildResult,
+        $search,
+        $Sort,
+        $orderBy,
+        $ProductsOnPage,
+        $offset
+    );
 }
 
-if ($categoryID !== "") {
-    $Query = "
-           SELECT SI.StockItemID, SI.StockItemName, SI.MarketingComments, TaxRate, RecommendedRetailPrice,
-           ROUND(SI.TaxRate * SI.RecommendedRetailPrice / 100 + SI.RecommendedRetailPrice,2) as SellPrice,
-           QuantityOnHand,
-           (SELECT ImagePath FROM stockitemimages WHERE StockItemID = SI.StockItemID LIMIT 1) as ImagePath,
-           (SELECT ImagePath FROM stockgroups JOIN stockitemstockgroups USING(StockGroupID) WHERE StockItemID = SI.StockItemID LIMIT 1) as BackupImagePath
-           FROM stockitems SI
-           JOIN stockitemholdings SIH USING(stockitemid)
-           JOIN stockitemstockgroups USING(StockItemID)
-           JOIN stockgroups ON stockitemstockgroups.StockGroupID = stockgroups.StockGroupID
-           WHERE " . $queryBuildResult . " ? IN (SELECT StockGroupID from stockitemstockgroups WHERE StockItemID = SI.StockItemID)
-           " . (empty($search) ? "" : "AND SI.StockItemName LIKE '%".$search."%'") . "
-           GROUP BY StockItemID
-           ORDER BY " . $Sort . " " . $orderBy . "
-           LIMIT ? OFFSET ?
-    ";
-
-    $Statement = mysqli_prepare($databaseConnection, $Query);
-    mysqli_stmt_bind_param($Statement, "iii", $categoryID, $ProductsOnPage, $offset);
-    mysqli_stmt_execute($Statement);
-    $returnableResult = mysqli_stmt_get_result($Statement);
-    $returnableResult = mysqli_fetch_all($returnableResult, MYSQLI_ASSOC);
-
-    $Query = "
-                SELECT count(*)
-                FROM stockitems SI
-                WHERE " . $queryBuildResult . " ? IN (SELECT SS.StockGroupID from stockitemstockgroups SS WHERE SS.StockItemID = SI.StockItemID)";
-    $Statement = mysqli_prepare($databaseConnection, $Query);
-    mysqli_stmt_bind_param($Statement, "i", $categoryID);
-    mysqli_stmt_execute($Statement);
-    $Result = mysqli_stmt_get_result($Statement);
-    $Result = mysqli_fetch_all($Result, MYSQLI_ASSOC);
-
-}
-
-$amount = $Result[0] ?? null;
-
-if (isset($amount)) {
-    $amountOfPages = ceil($amount["count(*)"] / $ProductsOnPage);
-}
+$amount = $Result['count'] ?? null;
+$amountOfPages = isset($amount) ? ceil($amount / $ProductsOnPage) : 0;
 ?>
 
 <div class="d-flex">
@@ -128,10 +99,9 @@ if (isset($amount)) {
 <!-- einde zoekresultaten die links van de zoekbalk staan -->
 <!-- einde code deel 3 van User story: Zoeken producten  -->
 <div id="ResultsArea" class="Browse">
-    
         <?php
-        if (isset($returnableResult) && count($returnableResult) > 0) {
-            foreach ($returnableResult as $row) {
+        if (isset($Result['data']) && $amount > 0) {
+            foreach ($Result['data'] as $row) {
                 ?>
                     <div id="ProductFrame">
                         <?php
