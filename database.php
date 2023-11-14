@@ -95,3 +95,17 @@ function getStockItemImage($id, $databaseConnection) {
 
     return $R;
 }
+
+function getProductsOnPage() {
+    if (isset($_GET['products_on_page'])) {
+        $ProductsOnPage = $_GET['products_on_page'];
+        $_SESSION['products_on_page'] = $_GET['products_on_page'];
+    } else if (isset($_SESSION['products_on_page'])) {
+        $ProductsOnPage = $_SESSION['products_on_page'];
+    } else {
+        $ProductsOnPage = 25;
+        $_SESSION['products_on_page'] = 25;
+    }
+
+    return $ProductsOnPage;
+}
