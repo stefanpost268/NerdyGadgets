@@ -4,16 +4,36 @@
 
     // Add to shopping bag
     if (isset($_POST["articleid"]) && isset($_POST["amount"])){
+        $amount = intval($_POST["amount"]);
         if(!isset($_SESSION["shoppingcart"])) {
             $_SESSION["shoppingcart"] = array();
         }
 
         $id = $_POST["articleid"];
-
-
-        $updated = $_SESSION["shoppingcart"][$id] = intval($_POST["amount"]);
+        if(isset($_SESSION["shoppingcart"][$id])) {
+            if($amount < 1) {
+                unset($_SESSION["shoppingcart"][$id]);
+                $status = "deleted";
+                $succesfull = true;
+            } else {
+                $status = "updated";
+                $succesfull = $_SESSION["shoppingcart"][$id] = $amount;
+            }
+        } else {
+            if($amount > 1) {
+                $status = "added";
+                $succesfull = $_SESSION["shoppingcart"][$id] = $amount;
+            }
+        }
     } else {
-        $id = $_GET['id'];
+        $id = $_GET["id"] ?? NULL;
+    }
+
+    // Get current shopping bag amount of product.
+    if(isset($_SESSION["shoppingcart"][$id])) {
+        $amount = $_SESSION["shoppingcart"][$id];
+    } else {
+        $amount = 0;
     }
 
     $StockItem = getStockItem($id, $databaseConnection);
@@ -21,10 +41,16 @@
 ?>
 
 <div id="CenteredContent">
-    <?php if(isset($updated)) { ?>
-        <?php if($updated) { ?>
+    <?php if(isset($succesfull)) { ?>
+        <?php if($succesfull) { ?>
             <div class="alert alert-success" role="alert">
-                Uw product is in de winkelmand gezet!
+                <?php
+                    switch($status) {
+                        case "added": echo "Uw product is toegevoegd aan de winkelmand!"; break;
+                        case "updated": echo "Uw product aantal is in de winkelmand aangepast!"; break;
+                        case "deleted": echo "Uw product is uit de winkelmand verwijderd!"; break;
+                    }
+                ?>
             </div>
         <?php } else { ?>
             <div class="alert alert-danger" role="alert">
@@ -158,7 +184,7 @@
     <div id="addToShoppingCart">
         <form method="post" action="productpage.php"> 
         <input type="hidden" name="articleid" value="<?php print($id);?>"> 
-        <input type="number" id="amount" name="amount" value="1" min="1" max="100">
+        <input type="number" id="amount" name="amount" value="<?php print($amount); ?>" min="0">
         <br><br> 
         <input type="submit" value="In Winkelwagen"> 
         </form> 
@@ -167,7 +193,7 @@
     <?php
     } else {
     ?>
-    <h2 id="ProductNotFound">Het opgevraagde product is niet gevonden.</h2>
+        <h2 id="ProductNotFound">Het opgevraagde product is niet gevonden.</h2>
     <?php
     }
     ?>
