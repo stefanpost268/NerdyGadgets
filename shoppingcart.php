@@ -76,7 +76,7 @@ if (isset($_SESSION["shoppingcart"])) {
                                     <div class="d-flex align-items-center">
                                         <img width='100' src='<?php echo $product["image"]; ?>' class="img-thumbnail">
                                         <div class="ml-3 color:red;">
-                                            <p><?php print($product["item"]["StockItemName"]); ?></p>
+                                            <p><a href="./productpage.php?id=<?php print($product["item"]["StockItemID"]); ?>"><?php print($product["item"]["StockItemName"]); ?></a></p>
                                             <p><?php  print("Article ID: " . $product["item"]["StockItemID"]); ?></p>
                                         </div>
                                     </div>
