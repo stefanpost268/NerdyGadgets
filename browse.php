@@ -15,54 +15,53 @@ function berekenVerkoopPrijs($adviesPrijs, $btw) {
 }
 
 $returnableResult = null;
-
 $queryBuildResult = "";
 
-$ProductsOnPage = getProductsOnPage();
-$categoryID = isset($_GET['category_id']) ? $_GET['category_id'] : "";
+$productsOnPage = getProductsOnPage();
+$categoryID = isset($_GET['category_id']) ? $_GET['category_id'] : NULL;
 $pageNumber = isset($_GET['page_number']) ? $_GET['page_number'] : 0;
 $orderByLabel = $_GET['order_by'] ?? "name-ASC";
 $search = $_GET['search'] ?? "";
-$offset = $pageNumber * $ProductsOnPage;
+$offset = $pageNumber * $productsOnPage;
 
 switch($orderByLabel) {
     case "price-ASC":
         $orderBy = "ASC";
-        $Sort = "SellPrice";
+        $sort = "SellPrice";
         break;
     case "price-DESC":
         $orderBy = "DESC";
-        $Sort = "SellPrice";
+        $sort = "SellPrice";
         break;
     case "name-DESC":
         $orderBy = "DESC";
-        $Sort = "StockItemName";
+        $sort = "StockItemName";
         break;
     default:
         $orderBy = "ASC";
-        $Sort = "StockItemName";
+        $sort = "StockItemName";
 }
 
 
-if ($categoryID != "") { 
+if ($categoryID !== null) { 
     if ($queryBuildResult != "") {
         $queryBuildResult .= " AND ";
     }
-
-    $Result = getProductsByCategory(
-        $databaseConnection,
-        $categoryID,
-        $queryBuildResult,
-        $search,
-        $Sort,
-        $orderBy,
-        $ProductsOnPage,
-        $offset
-    );
 }
 
+$Result = getProducts(
+    $databaseConnection,
+    $categoryID,
+    $queryBuildResult,
+    $search,
+    $sort,
+    $orderBy,
+    $productsOnPage,
+    $offset
+);
+
 $amount = $Result['count'] ?? null;
-$amountOfPages = isset($amount) ? ceil($amount / $ProductsOnPage) : 0;
+$amountOfPages = isset($amount) ? ceil($amount / $productsOnPage) : 0;
 ?>
 
 <div class="d-flex">
@@ -88,9 +87,9 @@ $amountOfPages = isset($amount) ? ceil($amount / $ProductsOnPage) : 0;
 
         <label class="pt-3" for="products_on_page">Selecteer het aantal producten:</label>
         <select name="products_on_page" onchange="this.form.submit()">
-            <option value="25" <?php print($ProductsOnPage == 25 ? "selected" : "") ?> >25</option>
-            <option value="50" <?php print($ProductsOnPage == 50 ? "selected" : "") ?>>50</option>
-            <option value="100" <?php print($ProductsOnPage == 100 ? "selected" : "") ?>>100</option>
+            <option value="25" <?php print($productsOnPage == 25 ? "selected" : "") ?> >25</option>
+            <option value="50" <?php print($productsOnPage == 50 ? "selected" : "") ?>>50</option>
+            <option value="100" <?php print($productsOnPage == 100 ? "selected" : "") ?>>100</option>
         </select>
     </form>
 </div>
