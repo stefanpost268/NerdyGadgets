@@ -147,6 +147,8 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
             WHERE {$whereClause}
         ";
 
+        $countQuery = $countQuery.(empty($search) ? "" : " AND SI.StockItemName LIKE '%" . $search . "%'");
+
         $countStatement = mysqli_prepare($databaseConnection, $countQuery);
         if (!empty($categoryID)) {
             mysqli_stmt_bind_param($countStatement, "i", $categoryID);
@@ -155,6 +157,7 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
         mysqli_stmt_execute($countStatement);
         $countResult = mysqli_stmt_get_result($countStatement);
         $countResult = mysqli_fetch_all($countResult, MYSQLI_ASSOC);
+
         $count = $countResult[0]['count(*)'];
     } else {
         $count = 0;

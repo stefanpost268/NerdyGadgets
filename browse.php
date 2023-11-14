@@ -94,9 +94,6 @@ $amountOfPages = isset($amount) ? ceil($amount / $productsOnPage) : 0;
     </form>
 </div>
 
-
-<!-- einde zoekresultaten die links van de zoekbalk staan -->
-<!-- einde code deel 3 van User story: Zoeken producten  -->
 <div id="ResultsArea" class="Browse">
         <?php
         if (isset($Result['data']) && $amount > 0) {
@@ -134,6 +131,8 @@ $amountOfPages = isset($amount) ? ceil($amount / $productsOnPage) : 0;
                     value="<?php print (isset($_GET['result_page_numbers'])) ? $_GET['result_page_numbers'] : "0"; ?>">
                 <input type="hidden" name="products_on_page" id="products_on_page"
                     value="<?php print ($_SESSION['products_on_page']); ?>">
+                <input type="hidden" name="order_by" id="order_by" value="<?php print($orderByLabel); ?>">
+                <input type="hidden" name="search" id="search" value="<?php print($search); ?>">
 
                 <?php
                 if ($amountOfPages > 0) {
