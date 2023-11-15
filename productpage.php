@@ -184,7 +184,7 @@
     <div id="addToShoppingCart">
         <form method="post" action="productpage.php"> 
         <input type="hidden" name="articleid" value="<?php print($id);?>"> 
-        <input type="number" id="amount" name="amount" value="<?php print($amount); ?>" min="0">
+        <input type="number" id="amount" name="amount" value="<?php print($amount); ?>" min="0" max="100">
         <br><br> 
         <input type="submit" value="In Winkelwagen"> 
         </form> 

@@ -16,6 +16,7 @@ if(isset($_POST["productAmount"])) {
     if($_POST["productAmount"] != $_SESSION["shoppingcart"]) {
         $items = $_POST["productAmount"];
         foreach($items as $id => $amount) {
+            if($amount > 100) { $amount = 100;}
             if($amount < 1) {
                 unset($_SESSION["shoppingcart"][$id]);
             } else if(is_numeric($amount)) {
