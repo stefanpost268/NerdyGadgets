@@ -1,5 +1,6 @@
 <?php
 include 'header.php';
+$config = json_decode(file_get_contents("config.json"));
 
 function getProductImage($id, $databaseConnection, $item): string
 {
@@ -16,7 +17,7 @@ if(isset($_POST["productAmount"])) {
     if($_POST["productAmount"] != $_SESSION["shoppingcart"]) {
         $items = $_POST["productAmount"];
         foreach($items as $id => $amount) {
-            if($amount > 100) { $amount = 100;}
+            if($amount > $config->maxInShoppingBasket) { $amount = $config->maxInShoppingBasket; }
             if($amount < 1) {
                 unset($_SESSION["shoppingcart"][$id]);
             } else if(is_numeric($amount)) {
