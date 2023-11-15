@@ -5,6 +5,7 @@
     // Add to shopping bag
     if (isset($_POST["articleid"]) && isset($_POST["amount"])){
         $amount = intval($_POST["amount"]);
+
         if(!isset($_SESSION["shoppingcart"])) {
             $_SESSION["shoppingcart"] = array();
         }
@@ -20,7 +21,7 @@
                 $succesfull = $_SESSION["shoppingcart"][$id] = $amount;
             }
         } else {
-            if($amount > 1) {
+            if($amount >= 1) {
                 $status = "added";
                 $succesfull = $_SESSION["shoppingcart"][$id] = $amount;
             }
