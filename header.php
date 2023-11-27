@@ -3,6 +3,8 @@
 <?php
 session_start();
 include "database.php";
+loadenv();
+
 $databaseConnection = connectToDatabase();
 ?>
 <!DOCTYPE html>

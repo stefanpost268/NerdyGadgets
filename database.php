@@ -5,7 +5,6 @@ function connectToDatabase() {
     $Connection = null;
 
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // Set MySQLi to throw exceptions
-    var_dump($_ENV["DATABASE_URL"], $_ENV["DATABASE_USER"], $_ENV["DATABASE_PASSWORD"], $_ENV["DATABASE_NAME"]);
     try {
         $Connection = mysqli_connect($_ENV["DATABASE_URL"], $_ENV["DATABASE_USER"], $_ENV["DATABASE_PASSWORD"], $_ENV["DATABASE_NAME"]);
         mysqli_set_charset($Connection, 'latin1');

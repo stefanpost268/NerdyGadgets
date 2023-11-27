@@ -42,7 +42,7 @@ class HTTP
         curl_close($curl);
 
         return [
-            "response" => $response,
+            "response" => json_decode($response),
             "info" => $info
         ];
     }

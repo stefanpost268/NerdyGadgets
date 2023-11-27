@@ -15,9 +15,14 @@
         $errors = $checkoutValidator->validate($products);
         
         if(empty($errors)) {
-            // include './Controller/CheckoutController.php';
-            // $checkoutController = new Controller\CheckoutController($databaseConnection);
-            print("Checkout items are valid to be bought out");
+            include './Controller/CheckoutController.php';
+            $checkoutController = new Controller\CheckoutController($databaseConnection);
+
+            try {
+                $checkoutController->getTransaction("Bestelling bij NerdyGadgets", $totalPrice, $databaseConnection);
+            } catch(Exception $e) {
+                $errors[] = $e->getMessage();
+            }
         }
     }
 ?>
