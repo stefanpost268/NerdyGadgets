@@ -31,7 +31,7 @@ class CheckoutController
             ],
             "description" => $description,
             "redirectUrl" => $appUrl . "status.php?id=".$dbId,
-            "webhookUrl" => $appUrl . "/webhooks/MollieWebhook.php"
+            "webhookUrl" => $appUrl . "Webhooks/MollieWebhook.php"
         ];
     }
 
@@ -122,5 +122,4 @@ class CheckoutController
 
         return $insertedId;
     }
-
 }

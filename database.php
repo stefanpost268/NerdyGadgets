@@ -215,8 +215,9 @@ function getVoorraadTekst($actueleVoorraad) {
     }
 }
 
-function loadenv() {
-    $envFile = '.env';
+function loadenv(string $envFile = '.env') {
+
+    var_dump($envFile);
     if (file_exists($envFile)) {
         $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         foreach ($lines as $line) {
