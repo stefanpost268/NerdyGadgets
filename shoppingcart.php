@@ -1,17 +1,6 @@
 <?php
 include 'header.php';
 
-function getProductImage($id, $databaseConnection, $item): string
-{
-    $stockImage = getStockItemImage($id, $databaseConnection);
-
-    if (isset($stockImage[0]["ImagePath"])) {
-        return "Public/StockItemIMG/" . getStockItemImage($id, $databaseConnection)[0]["ImagePath"];
-    } else {
-        return "Public/StockGroupIMG/" . $item["BackupImagePath"];
-    }
-}
-
 if(isset($_POST["productAmount"])) {
     if($_POST["productAmount"] != $_SESSION["shoppingcart"]) {
         $items = $_POST["productAmount"];
@@ -28,30 +17,12 @@ if(isset($_POST["productAmount"])) {
     }
 }
 
-// Check if the "Clear Session" button was clicked
-if (isset($_POST['clear_session'])) {
-    // Clear the session
-    session_unset();
-}
-
 $products = [];
 $totalPrice = 0;
 
 if (isset($_SESSION["shoppingcart"])) {
-    foreach ($_SESSION["shoppingcart"] as $id => $amount) {
-        $item = getStockItem($id, $databaseConnection);
-        $imagePath = getProductImage($id, $databaseConnection, $item);
-        $subtotal = round($amount * $item['SellPrice'], 2);
-
-        $products[] = [
-            "item" => $item,
-            "image" => $imagePath,
-            "amount" => $amount,
-            'subtotal' => $subtotal,
-        ];
-
-        $totalPrice += $subtotal;
-    }
+    $products = getShoppingCartItems($databaseConnection);
+    $totalPrice = getTotalPriceShoppingCart($products);
 }
 ?>
 
@@ -112,16 +83,15 @@ if (isset($_SESSION["shoppingcart"])) {
                     <h2>Overzicht van je bestelling</h2>
                     <div style="border-style: solid; border-color: white; padding: 5px;">
                         <h3>Totaal: € <?php print($totalPrice); ?></h3>
-                        <form method="post">
                             <button
                                 class="btn btn-primary"
                                 style="width: 100%;"
                                 type="submit"
-                                name="clear_session"
                             >
-                                Legen Winkelmand
+                                <a style="color: white;" href="./checkout.php">
+                                    Bestelling plaatsen
+                                </a>   
                             </button>
-                        </form>
                     </div>
                 </div>
             </div>

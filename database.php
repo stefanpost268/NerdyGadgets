@@ -168,3 +168,41 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
         'count' => $count
     ];
 }
+
+function getProductImage($id, $databaseConnection, $item): string
+{
+    $stockImage = getStockItemImage($id, $databaseConnection);
+
+    if (isset($stockImage[0]["ImagePath"])) {
+        return "Public/StockItemIMG/" . getStockItemImage($id, $databaseConnection)[0]["ImagePath"];
+    } else {
+        return "Public/StockGroupIMG/" . $item["BackupImagePath"];
+    }
+}
+
+function getShoppingCartItems($databaseConnection): array {
+    $products = [];
+    foreach ($_SESSION["shoppingcart"] as $id => $amount) {
+        $item = getStockItem($id, $databaseConnection);
+        $imagePath = getProductImage($id, $databaseConnection, $item);
+        $subtotal = round($amount * $item['SellPrice'], 2);
+
+        $products[] = [
+            "item" => $item,
+            "image" => $imagePath,
+            "amount" => $amount,
+            'subtotal' => $subtotal,
+        ];
+    }
+
+    return $products;
+}
+
+function getTotalPriceShoppingCart($products): float {
+    $totalPrice = 0;
+    foreach ($products as $product) {
+        $totalPrice += $product['subtotal'];
+    }
+
+    return $totalPrice;
+}
