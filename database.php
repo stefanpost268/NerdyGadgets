@@ -58,7 +58,7 @@ function getStockItem($id, $databaseConnection) {
            SELECT SI.StockItemID, 
             (RecommendedRetailPrice*(1+(TaxRate/100))) AS SellPrice, 
             StockItemName,
-            CONCAT('Voorraad: ',QuantityOnHand)AS QuantityOnHand,
+            QuantityOnHand,
             SearchDetails, 
             (CASE WHEN (RecommendedRetailPrice*(1+(TaxRate/100))) > 50 THEN 0 ELSE 6.95 END) AS SendCosts, MarketingComments, CustomFields, SI.Video,
             (SELECT ImagePath FROM stockgroups JOIN stockitemstockgroups USING(StockGroupID) WHERE StockItemID = SI.StockItemID LIMIT 1) as BackupImagePath   
@@ -205,4 +205,12 @@ function getTotalPriceShoppingCart($products): float {
     }
 
     return $totalPrice;
+}
+
+function getVoorraadTekst($actueleVoorraad) {
+    if ($actueleVoorraad > 1000) {
+        return "Ruime voorraad beschikbaar.";
+    } else {
+        return "Voorraad: $actueleVoorraad";
+    }
 }
