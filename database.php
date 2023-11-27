@@ -5,8 +5,9 @@ function connectToDatabase() {
     $Connection = null;
 
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // Set MySQLi to throw exceptions
+    var_dump($_ENV["DATABASE_URL"], $_ENV["DATABASE_USER"], $_ENV["DATABASE_PASSWORD"], $_ENV["DATABASE_NAME"]);
     try {
-        $Connection = mysqli_connect("localhost", "root", "", "nerdygadgets");
+        $Connection = mysqli_connect($_ENV["DATABASE_URL"], $_ENV["DATABASE_USER"], $_ENV["DATABASE_PASSWORD"], $_ENV["DATABASE_NAME"]);
         mysqli_set_charset($Connection, 'latin1');
         $DatabaseAvailable = true;
     } catch (mysqli_sql_exception $e) {
@@ -212,5 +213,25 @@ function getVoorraadTekst($actueleVoorraad) {
         return "Ruime voorraad beschikbaar.";
     } else {
         return "Voorraad: $actueleVoorraad";
+    }
+}
+
+function loadenv() {
+    $envFile = '.env';
+    if (file_exists($envFile)) {
+        $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            if (strpos(trim($line), '#') === 0) {
+                continue;
+            }
+
+            list($key, $value) = explode('=', $line, 2) + [NULL, NULL];
+            if ($key !== NULL && $value !== NULL) {
+                $_ENV[$key] = $value;
+                putenv("$key=$value");
+            }
+        }
+    } else {
+        throw new Exception('.env file not found');
     }
 }
