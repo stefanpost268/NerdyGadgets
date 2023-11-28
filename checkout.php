@@ -53,9 +53,9 @@
                     <input type="text" name="email" id="email" required>
                     <h3 style="margin-top: 10px;">Aflever adres</h3>
                     <label for="postalcode">Postcode</label>
-                    <input type="text" name="postalcode" id="postalcode" required>
+                    <input type="text" name="postalcode" id="postalcode" pattern="\d{4} [A-Za-z]{2}" title="Voer een geldige postocode in (bijv, 8302 BB)" required>
                     <label for="housenr">Huisnummer</label>
-                    <input type="text" name="housenr" id="housenr" required>
+                    <input type="text" name="housenr" id="housenr" pattern=".*\d+.*" title="Voer een geldig huis nummer in" required>
                     <label for="residence">Woonplaats</label>
                     <input type="text" name="residence" id="residence" required>
             </div>
