@@ -1,4 +1,3 @@
-<!-- dit bestand bevat alle code die verbinding maakt met de database -->
 <?php
 
 function connectToDatabase() {
@@ -216,8 +215,6 @@ function getVoorraadTekst($actueleVoorraad) {
 }
 
 function loadenv(string $envFile = '.env') {
-
-    var_dump($envFile);
     if (file_exists($envFile)) {
         $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         foreach ($lines as $line) {

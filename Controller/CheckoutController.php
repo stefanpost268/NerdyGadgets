@@ -64,7 +64,6 @@ class CheckoutController
     {
         
         $databaseId = $this->createTransaction($price, $databaseConnection);
-
         if($databaseId === 0) {
             throw new \Exception("Failed to create transaction");
         }

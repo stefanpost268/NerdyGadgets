@@ -16,12 +16,10 @@ class HTTP
         $response = curl_exec($curl);
         $info = curl_getinfo($curl);
 
-        var_dump($info['header_size']);
-
         curl_close($curl);
 
         return [
-            "response" => $response,
+            "response" => json_decode($response),
             "info" => $info
         ];
     }
