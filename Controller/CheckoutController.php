@@ -62,10 +62,13 @@ class CheckoutController
      */
     public function getTransaction(string $description, array $formData, float $price, mysqli $databaseConnection): void
     {
-        $databaseId = $this->createTransaction($price, $formData, $databaseConnection);
+        $userId = $this->updateOrCreateUser($databaseConnection, $formData);
+
+        $databaseId = $this->createTransaction($price, $formData, $userId, $databaseConnection);
         if($databaseId === 0) {
             throw new \Exception("Failed to create transaction");
         }
+
 
         $molliePayment = $this->createPayment($description, $price, $databaseId);
 
@@ -110,9 +113,10 @@ class CheckoutController
      * @param mysqli $databaseConnection
      * @return int returns the last inserted ID and 0 when failed.
      */
-    private function createTransaction(float $price, array $formData, mysqli $databaseConnection): int
+    private function createTransaction(float $price, array $formData, int $userId, mysqli $databaseConnection): int
     {
         $query = "INSERT INTO `Transaction` (
+            `userId`,
             `status`,
             `payment`,
             `postalcode`,
@@ -120,6 +124,7 @@ class CheckoutController
             `residence`
         ) VALUES 
         (   
+            '".$userId."',
             'open',
             ".$price.",
             '".$formData['postalcode']."',
@@ -133,5 +138,43 @@ class CheckoutController
         mysqli_stmt_close($statement);
 
         return $insertedId;
+    }
+
+    /**
+     * Update or create user in database.
+     */
+    private function updateOrCreateUser($databaseConnection, $formData): int {
+        $query = "SELECT `id` FROM `User` WHERE `email` = ?;";
+
+        $statement = mysqli_prepare($databaseConnection, $query);
+        mysqli_stmt_bind_param($statement, "s", $formData["email"]);
+        mysqli_stmt_execute($statement);
+        mysqli_stmt_bind_result($statement, $userId);
+        mysqli_stmt_fetch($statement);
+        mysqli_stmt_close($statement);
+
+        if($userId === null) {
+            $query = "INSERT INTO `User` (
+                `name`,
+                `email`
+            ) VALUES 
+            (   
+                '".$formData['name']."',
+                '".$formData['email']."'
+            );";
+
+            $statement = mysqli_prepare($databaseConnection, $query);
+            $success = mysqli_stmt_execute($statement);
+            $userId = ($success) ? mysqli_insert_id($databaseConnection) : 0;
+            mysqli_stmt_close($statement);
+        } else {
+            $query = "UPDATE `User` SET `name` = '".$formData['name']."' WHERE `id` = $userId;";
+
+            $statement = mysqli_prepare($databaseConnection, $query);
+            $success = mysqli_stmt_execute($statement);
+            mysqli_stmt_close($statement);
+        }
+
+        return $userId;
     }
 }

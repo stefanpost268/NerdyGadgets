@@ -47,10 +47,10 @@
         <div style="display: flex; justify-content: space-between;">
             <div style="width: 45%;">
                 <h3>Klant informatie</h3>
-                    <label for="naam">Naam</label>
-                    <input type="text" name="naam" id="naam" required>
+                    <label for="name">Naam</label>
+                    <input type="text" name="name" id="name" required>
                     <label for="email">Email</label>
-                    <input type="text" name="email" id="email" required>
+                    <input type="email" name="email" id="email" required>
                     <h3 style="margin-top: 10px;">Aflever adres</h3>
                     <label for="postalcode">Postcode</label>
                     <input type="text" name="postalcode" id="postalcode" pattern="\d{4} [A-Za-z]{2}" title="Voer een geldige postocode in (bijv, 8302 BB)" required>
