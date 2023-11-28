@@ -27,7 +27,7 @@ if (!empty($_POST)) {
 }
 ?>
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <?php if (!empty($errors)) { ?>
         <div class="alert alert-danger" role="alert">
             <?php foreach ($errors as $error) { ?>
