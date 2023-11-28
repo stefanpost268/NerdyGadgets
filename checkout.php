@@ -41,7 +41,7 @@
                 <h1>Voltooi uw bestelling</h1>
                 <h2>Vul uw gegevens in voordat u bestelt</h2>
             </div>
-            <button class="btn btn-primary" onclick="window.location = './shoppingcart.php'">Back</button>
+            <button class="btn btn-primary" onclick="window.location = './shoppingcart.php'">Terug</button>
         </div>
         <hr style="text-align:left;margin-left:0;background-color: white;"> 
         <div style="display: flex; justify-content: space-between;">
