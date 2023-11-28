@@ -1,7 +1,7 @@
 <?php
     include 'header.php';
 
-    if (!isset($_SESSION["shoppingcart"])) {
+    if (!isset($_SESSION["shoppingcart"]) || empty($_SESSION["shoppingcart"])) {
         header("Location: ./shoppingcart.php");
     }
 

@@ -88,9 +88,16 @@ if (isset($_SESSION["shoppingcart"])) {
                                 style="width: 100%;"
                                 type="submit"
                             >
-                                <a style="color: white;" href="./checkout.php">
-                                    Bestelling plaatsen
-                                </a>   
+                                <?php if(empty($products)) { ?>
+                                    <a style="color: white;" href="./browse.php">
+                                        Ga naar de winkel
+                                    </a>
+                                <?php } else { ?>
+                                    <a style="color: white;" href="./checkout.php">
+                                        Bestelling plaatsen
+                                    </a>   
+                                <?php } ?>
+                                
                             </button>
                     </div>
                 </div>
