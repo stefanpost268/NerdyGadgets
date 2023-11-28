@@ -125,12 +125,14 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
         JOIN stockgroups ON stockitemstockgroups.StockGroupID = stockgroups.StockGroupID
         WHERE {$whereClause}
         " . (empty($search) ? "" : 
-        (is_numeric($search) ? "AND SI.StockItemID = " . (int)$search : "AND SI.StockItemName LIKE '%" . $search . "%'")) . "
+        (is_numeric($search) ? "AND SI.StockItemID = " . intval($search) : "OR SI.StockItemName LIKE '%" . $search . "%'")) . "
         GROUP BY StockItemID
         ORDER BY " . $Sort . " " . $orderBy . "
         LIMIT ? OFFSET ?
     ";
     
+    
+
     $statement = mysqli_prepare($databaseConnection, $query);
     if (!empty($categoryID)) {
         mysqli_stmt_bind_param($statement, "iii", $categoryID, $ProductsOnPage, $offset);
@@ -140,7 +142,6 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
     mysqli_stmt_execute($statement);
     $returnableResult = mysqli_stmt_get_result($statement);
     $returnableResult = mysqli_fetch_all($returnableResult, MYSQLI_ASSOC);
-
     if(!empty($returnableResult)) {
         $countQuery = "
             SELECT count(*)
@@ -148,8 +149,7 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
             WHERE {$whereClause}
         ";
 
-        $countQuery = $countQuery.(empty($search) ? "" : " AND SI.StockItemName LIKE '%" . $search . "%'");
-
+        $countQuery = $countQuery.(empty($search) ? "" : " AND SI.StockItemName LIKE '%" . $search . "%' OR SI.StockItemID = ". $search ."" );
         $countStatement = mysqli_prepare($databaseConnection, $countQuery);
         if (!empty($categoryID)) {
             mysqli_stmt_bind_param($countStatement, "i", $categoryID);
@@ -160,6 +160,7 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
         $countResult = mysqli_fetch_all($countResult, MYSQLI_ASSOC);
 
         $count = $countResult[0]['count(*)'];
+
     } else {
         $count = 0;
     }
