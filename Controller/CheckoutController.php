@@ -69,6 +69,16 @@ class CheckoutController
             throw new \Exception("Failed to create transaction");
         }
 
+        $shoppingCart = $_SESSION["shoppingcart"] ?? [];
+        
+        $bindProducts = $this->bindProductsOnTransaction(
+            $databaseId,
+            $shoppingCart,
+            $databaseConnection
+        );
+
+        var_dump($bindProducts);
+
 
         $molliePayment = $this->createPayment($description, $price, $databaseId);
 
@@ -176,5 +186,25 @@ class CheckoutController
         }
 
         return $userId;
+    }
+
+    private function bindProductsOnTransaction(int $databaseId, array $shoppingCart, $databaseConnection): bool {
+        foreach($shoppingCart as $productId => $amount) {
+            $query = "INSERT INTO `TransactionBind` (
+                `transactionId`,
+                `stockitemId`,
+                `amount`
+            ) VALUES 
+            (   
+                '".$databaseId."',
+                '".$productId."',
+                '".$amount."'
+            );";
+    
+            $statement = mysqli_prepare($databaseConnection, $query);
+            mysqli_stmt_execute($statement);
+            mysqli_stmt_close($statement);
+        }
+        return true;
     }
 }
