@@ -77,8 +77,17 @@ class CheckoutController
             $databaseConnection
         );
 
-        var_dump($bindProducts);
+        if(!$bindProducts) {
+            throw new \Exception("Failed to bind products to transaction");
+        }
 
+        foreach($shoppingCart as $productId => $amount) {
+          $status = $this->updateStockQuantityOnProduct($productId, $amount, $databaseConnection);
+
+            if(!$status) {
+                throw new \Exception("Failed to update stock price");
+            }
+        }
 
         $molliePayment = $this->createPayment($description, $price, $databaseId);
 
@@ -206,5 +215,23 @@ class CheckoutController
             mysqli_stmt_close($statement);
         }
         return true;
+    }
+
+    /**
+     * Removes items from stock of a product.
+     * 
+     * @param int $productId
+     * @param int $amount
+     * @param mysqli $databaseConnection
+     * @return bool
+     */
+    private function updateStockQuantityOnProduct(int $productId, int $amount, mysqli $databaseConnection): bool {
+        $query = "UPDATE `stockitemholdings` SET `QuantityOnHand` = `QuantityOnHand` - $amount WHERE `StockItemID` = $productId;";
+
+        $statement = mysqli_prepare($databaseConnection, $query);
+        $success = mysqli_stmt_execute($statement);
+        mysqli_stmt_close($statement);
+
+        return $success;
     }
 }
