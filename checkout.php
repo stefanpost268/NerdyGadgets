@@ -19,7 +19,7 @@
             $checkoutController = new Controller\CheckoutController($databaseConnection);
 
             try {
-                $checkoutController->getTransaction("Bestelling bij NerdyGadgets", $totalPrice, $databaseConnection);
+                $checkoutController->getTransaction("Bestelling bij NerdyGadgets", $_POST, $totalPrice, $databaseConnection);
             } catch(Exception $e) {
                 $errors[] = $e->getMessage();
             }
@@ -52,12 +52,12 @@
                     <label for="email">Email</label>
                     <input type="text" name="email" id="email" required>
                     <h3 style="margin-top: 10px;">Aflever adres</h3>
-                    <label for="postcode">Postcode</label>
-                    <input type="text" name="postcode" id="postcode" required>
-                    <label for="huisnummer">Huisnummer</label>
-                    <input type="text" name="huisnummer" id="huisnummer" required>
-                    <label for="woonplaats">Woonplaats</label>
-                    <input type="text" name="woonplaats" id="woonplaats" required>
+                    <label for="postalcode">Postcode</label>
+                    <input type="text" name="postalcode" id="postalcode" required>
+                    <label for="housenr">Huisnummer</label>
+                    <input type="text" name="housenr" id="housenr" required>
+                    <label for="residence">Woonplaats</label>
+                    <input type="text" name="residence" id="residence" required>
             </div>
             <div style="width: 50%">
                 <h3>Je bestelling</h3>

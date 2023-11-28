@@ -60,10 +60,9 @@ class CheckoutController
      * @param mysqli $databaseConnection
      * @return void
      */
-    public function getTransaction(string $description, float $price, mysqli $databaseConnection): void
+    public function getTransaction(string $description, array $formData, float $price, mysqli $databaseConnection): void
     {
-        
-        $databaseId = $this->createTransaction($price, $databaseConnection);
+        $databaseId = $this->createTransaction($price, $formData, $databaseConnection);
         if($databaseId === 0) {
             throw new \Exception("Failed to create transaction");
         }
@@ -107,12 +106,26 @@ class CheckoutController
      * 
      * @param string $description
      * @param float $price
+     * @param array $formData
      * @param mysqli $databaseConnection
      * @return int returns the last inserted ID and 0 when failed.
      */
-    private function createTransaction(float $price, mysqli $databaseConnection): int
+    private function createTransaction(float $price, array $formData, mysqli $databaseConnection): int
     {
-        $query = "INSERT INTO `Transaction` (`status`, `payment`) VALUES ('open', $price);";
+        $query = "INSERT INTO `Transaction` (
+            `status`,
+            `payment`,
+            `postalcode`,
+            `housenr`,
+            `residence`
+        ) VALUES 
+        (   
+            'open',
+            ".$price.",
+            '".$formData['postalcode']."',
+            '".$formData['housenr']."',
+            '".$formData['residence']."'
+        );";
 
         $statement = mysqli_prepare($databaseConnection, $query);
         $success = mysqli_stmt_execute($statement);
