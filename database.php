@@ -124,12 +124,13 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
         JOIN stockitemstockgroups USING(StockItemID)
         JOIN stockgroups ON stockitemstockgroups.StockGroupID = stockgroups.StockGroupID
         WHERE {$whereClause}
-        " . (empty($search) ? "" : "AND SI.StockItemName LIKE '%" . $search . "%'") . "
+        " . (empty($search) ? "" : 
+        (is_numeric($search) ? "AND SI.StockItemID = " . (int)$search : "AND SI.StockItemName LIKE '%" . $search . "%'")) . "
         GROUP BY StockItemID
         ORDER BY " . $Sort . " " . $orderBy . "
         LIMIT ? OFFSET ?
     ";
-
+    
     $statement = mysqli_prepare($databaseConnection, $query);
     if (!empty($categoryID)) {
         mysqli_stmt_bind_param($statement, "iii", $categoryID, $ProductsOnPage, $offset);
