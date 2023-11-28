@@ -11,6 +11,10 @@
     if ($ReturnableResult && mysqli_num_rows($ReturnableResult) == 1) {
         $result = mysqli_fetch_all($ReturnableResult, MYSQLI_ASSOC)[0];
         $status = $result["status"];
+
+        if($status == "paid") {
+            $_SESSION["shoppingcart"] = [];
+        }
     } else {
         $result = null;
     }
