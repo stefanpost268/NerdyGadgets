@@ -48,6 +48,8 @@ if(mysqli_num_rows($result) === 0) {
     exit;
 }
 
+$dbTransaction = mysqli_fetch_all($result, MYSQLI_ASSOC)[0];
+
 // Get transacion status.
 require_once __DIR__ . "/../Service/http.php";
 require_once __DIR__ . "/../Controller/CheckoutController.php";
@@ -70,3 +72,18 @@ $mollieTransaction = $molliePayment["response"];
 $statement = mysqli_prepare($connection, "UPDATE Transaction SET status = '$mollieTransaction->status' WHERE transaction_id = '$mollieTransaction->id'");
 mysqli_stmt_execute($statement);
 mysqli_stmt_close($statement);
+
+// if status is not paid or open reset stock.
+if(!in_array($mollieTransaction->status, ["open", "paid"])) {
+    $statement = mysqli_prepare($connection, "SELECT * FROM TransactionBind WHERE transactionId = '".$dbTransaction["id"]."'");
+    mysqli_stmt_execute($statement);
+    $result = mysqli_stmt_get_result($statement);
+    mysqli_stmt_close($statement);
+
+    while($row = mysqli_fetch_assoc($result)) {
+        $statement = mysqli_prepare($connection, "UPDATE stockitemholdings SET QuantityOnHand = QuantityOnHand + ? WHERE `StockItemID` = ?");
+        mysqli_stmt_bind_param($statement, "ii", $row["amount"], $row["stockitemId"]);
+        mysqli_stmt_execute($statement);
+        mysqli_stmt_close($statement);
+    }
+}

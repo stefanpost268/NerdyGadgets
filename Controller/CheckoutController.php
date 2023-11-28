@@ -82,7 +82,8 @@ class CheckoutController
         }
 
         foreach($shoppingCart as $productId => $amount) {
-          $status = $this->updateStockQuantityOnProduct($productId, $amount, $databaseConnection);
+
+          $status = $this->updateStockQuantityOnProduct($productId, (int) $amount, $databaseConnection);
 
             if(!$status) {
                 throw new \Exception("Failed to update stock price");
@@ -161,6 +162,10 @@ class CheckoutController
 
     /**
      * Update or create user in database.
+     * 
+     * @param mysqli $databaseConnection
+     * @param array $formData
+     * @return int returns id of user.
      */
     private function updateOrCreateUser($databaseConnection, $formData): int {
         $query = "SELECT `id` FROM `User` WHERE `email` = ?;";
