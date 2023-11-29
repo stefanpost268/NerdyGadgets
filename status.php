@@ -30,7 +30,7 @@
 
             switch ($status) {
                 case 'open':
-                    $statusIcon = '<object width="95" type="image/svg+xml" data="./Public/SVG/check.svg" class="logo"></object>';
+                    $statusIcon = '<object width="95" type="image/svg+xml" data="./Public/SVG/info.svg" class="logo"></object>';
                     $statusMessage = 'Transactie staat nog open<br><br> als u de transactie al betaald heeft kunt u refreshen om de status opnieuw op te halen.';
                     break;
 
@@ -41,12 +41,12 @@
 
                 case 'failed':
                     $statusIcon = '<object width="95" type="image/svg+xml" data="./Public/SVG/error.svg" class="logo"></object>';
-                    $statusMessage = 'Transaction is niet successfull. Probeer het opnieuw.';
+                    $statusMessage = 'Transaction is niet succesvol. Probeer het opnieuw.';
                     break;
 
                 case 'paid':
                     $statusIcon = '<object width="95" type="image/svg+xml" data="./Public/SVG/check.svg" class="logo"></object>';
-                    $statusMessage = 'Uw transactie is successfull.';
+                    $statusMessage = 'Uw transactie is succesvol.';
                     break;
 
                 default:
@@ -58,7 +58,7 @@
             <h3 class="h4 font-weight-bold mb-4"><?php echo $statusMessage; ?></h3>
             
             <div class="mt-4">
-                <a href="./shoppingcart.php" class="btn btn-primary btn-lg">Back to shopping cart</a>
+                <a href="./shoppingcart.php" class="btn btn-primary btn-lg">Terug naar winkelmand</a>
             </div>
         </div>
     </div>

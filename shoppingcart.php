@@ -77,7 +77,7 @@ if (isset($_SESSION["shoppingcart"])) {
                 <div class="card-body">
                     <h2>Overzicht van je bestelling</h2>
                     <div style="border-style: solid; border-color: white; padding: 5px;">
-                        <h3>Totaal: € <?php print($totalPrice); ?></h3>
+                        <h3>Totaal: € <?php print(number_format($totalPrice, 2)); ?></h3>
                         <button class="btn btn-primary" style="width: 100%;" type="submit">
                             <?php if (empty($products)) { ?>
                                 <a style="color: white;" href="./browse.php">
