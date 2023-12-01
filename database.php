@@ -112,6 +112,7 @@ function getProductsOnPage() {
 
 function getProducts($databaseConnection, $categoryID, $queryBuildResult, $search, $Sort, $orderBy, $ProductsOnPage, $offset) {
     $whereClause = empty($categoryID) ? "1=1" : $queryBuildResult . " ? IN (SELECT StockGroupID from stockitemstockgroups WHERE StockItemID = SI.StockItemID)";
+    $searchQuery = (empty($search) ? "" : "AND SI.StockItemName LIKE '%" . $search . "%'");
 
     $query = "
         SELECT SI.StockItemID, SI.StockItemName, SI.MarketingComments, TaxRate, RecommendedRetailPrice,
@@ -124,7 +125,7 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
         JOIN stockitemstockgroups USING(StockItemID)
         JOIN stockgroups ON stockitemstockgroups.StockGroupID = stockgroups.StockGroupID
         WHERE {$whereClause}
-        " . (empty($search) ? "" : "AND SI.StockItemName LIKE '%" . $search . "%'") . "
+        " . $searchQuery . " OR SI.StockItemId = '$search'
         GROUP BY StockItemID
         ORDER BY " . $Sort . " " . $orderBy . "
         LIMIT ? OFFSET ?
@@ -147,7 +148,7 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
             WHERE {$whereClause}
         ";
 
-        $countQuery = $countQuery.(empty($search) ? "" : " AND SI.StockItemName LIKE '%" . $search . "%'");
+        $countQuery = $countQuery.(empty($search) ? "" : " AND SI.StockItemName LIKE '%" . $search . "%' OR SI.StockItemId = '$search'");
 
         $countStatement = mysqli_prepare($databaseConnection, $countQuery);
         if (!empty($categoryID)) {
