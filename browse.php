@@ -1,6 +1,7 @@
 <!-- dit bestand bevat alle code voor het productoverzicht -->
 <?php
 include __DIR__ . "/header.php";
+$config = json_decode(file_get_contents("config.json"));
 
 function getVoorraadTekst($actueleVoorraad) {
     if ($actueleVoorraad > 1000) {
@@ -17,7 +18,7 @@ function berekenVerkoopPrijs($adviesPrijs, $btw) {
 $returnableResult = null;
 $queryBuildResult = "";
 
-$productsOnPage = getProductsOnPage();
+$productsOnPage = getProductsOnPage($config->productsOnPage);
 $categoryID = isset($_GET['category_id']) ? $_GET['category_id'] : NULL;
 $pageNumber = isset($_GET['page_number']) ? $_GET['page_number'] : 0;
 $orderByLabel = $_GET['order_by'] ?? "name-ASC";
@@ -87,9 +88,18 @@ $amountOfPages = isset($amount) ? ceil($amount / $productsOnPage) : 0;
 
         <label class="pt-3" for="products_on_page">Selecteer het aantal producten:</label>
         <select name="products_on_page" onchange="this.form.submit()">
-            <option value="25" <?php print($productsOnPage == 25 ? "selected" : "") ?> >25</option>
+            <?php
+                for($i=0; $i < count($config->productsOnPage); $i++) {
+                    print("<option
+                        value='".$config->productsOnPage[$i]."'".
+                        ($productsOnPage == $config->productsOnPage[$i] ? "selected" : "").
+                    ">".$config->productsOnPage[$i]."</option>");
+                }
+
+            ?>
+            <!-- <option value="25" <?php print($productsOnPage == 25 ? "selected" : "") ?> >25</option>
             <option value="50" <?php print($productsOnPage == 50 ? "selected" : "") ?>>50</option>
-            <option value="100" <?php print($productsOnPage == 100 ? "selected" : "") ?>>100</option>
+            <option value="100" <?php print($productsOnPage == 100 ? "selected" : "") ?>>100</option> -->
         </select>
     </form>
 </div>
