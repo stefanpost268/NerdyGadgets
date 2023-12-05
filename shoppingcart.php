@@ -28,79 +28,76 @@ if (isset($_SESSION["shoppingcart"])) {
 }
 ?>
 
-<h1 class="pb-5 text-4xl">Winkelwagen</h1>
-<div class="min-h-screen flex justify-center">
-    <div class="max-w-screen-2xl w-full">
-        <div class="flex flex-wrap">
-            <div class="w-full md:w-7/12 mb-4 md:mb-0">
-                <form method="POST">
-                    <div class="overflow-x-auto">
-                        <table class="w-full table-auto text-white">
-                            <thead>
-                                <tr>
-                                    <th class="px-4 py-2">Artikel</th>
-                                    <th class="px-4 py-2">Prijs</th>
-                                    <th class="px-4 py-2">Aantal</th>
-                                    <th class="px-4 py-2">Subtotaal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (!empty($products)) : ?>
-                                    <?php foreach ($products as $product) : ?>
-                                        <tr>
-                                            <td class="px-4 py-2">
-                                                <div class="flex items-center">
-                                                    <img width='100' src='<?php echo $product["image"]; ?>' class="rounded-md">
-                                                    <div class="ml-3 text-red-500">
-                                                        <p class="truncate w-40"><a href="./productpage.php?id=<?php echo $product["item"]["StockItemID"]; ?>"><?php echo $product["item"]["StockItemName"]; ?></a></p>
-                                                        <p class="text-gray-400"><?php echo "Article ID: " . $product["item"]["StockItemID"]; ?></p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-2">€<?php echo number_format($product["item"]["SellPrice"], 2); ?></td>
-                                            <td class="px-4 py-2">
-                                                <input type="number" max="100" min="0" name="productAmount[<?php echo $product["item"]["StockItemID"]; ?>]" value="<?php echo $product['amount']; ?>" onchange="this.form.submit()" class="w-16 rounded-md border py-1 px-2 text-black dark:text-white bg-gray-300 dark:bg-gray-700">
-                                            </td>
-                                            <td class="px-4 py-2">€ <?php echo number_format($product["subtotal"], 2); ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php else : ?>
-                                    <tr>
-                                        <td colspan='4' class="px-4 py-2">Winkelmand is leeg</td>
-                                    </tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </form>
+<div class="container mx-auto p-4">
+    <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+        <!-- Products -->
+        <div id="products" class="w-full md:w-7/12">
+            <form method="POST">
+                <?php if (!empty($products)) : ?>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <?php foreach ($products as $product) : ?>
+    <div class="bg-gray-800 text-white p-4 rounded-md shadow-md mb-4">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <img width='150' src='<?php echo $product["image"]; ?>' class="rounded-md">
             </div>
-            <div class="w-full md:w-5/12">
-                <div class="bg-gray-800 border border-white rounded-md p-4">
-                    <h2 class="text-white mb-4 text-xl font-bold">Winkelmand</h2>
-                    <div class="border border-white p-4 rounded-md">
+            <div class="ml-4 flex-grow">
+                <p class="text-blue-500 text-lg font-semibold">
+                    <a href="./productpage.php?id=<?php echo $product["item"]["StockItemID"]; ?>" class="hover:underline">
+                        <?php echo $product["item"]["StockItemName"]; ?>
+                    </a>
+                </p>
+                <p class="text-gray-400"><?php echo "Article ID: " . $product["item"]["StockItemID"]; ?></p>
+                <p class="text-gray-600">Price: €<?php echo number_format($product["item"]["SellPrice"], 2); ?></p>
+                <div class="flex items-center mt-2">
+                    <label class="mr-2">Quantity:</label>
+                    <input type="number" max="100" min="0" name="productAmount[<?php echo $product["item"]["StockItemID"]; ?>]" value="<?php echo $product['amount']; ?>" onchange="this.form.submit()" class="w-16 rounded-md border py-1 px-2 text-white bg-gray-700 dark:text-black dark:bg-gray-300">
+                </div>
+                <p class="text-gray-600 mt-2">Subtotal: € <?php echo number_format($product["subtotal"], 2); ?></p>
+            </div>
+        </div>
+    </div>
+<?php endforeach; ?>
+
+                    </div>
+                <?php else : ?>
+                    <p class="text-gray-600">Your shopping cart is empty</p>
+                <?php endif; ?>
+            </form>
+        </div>
+
+        <!-- Shopping Cart Info -->
+        <div id="shoppingcartinfo" class="w-full md:w-5/12">
+            <div class="bg-gray-800 text-white p-4 rounded-md">
+                <h2 class="text-xl font-bold mb-4">Shopping Cart</h2>
+                <?php if (!empty($products)) : ?>
+                    <div class="mb-4">
                         <div class="flex justify-between mb-2">
-                            <span class="text-gray-300">Subtotaal:</span>
+                            <span class="text-gray-300">Subtotal:</span>
                             <span class="text-white">€ <?php echo number_format($totalPrice, 2); ?></span>
                         </div>
                         <div class="flex justify-between mb-2">
-                            <span class="text-gray-300">Verzendkosten:</span>
-                            <span class="text-white">€ 0.00</span> <!-- You can update this with actual shipping costs -->
+                            <span class="text-gray-300">Shipping Cost:</span>
+                            <span class="text-white">€ 0.00</span>
                         </div>
                         <hr class="border-gray-600 my-2">
                         <div class="flex justify-between font-bold">
-                            <span class="text-gray-300">Totaal:</span>
+                            <span class="text-gray-300">Total:</span>
                             <span class="text-white">€ <?php echo number_format($totalPrice, 2); ?></span>
                         </div>
-                        <button class="bg-blue-500 text-white mt-4 py-2 px-4 rounded-md w-full">
-                            <?php if (empty($products)) { ?>
-                                <a class="text-white" href="./browse.php">Ga naar de winkel</a>
-                            <?php } else { ?>
-                                <a class="text-white" href="./checkout.php">Bestelling plaatsen</a>
-                            <?php } ?>
-                        </button>
                     </div>
-                </div>
+                    <button class="bg-blue-500 text-white py-2 px-4 rounded-md w-full">
+                        <a class="text-white" href="<?php echo empty($products) ? './browse.php' : './checkout.php'; ?>">
+                            <?php echo empty($products) ? 'Go to the Store' : 'Place Order'; ?>
+                        </a>
+                    </button>
+                <?php else : ?>
+                    <p>Your shopping cart is empty. <a class="underline text-blue-300" href="./browse.php">Continue shopping</a></p>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 </div>
+
+
+
