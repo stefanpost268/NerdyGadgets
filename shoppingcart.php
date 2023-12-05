@@ -36,7 +36,7 @@ if (isset($_SESSION["shoppingcart"])) {
                 <?php if (!empty($products)) : ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <?php foreach ($products as $product) : ?>
-    <div class="bg-gray-800 text-white p-4 rounded-md shadow-md mb-4">
+    <div class="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-4 rounded-md shadow-md mb-4">
         <div class="flex items-start">
             <div class="flex-shrink-0">
                 <img width='150' src='<?php echo $product["image"]; ?>' class="rounded-md">
@@ -48,16 +48,18 @@ if (isset($_SESSION["shoppingcart"])) {
                     </a>
                 </p>
                 <p class="text-gray-400"><?php echo "Article ID: " . $product["item"]["StockItemID"]; ?></p>
-                <p class="text-gray-600">Price: €<?php echo number_format($product["item"]["SellPrice"], 2); ?></p>
+                <p class="text-green-500 font-semibold text-xl">€<?php echo number_format($product["item"]["SellPrice"], 2); ?></p>
                 <div class="flex items-center mt-2">
-                    <label class="mr-2">Quantity:</label>
+                    <label class="mr-2 text-gray-400">Quantity:</label>
                     <input type="number" max="100" min="0" name="productAmount[<?php echo $product["item"]["StockItemID"]; ?>]" value="<?php echo $product['amount']; ?>" onchange="this.form.submit()" class="w-16 rounded-md border py-1 px-2 text-white bg-gray-700 dark:text-black dark:bg-gray-300">
                 </div>
-                <p class="text-gray-600 mt-2">Subtotal: € <?php echo number_format($product["subtotal"], 2); ?></p>
+                <p class="text-green-500 font-semibold mt-2">Subtotal: € <?php echo number_format($product["subtotal"], 2); ?></p>
             </div>
         </div>
     </div>
 <?php endforeach; ?>
+
+
 
                     </div>
                 <?php else : ?>
