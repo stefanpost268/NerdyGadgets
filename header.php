@@ -27,7 +27,7 @@ $databaseConnection = connectToDatabase();
     ?>
 
     <!-- Style sheets-->
-    <?php if(!in_array($filename, ["categories.php"])) { ?>
+    <?php if(!in_array($filename, ["categories.php", "shoppingcart.php"])) { ?>
     <link rel="stylesheet" href="Public/CSS/style.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/typekit.css">

@@ -6,7 +6,7 @@ $StockGroups = getStockGroups($databaseConnection);
 
 ?>
 
-<div id="Wrap" class="flex flex-wrap justify-center max-w-screen-2xl ml-auto mr-auto">
+<div id="Wrap" class="flex flex-wrap justify-center max-w-screen-2xl mx-auto">
     <?php if (isset($StockGroups)) {
         $i = 0;
         foreach ($StockGroups as $StockGroup) {
