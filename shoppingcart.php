@@ -31,36 +31,33 @@ if (isset($_SESSION["shoppingcart"])) {
 <div class="container mx-auto p-4">
     <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
         <!-- Products -->
-        <div id="products" class="w-full md:w-7/12">
+        <div id="products" class="w-full md:w-7/12 overflow-y-hidden md:overflow-y-auto md:max-h-screen">
             <form method="POST">
                 <?php if (!empty($products)) : ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <?php foreach ($products as $product) : ?>
-    <div class="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-4 rounded-md shadow-md mb-4">
-        <div class="flex items-start">
-            <div class="flex-shrink-0">
-                <img width='150' src='<?php echo $product["image"]; ?>' class="rounded-md">
-            </div>
-            <div class="ml-4 flex-grow">
-                <p class="text-blue-500 text-lg font-semibold">
-                    <a href="./productpage.php?id=<?php echo $product["item"]["StockItemID"]; ?>" class="hover:underline">
-                        <?php echo $product["item"]["StockItemName"]; ?>
-                    </a>
-                </p>
-                <p class="text-gray-400"><?php echo "Article ID: " . $product["item"]["StockItemID"]; ?></p>
-                <p class="text-green-500 font-semibold text-xl">€<?php echo number_format($product["item"]["SellPrice"], 2); ?></p>
-                <div class="flex items-center mt-2">
-                    <label class="mr-2 text-gray-400">Quantity:</label>
-                    <input type="number" max="100" min="0" name="productAmount[<?php echo $product["item"]["StockItemID"]; ?>]" value="<?php echo $product['amount']; ?>" onchange="this.form.submit()" class="w-16 rounded-md border py-1 px-2 text-white bg-gray-700 dark:text-black dark:bg-gray-300">
-                </div>
-                <p class="text-green-500 font-semibold mt-2">Subtotal: € <?php echo number_format($product["subtotal"], 2); ?></p>
-            </div>
-        </div>
-    </div>
-<?php endforeach; ?>
-
-
-
+                        <?php foreach ($products as $product) : ?>
+                            <div class="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-4 rounded-md shadow-md mb-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <img width='150' src='<?php echo $product["image"]; ?>' class="rounded-md">
+                                    </div>
+                                    <div class="ml-4 flex-grow">
+                                        <p class="text-blue-500 text-lg font-semibold">
+                                            <a href="./productpage.php?id=<?php echo $product["item"]["StockItemID"]; ?>" class="hover:underline">
+                                                <?php echo $product["item"]["StockItemName"]; ?>
+                                            </a>
+                                        </p>
+                                        <p class="text-gray-400"><?php echo "Article ID: " . $product["item"]["StockItemID"]; ?></p>
+                                        <p class="text-green-500 font-semibold text-xl">€<?php echo number_format($product["item"]["SellPrice"], 2); ?></p>
+                                        <div class="flex items-center mt-2">
+                                            <label class="mr-2 text-gray-400">Quantity:</label>
+                                            <input type="number" max="100" min="0" name="productAmount[<?php echo $product["item"]["StockItemID"]; ?>]" value="<?php echo $product['amount']; ?>" onchange="this.form.submit()" class="w-16 rounded-md border py-1 px-2 text-white bg-gray-700 dark:text-black dark:bg-gray-300">
+                                        </div>
+                                        <p class="text-green-500 font-semibold mt-2">Subtotal: € <?php echo number_format($product["subtotal"], 2); ?></p>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 <?php else : ?>
                     <p class="text-gray-600">Your shopping cart is empty</p>
@@ -100,6 +97,3 @@ if (isset($_SESSION["shoppingcart"])) {
         </div>
     </div>
 </div>
-
-
-
