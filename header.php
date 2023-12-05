@@ -11,6 +11,9 @@ $databaseConnection = connectToDatabase();
 <head>
     <title>NerdyGadgets</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
     <!-- Javascript -->
     <script src="Public/JS/fontawesome.js"></script>
     <script src="Public/JS/jquery.min.js"></script>
@@ -31,19 +34,21 @@ $databaseConnection = connectToDatabase();
 <div class="bg-gray-800">
     <div class="flex items-center justify-between p-4">
         <a href="./">
-            <img src="Public/ProductIMGHighRes/NerdyGadgetsLogo.png" alt="NerdyGadgetsLogo" class="w-36">
+            <img src="Public/ProductIMGHighRes/NerdyGadgetsLogo.png" alt="NerdyGadgetsLogo" class="w-16 md:w-24">
         </a>
         <div class="flex gap-1">
-            <?php
-                foreach (getHeaderStockGroups($databaseConnection) as $HeaderStockGroup) {
-                    ?>
-                    <a href="browse.php?category_id=<?php print $HeaderStockGroup['StockGroupID']; ?>"
-                    class="text-white hover:text-gray-500"><?php print $HeaderStockGroup['StockGroupName']; ?></a> 
-                    <div class="text-white">|</div>
-                    <?php
-                }
-            ?>
-            <a href="categories.php" class="text-white hover:text-gray-300">Alle categorieën</a>
+        <?php
+            foreach (getHeaderStockGroups($databaseConnection) as $HeaderStockGroup) {
+                ?>
+                <a href="browse.php?category_id=<?php print $HeaderStockGroup['StockGroupID']; ?>"
+                class="text-white hover:text-gray-500 hidden lg:block"><?php print $HeaderStockGroup['StockGroupName']; ?></a>
+                <div class="text-white hidden lg:block">|</div>
+                <?php
+            }
+        ?>
+            <a href="categories.php" class="text-white hover:text-gray-300 flex hidden lg:block">
+                Alle categorieën
+            </a>
         </div>
         <div class="flex items-center space-x-4">
             <a href="browse.php" class="text-white hover:text-gray-300">
@@ -60,6 +65,9 @@ $databaseConnection = connectToDatabase();
                     echo '<div class="bg-red-500 text-white px-2 py-1 rounded-full">' . count($_SESSION["shoppingcart"]) . '</div>';
                 }
                 ?>
+            </a>
+            <a href="categories.php" class="text-white hover:text-gray-300 block lg:hidden">
+                <img src="./Public/SVG/category.svg" alt="Categories" width="30" height="30">
             </a>
         </div>
     </div>
