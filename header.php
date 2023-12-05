@@ -21,16 +21,23 @@ $databaseConnection = connectToDatabase();
     <script src="Public/JS/popper.min.js"></script>
     <script src="Public/JS/resizer.js"></script>
 
+    <?php
+        // get name of file
+        $filename = basename($_SERVER['PHP_SELF']);
+    ?>
+
     <!-- Style sheets-->
+    <?php if(!in_array($filename, ["categories.php"])) { ?>
     <link rel="stylesheet" href="Public/CSS/style.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/typekit.css">
+    <?php } ?>
 
     <!-- TAILWIND -->
     <script src="https://cdn.tailwindcss.com"></script>
 
 </head>
-<body class="bg-gray-800">
+<body class="bg-gray-700">
 <div class="bg-gray-800">
     <div class="flex items-center justify-between p-4">
         <a href="./">
@@ -74,12 +81,3 @@ $databaseConnection = connectToDatabase();
     <!-- code voor US3: zoeken -->
     <!-- einde code voor US3 zoeken -->
 </div>
-<div class="bg-gray-200">
-    <div class="flex justify-center p-4">
-        <div class="w-full max-w-6xl">
-            <!-- Your content goes here -->
-        </div>
-    </div>
-</div>
-</body>
-</html>
