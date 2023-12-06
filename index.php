@@ -1,17 +1,45 @@
-<?php include __DIR__ . "/header.php"; ?>
-<div class="mx-auto max-w-7xl">
-    <div class="col-11">
-        <div class="mt-16 select-none">
-            <a href="productPage.php?id=93">
-                <div class="text-white font-vortice-concept text-5xl uppercase font-bold w-3/5 ml-10">
-                    "The Gu" red shirt XML tag t-shirt (Black) M
+<?php include __DIR__ . "/header.php";
+
+    $products = getRandomProducts($databaseConnection);
+?>
+<main class="relative flex flex-col items-center justify-start w-full overflow-hidden bg-gradient-to-b from-gray-800 to-black dark:--geist-foreground:#000">
+    <h1 class="mt-6 lg:!mt-12 mx-6 w-[300px] md:w-full font-extrabold text-4xl sm:text-5xl md:text-6xl leading-tight xl:leading-snug text-center pb-4 bg-clip-text text-transparent bg-gradient-to-b from-black/80 to-black dark:from-white dark:to-[#AAAAAA]">
+        NerdyGadgets
+    </h1>
+    <p class="mx-6 text-lg sm:text-xl md:text-2xl sm:mt-4 mb-8 max-h-[112px] md:max-h-[96px] w-[315px] md:w-[660px] font-space-grotesk text-center text-[#666666] dark:text-[#888888]">
+        Welcome to NerdyGadgets, the best place to buy your gadgets!
+    </p>
+
+    <div id="controls-carousel" class="relative w-full max-w-[660px] mb-8" data-carousel="static">
+        <!-- Carousel wrapper -->
+        <div class="relative h-56 overflow-hidden rounded-lg md:h-96">
+            <?php foreach($products as $product) { 
+                $productImage = getProductImage($product["StockItemID"], $databaseConnection, $product);
+                ?>
+                <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                    <img src="<?php print($productImage); ?>" class="w-full h-full object-contain" alt="...">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-black bg-opacity-50 text-white">
+                        <p class="text-lg font-semibold">Prijs: € <?php print(number_format($product["SellPrice"], 2)); ?></p>
+                    </div>
                 </div>
-                <ul id="ul-class-price">
-                    <li class="text-5xl text-blue-600 font-vortice-concept uppercase font-bold ml-7">€30.95</li>
-                </ul>
-            </a>
+            <?php } ?>
         </div>
-        <div class="bg-cover bg-no-repeat w-96 h-96 ml-55p mt-neg30p" style="background-image: url('Public/ProductIMGHighRes/580b57fbd9996e24bc43bf55.png');"></div>
+        <button type="button" class="text-white absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
+            <
+        </button>
+        <button type="button" class="text-white absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
+            >
+        </button>
     </div>
-</div>
+</main>
+
+
+
+
+
+
+
+
+
+
 <?php include __DIR__ . "/footer.php"; ?>

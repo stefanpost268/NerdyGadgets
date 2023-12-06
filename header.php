@@ -21,6 +21,9 @@ $databaseConnection = connectToDatabase();
     <script src="Public/JS/popper.min.js"></script>
     <script src="Public/JS/resizer.js"></script>
 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+    
     <?php
         // get name of file
         $filename = basename($_SERVER['PHP_SELF']);
