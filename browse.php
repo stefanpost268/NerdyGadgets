@@ -58,7 +58,7 @@ $amountOfPages = isset($amount) ? ceil($amount / $productsOnPage) : 0;
 ?>
 
 <main class="min-h-screen flex flex-col md:flex-row mx-auto max-w-screen-lg">
-    <div class="bg-gray-800 text-white p-4 mt-2 md:mt-10 md:ml-10 rounded-md shadow-md m-1">
+<div class="md:w-1/3 bg-gray-800 text-white p-4 md:ml-10 rounded-md md:mt-10 shadow-md m-1 md:sticky md:top-10 md:max-h-[calc(100vh-150px)] md:overflow-y-auto">
         <form id="sideBar" class="">
             <p id="sideBarTitle" class="text-lg font-bold mb-4">Filteren</p>
             <input type="hidden" name="category_id" id="category_id" value="<?= isset($_GET['category_id']) ? $_GET['category_id'] : '' ?>">
@@ -111,7 +111,7 @@ $amountOfPages = isset($amount) ? ceil($amount / $productsOnPage) : 0;
                 <input type="hidden" name="category_id" id="category_id" value="<?= isset($_GET['category_id']) ? $_GET['category_id'] : '' ?>">
 
                 <?php if ($amountOfPages > 0) : ?>
-                    <div class="flex space-x-2">
+                    <div class="flex space-x-2 pb-5">
                         <?php for ($i = 1; $i <= $amountOfPages; $i++) : ?>
                             <?php if ($pageNumber == ($i - 1)) : ?>
                                 <div id="SelectedPage" class="bg-blue-500 text-white px-3 py-1 rounded-full"><?= $i ?></div>
