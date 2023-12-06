@@ -60,7 +60,14 @@ if (isset($_SESSION["shoppingcart"])) {
                         <?php endforeach; ?>
                     </div>
                 <?php else : ?>
-                    <p class="text-gray-600">Your shopping cart is empty</p>
+                    <!-- Empty Cart Message -->
+                    <div class="flex flex-col items-center justify-center text-center bg-gray-800 p-8 rounded-lg shadow-md">
+                        <h1 class="text-white text-4xl font-bold mb-4">Your shopping cart is empty</h1>
+                        <img class="bg-white rounded-xl shadow-md" src="./Public/SVG/shopping-cart-empty.svg" alt="Empty Cart" width="150" height="150">
+                        <p class="text-gray-300 mt-4">Looks like you haven't added anything to your cart yet.</p>
+                        <p class="text-gray-300 pt-5 md:pt-0">Explore our products and find something you like!</p>
+                        <a href="./browse.php" class="text-blue-500 underline mt-4 hover:text-blue-700">Continue shopping</a>
+                    </div>
                 <?php endif; ?>
             </form>
         </div>
@@ -91,7 +98,7 @@ if (isset($_SESSION["shoppingcart"])) {
                         </a>
                     </button>
                 <?php else : ?>
-                    <p>Your shopping cart is empty. <a class="underline text-blue-300" href="./browse.php">Continue shopping</a></p>
+                    <p>Your shopping cart is empty.</p>
                 <?php endif; ?>
             </div>
         </div>
