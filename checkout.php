@@ -27,7 +27,7 @@ if (!empty($_POST)) {
 }
 ?>
 
-<div class="container mx-auto mt-5 mb-5 p-8 bg-gray-900 bg-gray-800 rounded shadow-lg text-white">
+<div class="container mx-auto mt-5 mb-5 p-8 rounded shadow-lg text-white bg-gradient-to-b from-gray-800 to-black --geist-foreground:#000"">
     <?php if (!empty($errors)) { ?>
         <div class="alert alert-danger" role="alert">
             <?php foreach ($errors as $error) { ?>
@@ -70,32 +70,31 @@ if (!empty($_POST)) {
                 </div>
             </div>
             <div class="text-white">
-                <h3 class="text-xl">Je bestelling</h3>
-                <div class="border p-3">
-                    <div class="flex justify-between items-center">
-                        <p>Product</p>
-                        <p>Subtotaal</p>
+                <h3 class="text-2xl font-bold mb-4">Je bestelling</h3>
+                <div class="border p-4 rounded bg-gray-700">
+                    <div class="flex justify-between items-center mb-3">
+                        <p class="font-semibold">Product</p>
+                        <p class="font-semibold">Subtotaal</p>
                     </div>
                     <?php foreach ($products as $product) { ?>
-                        <div class="flex justify-between items-center mt-2">
-                            <div class="relative">
-                                <img width='75' src='<?php echo $product["image"]; ?>' class="img-thumbnail">
-                                <div class="absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white" style="margin-left: -15px; padding: 5px;">
-                                    <?php echo $product["amount"]; ?>
-                                </div>
+                        <div class="flex justify-between items-center mt-2 relative">
+                            <div class="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 badge rounded-full bg-red-500 text-white">
+                                <?php echo $product["amount"]; ?>
                             </div>
-                            <div class="flex-grow-1 truncate">
-                                <a href="./productpage.php?id=<?php print($product["item"]["StockItemID"]) ?>"><?php echo $product["item"]["StockItemName"] ?></a>
+                            <img width='75' src='<?php echo $product["image"]; ?>' class="img-thumbnail">
+                            <div class="flex-grow-1 truncate ml-3">
+                                <a href="./productpage.php?id=<?php print($product["item"]["StockItemID"]) ?>" class="text-blue-400 hover:underline"><?php echo $product["item"]["StockItemName"] ?></a>
                             </div>
-                            <p>€<?php print(number_format(($product["item"]["SellPrice"] * $product["amount"]), 2)) ?></p>
+                            <p class="text-sm">€<?php print(number_format(($product["item"]["SellPrice"] * $product["amount"]), 2)) ?></p>
                         </div>
                     <?php } ?>
                     <hr class="my-3">
-                    <div class="flex">
-                        <h3 class="mb-0">Totaal: €<?php echo number_format($totalPrice, 2); ?></h3>
-                        <p class="ml-2">Inclusief BTW</p>
+                    <div class="flex items-center justify-between">
+                        <p class="text-lg font-semibold">Totaal:</p>
+                        <p class="text-lg font-semibold">€<?php echo number_format($totalPrice, 2); ?></p>
                     </div>
-                    <button class="btn btn-primary mt-3" style="width: 100%">Afrekenen</button>
+                    <p class="text-sm">Inclusief BTW</p>
+                    <button class="bg-blue-500 text-white py-3 px-4 rounded-md w-full">Afrekenen</button>
                 </div>
             </div>
         </div>
