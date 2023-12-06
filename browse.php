@@ -2,7 +2,8 @@
 <?php
 include __DIR__ . "/header.php";
 
-function berekenVerkoopPrijs($adviesPrijs, $btw) {
+function berekenVerkoopPrijs($adviesPrijs, $btw)
+{
     return $btw * $adviesPrijs / 100 + $adviesPrijs;
 }
 
@@ -16,7 +17,7 @@ $orderByLabel = $_GET['order_by'] ?? "name-ASC";
 $search = $_GET['search'] ?? "";
 $offset = $pageNumber * $productsOnPage;
 
-switch($orderByLabel) {
+switch ($orderByLabel) {
     case "price-ASC":
         $orderBy = "ASC";
         $sort = "SellPrice";
@@ -35,7 +36,7 @@ switch($orderByLabel) {
 }
 
 
-if ($categoryID !== null) { 
+if ($categoryID !== null) {
     if ($queryBuildResult != "") {
         $queryBuildResult .= " AND ";
     }
@@ -56,116 +57,81 @@ $amount = $Result['count'] ?? null;
 $amountOfPages = isset($amount) ? ceil($amount / $productsOnPage) : 0;
 ?>
 
-<div class="d-flex">
-    <form id="sideBar">
-        <p id="sideBarTitle">Filteren</p>
-        <input type="hidden" name="category_id" id="category_id" value="<?php if (isset($_GET['category_id'])) {
-            print ($_GET['category_id']);
-        } ?>">
+<main class="min-h-screen flex flex-col md:flex-row mx-auto max-w-screen-lg">
+    <div class="bg-gray-800 text-white p-4 mt-2 md:mt-10 md:ml-10 rounded-md shadow-md m-1">
+        <form id="sideBar" class="">
+            <p id="sideBarTitle" class="text-lg font-bold mb-4">Filteren</p>
+            <input type="hidden" name="category_id" id="category_id" value="<?= isset($_GET['category_id']) ? $_GET['category_id'] : '' ?>">
 
-        <div class="m-1">
-            <label for="search">Zoeken:</label>
-            <input type="text" name="search" id="search" value="<?php if (isset($_GET['search'])) {
-                print ($_GET['search']);
-            } ?>">
+            <div class="mt-2">
+                <label for="search" class="block text-sm">Zoeken:</label>
+                <input type="text" name="search" id="search" value="<?= isset($_GET['search']) ? $_GET['search'] : '' ?>" class="w-full mb-2 p-2 bg-gray-700 text-white rounded">
 
-        <label class="pt-3" for="order_by">Sorteer op:</label>
-        <select name="order_by" id="order_by" onchange="this.form.submit()">
-            <option value="price-ASC" <?php print($orderByLabel == "price-ASC" ? "selected" : ""); ?> >Prijs oplopend</option>
-            <option value="price-DESC" <?php print($orderByLabel == "price-DESC" ? "selected" : ""); ?> >Prijs aflopend</option>
-            <option value="name-ASC" <?php print($orderByLabel== "name-ASC" ? "selected" : ""); ?> >Naam oplopend</option>
-            <option value="name-DESC" <?php print($orderByLabel == "name-DESC" ? "selected" : ""); ?> >Naam aflopend</option>
-        </select>
+                <label class="block text-sm" for="order_by">Sorteer op:</label>
+                <select name="order_by" id="order_by" onchange="this.form.submit()" class="w-full mb-2 p-2 bg-gray-700 text-white rounded">
+                    <option value="price-ASC" selected>Prijs oplopend</option>
+                    <option value="price-DESC">Prijs aflopend</option>
+                    <option value="name-ASC">Naam oplopend</option>
+                    <option value="name-DESC">Naam aflopend</option>
+                </select>
 
-        <label class="pt-3" for="products_on_page">Selecteer het aantal producten:</label>
-        <select name="products_on_page" onchange="this.form.submit()">
-            <option value="25" <?php print($productsOnPage == 25 ? "selected" : "") ?> >25</option>
-            <option value="50" <?php print($productsOnPage == 50 ? "selected" : "") ?>>50</option>
-            <option value="100" <?php print($productsOnPage == 100 ? "selected" : "") ?>>100</option>
-        </select>
-    </form>
-</div>
+                <label class="block text-sm" for="products_on_page">Selecteer het aantal producten:</label>
+                <select name="products_on_page" onchange="this.form.submit()" class="w-full p-2 bg-gray-700 text-white rounded">
+                    <option value="25" selected>25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+        </form>
+    </div>
 
-<div id="ResultsArea" class="Browse">
-        <?php
-        if (isset($Result['data']) && $amount > 0) {
-            foreach ($Result['data'] as $row) {
-                ?>
-                    <div id="ProductFrame">
-                        <?php
-                        if (isset($row['ImagePath'])) { ?>
-                            <div class="ImgFrame"
-                                style="background-image: url('<?php print "Public/StockItemIMG/" . $row['ImagePath']; ?>'); background-size: 230px; background-repeat: no-repeat; background-position: center;"></div>
-                        <?php } else if (isset($row['BackupImagePath'])) { ?>
-                            <div class="ImgFrame"
-                                style="background-image: url('<?php print "Public/StockGroupIMG/" . $row['BackupImagePath'] ?>'); background-size: cover;"></div>
-                        <?php }
-                        ?>
+    <div id="ResultsArea" class="md:w-2/3 m-1 md:m-10">
+        <?php if (isset($Result['data']) && $amount > 0) : ?>
+            <?php foreach ($Result['data'] as $row) : ?>
+                <div class="mb-4 p-6 bg-gray-800 text-white rounded-md shadow-md overflow-hidden w-full">
+                    <?php if (isset($row['ImagePath'])) : ?>
+                        <div class="w-48 h-48 bg-cover bg-center rounded-md float-left mr-4" style="background-image: url('<?= "Public/StockItemIMG/" . $row['ImagePath'] ?>');"></div>
+                    <?php elseif (isset($row['BackupImagePath'])) : ?>
+                        <div class="w-48 h-48 bg-cover bg-center rounded-md float-left mr-4" style="background-image: url('<?= "Public/StockGroupIMG/" . $row['BackupImagePath'] ?>');"></div>
+                    <?php endif; ?>
 
-                        <div id="StockItemFrameRight">
-                            <div class="CenterPriceLeftChild">
-                                <h1 class="StockItemPriceText"><?php print sprintf(" %0.2f", berekenVerkoopPrijs($row["RecommendedRetailPrice"], $row["TaxRate"])); ?></h1>
-                                <h6>Inclusief BTW </h6>
-                            </div>
+                    <div class="flex items-center mb-2">
+                        <div class="ml-auto text-gray-300">
+                            <h1 class="text-lg font-bold"><?= sprintf("€%0.2f", berekenVerkoopPrijs($row['RecommendedRetailPrice'], $row['TaxRate'])) ?></h1>
+                            <h6 class="text-sm">Inclusief BTW</h6>
                         </div>
-                        <h1 class="StockItemID">Artikelnummer: <?php print $row["StockItemID"]; ?></h1>
-                        <a href="productpage.php?id=<?php echo $row['StockItemID']; ?>" class="StockItemName"><?php echo $row["StockItemName"]; ?></a>
-                        <p class="StockItemComments"><?php print $row["MarketingComments"]; ?></p>
-                        <h4 class="ItemQuantity"><?php print getVoorraadTekst($row["QuantityOnHand"]); ?></h4>
                     </div>
-            <?php } ?>
+                    <h1 class="text-gray-400 text-sm">Artikelnummer: <?= $row['StockItemID'] ?></h1>
+                    <a href="productpage.php?id=<?= $row['StockItemID'] ?>" class="text-blue-400 hover:underline text-lg font-semibold"><?= $row['StockItemName'] ?></a>
+                    <p class="text-gray-400 text-sm"><?= $row['MarketingComments'] ?></p>
+                    <h4 class="text-green-400"><?= getVoorraadTekst($row['QuantityOnHand']) ?></h4>
+                </div>
+            <?php endforeach; ?>
+            <form id="PageSelector" class="mt-4 flex items-center justify-center">
+                <input type="hidden" name="category_id" id="category_id" value="<?= isset($_GET['category_id']) ? $_GET['category_id'] : '' ?>">
 
-            <form id="PageSelector">
-                <input type="hidden" name="category_id" id="category_id" value="<?php if (isset($_GET['category_id'])) {
-                    print ($_GET['category_id']);
-                } ?>">
-                <input type="hidden" name="result_page_numbers" id="result_page_numbers"
-                    value="<?php print (isset($_GET['result_page_numbers'])) ? $_GET['result_page_numbers'] : "0"; ?>">
-                <input type="hidden" name="products_on_page" id="products_on_page"
-                    value="<?php print ($_SESSION['products_on_page']); ?>">
-                <input type="hidden" name="order_by" id="order_by" value="<?php print($orderByLabel); ?>">
-                <input type="hidden" name="search" id="search" value="<?php print($search); ?>">
-
-                <?php
-                if ($amountOfPages > 0) {
-                    for ($i = 1; $i <= $amountOfPages; $i++) {
-                        if ($pageNumber == ($i - 1)) {
-                            ?>
-                            <div id="SelectedPage"><?php print $i; ?></div><?php
-                        } else { ?>
-                            <button id="page_number" class="PageNumber" value="<?php print($i - 1); ?>" type="submit"
-                                    name="page_number"><?php print($i); ?></button>
-                        <?php }
-                    }
-                }
-                ?>
+                <?php if ($amountOfPages > 0) : ?>
+                    <div class="flex space-x-2">
+                        <?php for ($i = 1; $i <= $amountOfPages; $i++) : ?>
+                            <?php if ($pageNumber == ($i - 1)) : ?>
+                                <div id="SelectedPage" class="bg-blue-500 text-white px-3 py-1 rounded-full"><?= $i ?></div>
+                            <?php else : ?>
+                                <button id="page_number" class="PageNumber bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-3 rounded-full" value="<?= $i - 1 ?>" type="submit" name="page_number"><?= $i ?></button>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+                    </div>
+                <?php endif; ?>
             </form>
-            <?php
-        } else {
-            ?>
-            <h2 id="NoSearchResults">
+        <?php else : ?>
+            <h2 id="NoSearchResults" class="text-xl font-bold">
                 Helaas, uw zoek opdracht voor
-                <u><?php print (isset($_GET['search'])) ? $_GET['search'] : ""; ?></u>
+                <u><?= isset($_GET['search']) ? $_GET['search'] : '' ?></u>
                 heeft geen resultaten opgeleverd.
             </h2>
-            <?php
-        }
-        ?>
+        <?php endif; ?>
     </div>
-</body>
-</html>
+</main>
 
 <?php
 include __DIR__ . "/footer.php";
 ?>
-
-<style>
-    #ResultsArea {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
-    }
-
-    #ResultsArea::-webkit-scrollbar {
-        display: none;
-    }
-</style>

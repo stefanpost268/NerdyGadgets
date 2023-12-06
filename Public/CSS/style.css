@@ -97,11 +97,6 @@ ul#ul-class-navigation li {
     margin-top: 10px;
     padding: 20px;
 }
-#ResultsArea.Browse  {
-    width: 75%;
-    height: 70vh;
-    overflow: scroll;
-}
 #ProductFrame {
     width: 100%;
     height: 250px;
@@ -110,19 +105,7 @@ ul#ul-class-navigation li {
     padding: 1px;
     border-bottom: 1px solid #fff;
 }
-.ImgFrame {
-    width: 230px;
-    height: 230px;
-    background-color: rgb(36, 41, 143);
-    float: left;
-    margin-left: 10px;
-    margin-top: 10px;
-    margin-right: 10px
-}
-.ImgFrame img {
-    width: 230px;
-    height: 230px;
-}
+
 #StockItemFrameRight {
     float: right;
     text-align: right;
@@ -190,12 +173,7 @@ ul#ul-class-navigation li {
     right: 0;
     width: 200px;
 }
-.CenterPriceLeftChild {
-    position: relative;
-    top: 40%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-}
+
 #StockItemDescription {
     background-color: rgba(35, 40, 47, 0.8);
     width: 49%;
@@ -459,7 +437,7 @@ ul#ul-class li {
     color: #fff;
 }
 
-#sideBar {
+/* #sideBar {
     margin: 25px;
     width: 250px;
     height: 65vh;
@@ -472,4 +450,4 @@ ul#ul-class li {
     font-weight: bold;
     color: white;
     margin: 5px;
-}
+} */
