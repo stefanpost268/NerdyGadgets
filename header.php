@@ -16,7 +16,6 @@ $HeaderStockGroups = getHeaderStockGroups($databaseConnection);
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
     <!-- Javascript -->
     <script src="Public/JS/fontawesome.js"></script>
     <script src="Public/JS/jquery.min.js"></script>
@@ -33,7 +32,7 @@ $HeaderStockGroups = getHeaderStockGroups($databaseConnection);
     ?>
 
     <!-- Style sheets-->
-    <?php if(!in_array($filename, ["categories.php", "shoppingcart.php", "index.php", "checkout.php"])) { ?>
+    <?php if(!in_array($filename, ["categories.php", "shoppingcart.php", "index.php", "checkout.php", "status.php"])) { ?>
     <link rel="stylesheet" href="Public/CSS/style.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/typekit.css">
