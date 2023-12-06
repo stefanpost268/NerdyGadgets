@@ -21,18 +21,25 @@ function connectToDatabase() {
 
 function getHeaderStockGroups($databaseConnection) {
     $Query = "
-                SELECT StockGroupID, StockGroupName, ImagePath
-                FROM stockgroups 
-                WHERE StockGroupID IN (
-                                        SELECT StockGroupID 
-                                        FROM stockitemstockgroups
-                                        ) AND ImagePath IS NOT NULL
-                ORDER BY StockGroupID ASC";
+        SELECT StockGroupID, StockGroupName, ImagePath
+        FROM stockgroups 
+        WHERE StockGroupID IN (
+            SELECT StockGroupID 
+            FROM stockitemstockgroups
+        ) AND ImagePath IS NOT NULL
+        ORDER BY StockGroupID ASC";
     $Statement = mysqli_prepare($databaseConnection, $Query);
     mysqli_stmt_execute($Statement);
-    $HeaderStockGroups = mysqli_stmt_get_result($Statement);
+    
+    // Fetch all rows as an associative array
+    $HeaderStockGroups = mysqli_fetch_all(mysqli_stmt_get_result($Statement), MYSQLI_ASSOC);
+
+    // Close the statement
+    mysqli_stmt_close($Statement);
+
     return $HeaderStockGroups;
 }
+
 
 function getStockGroups($databaseConnection) {
     $Query = "

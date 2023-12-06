@@ -5,6 +5,9 @@ include "database.php";
 loadenv();
 
 $databaseConnection = connectToDatabase();
+
+$HeaderStockGroups = getHeaderStockGroups($databaseConnection);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,15 +50,12 @@ $databaseConnection = connectToDatabase();
             <img src="Public/ProductIMGHighRes/NerdyGadgetsLogo.png" alt="NerdyGadgetsLogo" class="w-16 md:w-24">
         </a>
         <div class="flex gap-1">
-        <?php
-            foreach (getHeaderStockGroups($databaseConnection) as $HeaderStockGroup) {
-                ?>
-                <a href="browse.php?category_id=<?php print $HeaderStockGroup['StockGroupID']; ?>"
-                class="text-white hover:text-gray-500 hidden lg:block"><?php print $HeaderStockGroup['StockGroupName']; ?></a>
-                <div class="text-white hidden lg:block">|</div>
-                <?php
-            }
-        ?>
+            <?php foreach($HeaderStockGroups as $HeaderStockGroup) { ?>
+                <a class="text-white hover:text-gray-300 flex hidden lg:block" href="browse.php?category_id=<?php print($HeaderStockGroup['StockGroupID']); ?>">
+                    <?php print($HeaderStockGroup["StockGroupName"]); ?>
+                </a>
+            <?php } ?>
+
             <a href="categories.php" class="text-white hover:text-gray-300 flex hidden lg:block">
                 Alle categorieën
             </a>
@@ -71,16 +71,15 @@ $databaseConnection = connectToDatabase();
                     <path d="M24 3l-.743 2h-1.929l-3.474 12h-13.239l-4.615-11h16.812l-.564 2h-13.24l2.937 7h10.428l3.432-12h4.195zm-15.5 15c-.828 0-1.5.672-1.5 1.5 0 .829.672 1.5 1.5 1.5s1.5-.671 1.5-1.5c0-.828-.672-1.5-1.5-1.5zm6.9-7-1.9 7c-.828 0-1.5.671-1.5 1.5s.672 1.5 1.5 1.5 1.5-.671 1.5-1.5c0-.828-.672-1.5-1.5-1.5z"/>
                 </svg>
                 <?php
-                if (isset($_SESSION["shoppingcart"]) && !empty($_SESSION["shoppingcart"])) {
-                    echo '<div class="bg-red-500 text-white px-2 py-1 rounded-full">' . count($_SESSION["shoppingcart"]) . '</div>';
-                }
+                    if (isset($_SESSION["shoppingcart"]) && !empty($_SESSION["shoppingcart"])) {
+                        print('<div class="bg-red-500 text-white px-2 py-1 rounded-full">' . count($_SESSION["shoppingcart"]) . '</div>');
+                    }
                 ?>
             </a>
             <a href="categories.php" class="text-white hover:text-gray-300 block lg:hidden">
                 <img src="./Public/SVG/category.svg" alt="Categories" width="30" height="30">
+                
             </a>
         </div>
     </div>
-    <!-- code voor US3: zoeken -->
-    <!-- einde code voor US3 zoeken -->
 </div>
