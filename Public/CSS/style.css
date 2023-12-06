@@ -258,9 +258,6 @@ ul#ul-class li {
     max-width: 300px;
     max-height: 250px;
 }
-ul#ul-class-price li {
-    display: inline;
-}
 .TextPrice {
     margin-top: 16%;
     -webkit-touch-callout: none;
@@ -282,32 +279,9 @@ ul#ul-class-price li {
     text-decoration: none;
     color: #ccc;
 }
-.TextMain {
-    color: #fff;
-    font-family: vortice-concept, sans-serif;
-    font-size: 50px;
-    text-transform: uppercase;
-    font-weight: bold;
-    width: 60%;
-    margin-left: 10%;
-}
-.HomePagePrice {
-    color: #676EFF;
-    font-family: vortice-concept, sans-serif;
-    font-size: 50px;
-    text-transform: uppercase;
-    font-weight: bold;
-    margin-left: 7%;
-}
-.HomePageStockItemPicture {
-    background-image: url("../ProductIMGHighRes/580b57fbd9996e24bc43bf55.png");
-    background-size: 100% 100%;
-    width: 477px;
-    height: 477px;
-    background-repeat: no-repeat;
-    margin-left: 55%;
-    margin-top: -30%;
-}
+
+
+
 #Wrap {
     width: 100%;
     height: 600px;
@@ -454,10 +428,7 @@ ul#ul-class-price li {
     position: relative;
 
 }
-.IndexStyle {
-    margin: 0 auto;
-    width: 1400px;
-}
+
 .FilterTopMargin {
     margin-top: 20px;
 }
