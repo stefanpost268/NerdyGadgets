@@ -27,7 +27,6 @@
             <?php
             $statusIcon = '';
             $statusMessage = '';
-
             switch ($status) {
                 case 'open':
                     $statusIcon = '<object width="95" type="image/svg+xml" data="./Public/SVG/info.svg" class="logo"></object>';

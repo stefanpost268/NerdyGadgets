@@ -51,7 +51,7 @@ if (isset($_SESSION["shoppingcart"])) {
                                         <p class="text-green-500 font-semibold text-xl">€<?php echo number_format($product["item"]["SellPrice"], 2); ?></p>
                                         <div class="flex items-center mt-2">
                                             <label class="mr-2 text-gray-400">Quantity:</label>
-                                            <input type="number" max="100" min="0" name="productAmount[<?php echo $product["item"]["StockItemID"]; ?>]" value="<?php echo $product['amount']; ?>" onchange="this.form.submit()" class="w-16 rounded-md border py-1 px-2 text-white bg-gray-700 dark:text-black dark:bg-gray-300">
+                                            <input type="number" max="100" min="0" name="productAmount[<?php echo $product["item"]["StockItemID"]; ?>]" value="<?php echo $product['amount']; ?>" onchange="this.form.submit()" class="w-16 rounded-md border py-1 px-2 text-white bg-gray-700 text-black bg-gray-300">
                                         </div>
                                         <p class="text-green-500 font-semibold mt-2">Subtotal: € <?php echo number_format($product["subtotal"], 2); ?></p>
                                     </div>

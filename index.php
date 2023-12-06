@@ -2,17 +2,17 @@
 
     $products = getRandomProducts($databaseConnection);
 ?>
-<main class="relative flex flex-col items-center justify-start w-full overflow-hidden min-h-screen bg-gradient-to-b from-gray-800 to-black dark:--geist-foreground:#000">
-    <h1 class="mt-6 lg:!mt-12 mx-6 w-[300px] md:w-full font-extrabold text-4xl sm:text-5xl md:text-6xl leading-tight xl:leading-snug text-center pb-4 bg-clip-text text-transparent bg-gradient-to-b from-black/80 to-black dark:from-white dark:to-[#AAAAAA]">
+<main class="relative flex flex-col items-center justify-start w-full overflow-hidden min-h-screen bg-gradient-to-b from-gray-800 to-black --geist-foreground:#000">
+    <h1 class="mt-6 lg:!mt-12 mx-6 w-[300px] md:w-full font-extrabold text-4xl sm:text-5xl md:text-6xl leading-tight xl:leading-snug text-center pb-4 bg-clip-text text-transparent bg-gradient-to-b from-black/80 to-black from-white to-[#AAAAAA]">
         NerdyGadgets
     </h1>
-    <p class="mx-6 text-lg sm:text-xl md:text-2xl sm:mt-4 mb-8 max-h-[112px] md:max-h-[96px] w-[315px] md:w-[660px] font-space-grotesk text-center text-[#666666] dark:text-[#888888]">
+    <p class="mx-6 text-lg sm:text-xl md:text-2xl sm:mt-4 mb-8 max-h-[112px] md:max-h-[96px] w-[315px] md:w-[660px] font-space-grotesk text-center text-[#666666] text-[#888888]">
         Welcome to NerdyGadgets, the best place to buy your gadgets!
     </p>
 
     <div id="controls-carousel" class="relative w-full max-w-[660px] mb-8 px-4 sm:px-8" data-carousel="static">
     <!-- Carousel wrapper -->
-    <div class="relative h-56 overflow-hidden rounded-lg md:h-96 bg-gradient-to-b from-gray-900 to-black dark:from-gray-800 dark:to-black">
+    <div class="relative h-56 overflow-hidden rounded-lg md:h-96 bg-gradient-to-b from-gray-900 to-black from-gray-800 to-black">
         <?php foreach($products as $product) { 
             $productImage = getProductImage($product["StockItemID"], $databaseConnection, $product);
             ?>

@@ -30,7 +30,7 @@ $databaseConnection = connectToDatabase();
     ?>
 
     <!-- Style sheets-->
-    <?php if(!in_array($filename, ["categories.php", "shoppingcart.php", "index.php"])) { ?>
+    <?php if(!in_array($filename, ["categories.php", "shoppingcart.php", "index.php", "checkout.php"])) { ?>
     <link rel="stylesheet" href="Public/CSS/style.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="Public/CSS/typekit.css">
@@ -38,7 +38,7 @@ $databaseConnection = connectToDatabase();
 
     <!-- TAILWIND -->
     <script src="https://cdn.tailwindcss.com"></script>
-
+    
 </head>
 <body class="bg-gray-700">
 <div class="bg-gray-800">
