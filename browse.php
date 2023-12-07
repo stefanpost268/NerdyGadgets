@@ -11,6 +11,7 @@ $returnableResult = null;
 $queryBuildResult = "";
 
 $productsOnPage = getProductsOnPage();
+
 $categoryID = isset($_GET['category_id']) ? $_GET['category_id'] : NULL;
 $pageNumber = isset($_GET['page_number']) ? $_GET['page_number'] : 0;
 $orderByLabel = $_GET['order_by'] ?? "name-ASC";
@@ -58,53 +59,37 @@ $amountOfPages = isset($amount) ? ceil($amount / $productsOnPage) : 0;
 ?>
 
 <main class="min-h-screen flex flex-col md:flex-row mx-auto max-w-screen-lg">
-<div class="md:w-1/3 bg-gray-800 text-white p-4 md:ml-10 rounded-md md:mt-10 shadow-md m-1 md:sticky md:top-10 md:max-h-[calc(100vh-150px)] md:overflow-y-auto">
-        <form id="sideBar" class="">
-            <p id="sideBarTitle" class="text-lg font-bold mb-4">Filteren</p>
-            <input type="hidden" name="category_id" id="category_id" value="<?= isset($_GET['category_id']) ? $_GET['category_id'] : '' ?>">
-
-            <div class="mt-2">
-                <label for="search" class="block text-sm">Zoeken:</label>
-                <input type="text" name="search" id="search" value="<?= isset($_GET['search']) ? $_GET['search'] : '' ?>" class="w-full mb-2 p-2 bg-gray-700 text-white rounded">
-
-                <label class="block text-sm" for="order_by">Sorteer op:</label>
-                <select name="order_by" id="order_by" onchange="this.form.submit()" class="w-full mb-2 p-2 bg-gray-700 text-white rounded">
-                    <option value="price-ASC" selected>Prijs oplopend</option>
-                    <option value="price-DESC">Prijs aflopend</option>
-                    <option value="name-ASC">Naam oplopend</option>
-                    <option value="name-DESC">Naam aflopend</option>
-                </select>
-
-                <label class="block text-sm" for="products_on_page">Selecteer het aantal producten:</label>
-                <select name="products_on_page" onchange="this.form.submit()" class="w-full p-2 bg-gray-700 text-white rounded">
-                    <option value="25" selected>25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
-            </div>
-        </form>
+    <div id="filterSidebar" class="hidden md:block md:w-1/3 bg-gray-800 p-4 md:ml-10 rounded-md md:mt-10 shadow-md m-1 md:sticky md:top-10 md:max-h-[calc(100vh-150px)] md:overflow-y-auto">
+        <p id="sideBarTitle" class="text-lg text-white font-bold mb-4">Filteren</p>
+        <?php include "./Components/filterFormData.php" ?>
     </div>
+
+    <?php include "./Components/filterDropdown.php"; ?>
 
     <div id="ResultsArea" class="md:w-2/3 m-1 md:m-10">
         <?php if (isset($Result['data']) && $amount > 0) : ?>
             <?php foreach ($Result['data'] as $row) : ?>
                 <div class="mb-4 p-6 bg-gray-800 text-white rounded-md shadow-md overflow-hidden w-full">
                     <?php if (isset($row['ImagePath'])) : ?>
-                        <div class="w-48 h-48 bg-cover bg-center rounded-md float-left mr-4" style="background-image: url('<?= "Public/StockItemIMG/" . $row['ImagePath'] ?>');"></div>
+                        <div class="md:w-48 md:h-48 h-28 w-28 bg-cover bg-center rounded-md float-left mr-4" style="background-image: url('<?= "Public/StockItemIMG/" . $row['ImagePath'] ?>');"></div>
                     <?php elseif (isset($row['BackupImagePath'])) : ?>
                         <div class="w-48 h-48 bg-cover bg-center rounded-md float-left mr-4" style="background-image: url('<?= "Public/StockGroupIMG/" . $row['BackupImagePath'] ?>');"></div>
                     <?php endif; ?>
 
-                    <div class="flex items-center mb-2">
+                    <div class="hidden md:flex items-center mb-2">
                         <div class="ml-auto text-gray-300">
                             <h1 class="text-lg font-bold"><?= sprintf("€%0.2f", berekenVerkoopPrijs($row['RecommendedRetailPrice'], $row['TaxRate'])) ?></h1>
                             <h6 class="text-sm">Inclusief BTW</h6>
                         </div>
                     </div>
                     <h1 class="text-gray-400 text-sm">Artikelnummer: <?= $row['StockItemID'] ?></h1>
-                    <a href="productpage.php?id=<?= $row['StockItemID'] ?>" class="text-blue-400 hover:underline text-lg font-semibold"><?= $row['StockItemName'] ?></a>
+                    <a href="productpage.php?id=<?= $row['StockItemID'] ?>" class="text-blue-400 hover:underline md:text-lg font-semibold"><?= $row['StockItemName'] ?></a>
                     <p class="text-gray-400 text-sm"><?= $row['MarketingComments'] ?></p>
-                    <h4 class="text-green-400"><?= getVoorraadTekst($row['QuantityOnHand']) ?></h4>
+                    <div class="flex md:hidden text-gray-300">
+                        <h1 class="text- font-bold"><?= sprintf("€%0.2f", berekenVerkoopPrijs($row['RecommendedRetailPrice'], $row['TaxRate'])) ?></h1>
+                        <h6 class="text-xs ml-1">Inclusief BTW</h6>
+                    </div>
+                    <h4 class="text-green-400 text-sm md:text-lg"><?= getVoorraadTekst($row['QuantityOnHand']) ?></h4>
                 </div>
             <?php endforeach; ?>
             <form id="PageSelector" class="mt-4 flex items-center justify-center">
