@@ -14,7 +14,8 @@
     <!-- Carousel wrapper -->
     <div class="relative h-56 overflow-hidden rounded-lg md:h-96 bg-gradient-to-b from-gray-900 to-black from-gray-800 to-black">
         <?php foreach($products as $product) { 
-            $productImage = getProductImage($product["StockItemID"], $databaseConnection, $product);
+            $productImage = getStockImage($product["StockItemID"], $databaseConnection, $product, $product["BackupImagePath"]);
+
             ?>
             <a href="productpage.php?id=<?php print($product["StockItemID"]); ?>">
                 <div class="hidden duration-700 ease-in-out" data-carousel-item>
@@ -32,7 +33,7 @@
     <button type="button" class="text-white absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
         <img class="shadow-md" src="./Public/SVG/arrow-right.svg" alt="Empty Cart" width="30" height="30">
     </button>
-</div>
+    </div>
 
 </main>
 

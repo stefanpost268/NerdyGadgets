@@ -86,7 +86,14 @@ function getStockItem($id, $databaseConnection) {
     return $Result;
 }
 
-function getStockItemImage($id, $databaseConnection) {
+/**
+ * Return the images of a stock item or return group image.
+ * 
+ * @param int $id The id of the stock item
+ * @param mysqli $databaseConnection The database connection
+ * @return array The images of the stock item
+ */
+function getStockItemImage($id, $databaseConnection, $backupImagePath) {
 
     $Query = "
                 SELECT ImagePath
@@ -96,10 +103,25 @@ function getStockItemImage($id, $databaseConnection) {
     $Statement = mysqli_prepare($databaseConnection, $Query);
     mysqli_stmt_bind_param($Statement, "i", $id);
     mysqli_stmt_execute($Statement);
-    $R = mysqli_stmt_get_result($Statement);
-    $R = mysqli_fetch_all($R, MYSQLI_ASSOC);
+    $r = mysqli_stmt_get_result($Statement);
+    $r = mysqli_fetch_all($r, MYSQLI_ASSOC);
 
-    return $R;
+    if(!empty($r)) {
+        foreach ($r as $key => $value) {
+            $r[$key]["ImagePath"] = "Public/StockItemIMG/".$value["ImagePath"];
+        }
+        return $r;
+    } else {
+        return array(
+            array(
+                "ImagePath" => "Public/StockGroupIMG/".$backupImagePath
+            )
+        );
+    }
+
+    die(var_dump($r));
+
+    return $r;
 }
 
 function getProductsOnPage() {
@@ -175,22 +197,16 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
     ];
 }
 
-function getProductImage($id, $databaseConnection, $item): string
+function getStockImage($id, $databaseConnection, $item, $backupImagePath): string
 {
-    $stockImage = getStockItemImage($id, $databaseConnection);
-
-    if (isset($stockImage[0]["ImagePath"])) {
-        return "Public/StockItemIMG/" . getStockItemImage($id, $databaseConnection)[0]["ImagePath"];
-    } else {
-        return "Public/StockGroupIMG/" . $item["BackupImagePath"];
-    }
+    return getStockItemImage($id, $databaseConnection, $backupImagePath)[0]["ImagePath"];
 }
 
 function getShoppingCartItems($databaseConnection): array {
     $products = [];
     foreach ($_SESSION["shoppingcart"] as $id => $amount) {
         $item = getStockItem($id, $databaseConnection);
-        $imagePath = getProductImage($id, $databaseConnection, $item);
+        $imagePath = getStockImage($id, $databaseConnection, $item, $item["BackupImagePath"]);
         $subtotal = round($amount * $item['SellPrice'], 2);
 
         $products[] = [
