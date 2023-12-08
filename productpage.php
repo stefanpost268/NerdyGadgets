@@ -2,6 +2,8 @@
 <?php
 include __DIR__ . "/header.php";
 
+$lang = json_decode(file_get_contents("Lang/nl.json"))->productPage;
+
 // Add to shopping bag
 if (isset($_POST["articleid"]) && isset($_POST["amount"])) {
     $amount = intval($_POST["amount"]);
@@ -103,19 +105,22 @@ $stockItemImage = getStockItemImage($id, $databaseConnection, $stockItem['Backup
             <div id="stockSpecs" class="pt-5">
                 <h2 class="font-bold text-2xl mb-2">Product specificaties</h2>
                 <?php
-                $CustomFields = json_decode($stockItem['CustomFields'], true);
-                if (is_array($CustomFields)) {
+                $customFields = json_decode($stockItem['CustomFields'], true);
+                if (is_array($customFields)) {
                 ?>
-                    <!-- Product Specifications -->
                     <ul class="list-disc pl-4 dark">
-                        <?php foreach ($CustomFields as $specName => $specText) { ?>
+                        <?php foreach ($customFields as $specName => $specText) { ?>
                             <?php
-                            if (is_array($specText)) {
-                                foreach ($specText as $subText) {
-                                    echo "<li>{$specName}: {$subText}</li>";
+                            $specNameTranslated = isset($lang->stockSpecs->$specName) ? $lang->stockSpecs->$specName : $specName;
+                            if (!is_array($specText)) {
+                                
+                                echo "<li>{$specNameTranslated }: {$specText}</li>";
+                            } else if(count($specText) > 0) {
+                                echo "<li>{$specNameTranslated}: ";
+                                foreach ($specText as $specTextItem) {
+                                    echo "{$specTextItem} ";
                                 }
-                            } else {
-                                echo "<li>{$specName}: {$specText}</li>";
+                                echo "</li>";
                             }
                             ?>
                         <?php } ?>
