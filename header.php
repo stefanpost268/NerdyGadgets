@@ -49,7 +49,7 @@ $HeaderStockGroups = getHeaderStockGroups($databaseConnection);
             <a href="./">
                 <img src="Public/ProductIMGHighRes/NerdyGadgetsLogo.png" alt="NerdyGadgetsLogo" class="w-16 md:w-24">
             </a>
-            <div class="flex gap-1">
+            <div class="flex gap-5">
                 <?php foreach ($HeaderStockGroups as $HeaderStockGroup) { ?>
                     <a class="text-white hover:text-gray-300 flex hidden lg:block" href="browse.php?category_id=<?php print($HeaderStockGroup['StockGroupID']); ?>">
                         <?php print($HeaderStockGroup["StockGroupName"]); ?>
@@ -67,13 +67,11 @@ $HeaderStockGroups = getHeaderStockGroups($databaseConnection);
                     </svg>
                 </a>
                 <a href="shoppingcart.php" class="text-white hover:text-gray-300 relative">
-                    <div class="bg-red-500 p-0.5 px-1.5 text-white rounded-full text-xs absolute top-0 right-0 transform translate-y-[60%] translate-x-[25%]">
-                        <?php
-                        if (isset($_SESSION["shoppingcart"]) && !empty($_SESSION["shoppingcart"])) {
-                            print(count($_SESSION["shoppingcart"]));
-                        }
-                        ?>
-                    </div>
+                    <?php if (isset($_SESSION["shoppingcart"]) && !empty($_SESSION["shoppingcart"])) { ?>
+                        <div class="bg-red-500 p-0.5 px-1.5 text-white rounded-full text-xs absolute top-0 right-0 transform translate-y-[60%] translate-x-[25%]">
+                            <?php print(count($_SESSION["shoppingcart"])); ?>
+                        </div>
+                    <?php } ?>
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="#ffffff">
                         <path d="M24 3l-.743 2h-1.929l-3.474 12h-13.239l-4.615-11h16.812l-.564 2h-13.24l2.937 7h10.428l3.432-12h4.195zm-15.5 15c-.828 0-1.5.672-1.5 1.5 0 .829.672 1.5 1.5 1.5s1.5-.671 1.5-1.5c0-.828-.672-1.5-1.5-1.5zm6.9-7-1.9 7c-.828 0-1.5.671-1.5 1.5s.672 1.5 1.5 1.5 1.5-.671 1.5-1.5c0-.828-.672-1.5-1.5-1.5z" />
                     </svg>
