@@ -26,18 +26,6 @@ $HeaderStockGroups = getHeaderStockGroups($databaseConnection);
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
 
-    <?php
-    // get name of file
-    $filename = basename($_SERVER['PHP_SELF']);
-    ?>
-
-    <!-- Style sheets-->
-    <?php if (!in_array($filename, ["categories.php", "shoppingcart.php", "index.php", "checkout.php", "status.php", "browse.php", "productpage.php"])) { ?>
-        <link rel="stylesheet" href="Public/CSS/style.css" type="text/css">
-        <link rel="stylesheet" href="Public/CSS/bootstrap.min.css" type="text/css">
-        <link rel="stylesheet" href="Public/CSS/typekit.css">
-    <?php } ?>
-
     <!-- TAILWIND -->
     <script src="https://cdn.tailwindcss.com"></script>
 
