@@ -29,6 +29,10 @@ $HeaderStockGroups = getHeaderStockGroups($databaseConnection);
     <!-- TAILWIND -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <?php
+        $currentFile = basename($_SERVER["PHP_SELF"]);
+        $method = $_SERVER["REQUEST_METHOD"];
+    ?>
 </head>
 
 <body class="bg-gray-700">
@@ -38,10 +42,12 @@ $HeaderStockGroups = getHeaderStockGroups($databaseConnection);
                 <img src="Public/ProductIMGHighRes/NerdyGadgetsLogo.png" alt="NerdyGadgetsLogo" class="w-16 md:w-24">
             </a>
             <div class="flex gap-5">
-                <?php foreach ($HeaderStockGroups as $HeaderStockGroup) { ?>
-                    <a class="text-white hover:text-gray-300 flex hidden lg:block" href="browse.php?category_id=<?php print($HeaderStockGroup['StockGroupID']); ?>">
-                        <?php print($HeaderStockGroup["StockGroupName"]); ?>
-                    </a>
+                <?php if(!($currentFile === "checkout.php" && $method === "POST")) { ?>
+                    <?php foreach ($HeaderStockGroups as $HeaderStockGroup) { ?>
+                        <a class="text-white hover:text-gray-300 flex hidden lg:block" href="browse.php?category_id=<?php print($HeaderStockGroup['StockGroupID']); ?>">
+                            <?php print($HeaderStockGroup["StockGroupName"]); ?>
+                        </a>
+                    <?php } ?>
                 <?php } ?>
 
                 <a href="categories.php" class="text-white hover:text-gray-300 flex hidden lg:block">
