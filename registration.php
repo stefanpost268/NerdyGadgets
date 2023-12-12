@@ -5,9 +5,38 @@ loadenv();
 
 $databaseConnection = connectToDatabase();
 
-if(isset($_POST["wachtwoord"])) {
-    var_dump($_POST);
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = $_POST["naam"];
+    $email = $_POST["e-mail"];
+    $wachtwoord = $_POST["wachtwoord"];
+    $cwachtwoord = $_POST["cwachtwoord"];
+
+    if($wachtwoord === $cwachtwoord) {
+    $hash = hash("sha256", $wachtwoord);
+
+    $checkQuery = "SELECT * FROM user WHERE email = '$email'";
+    $result = $databaseConnection->query($checkQuery);
+
+    if ($result->num_rows > 0) {
+        echo "Email already exists!";
+    } else {
+
+    $sql = "INSERT INTO user (email, name, password) VALUES ('$email', '$name', '$hash')";
+
+    if ($databaseConnection->query($sql) === TRUE) {
+        echo "Account is succesvol geregistreerd!";
+    } else {    
+        echo "Account is niet geregistreerd, probeer het opnieuw.";
+    }
+        }
+    } else {
+        echo "Wachtwoorden komen niet overheen!";
+    }
 }
+
+$databaseConnection->close();
+session_destroy();
 ?>
 
 <!DOCTYPE html>
@@ -49,14 +78,14 @@ if(isset($_POST["wachtwoord"])) {
     <img src="Public/ProductIMGHighRes/NerdyGadgetsLogo.png" alt="logo" class="center1">
 <form method="post">
     <div class="center">
-        <h1 class="h2">Registreer je account.</h1>
+        <h1 class="h1">Registreer je account.</h1>
         <div class="row">
             <label for="naam">Naam:</label>
-            <input type="text" class="form-control" name="naam" id="naam" required>
+            <input type="text" class="form-control" name="naam" id="naam" maxlength="50" required>
             <label for="e-mail">E-mail:</label>
             <input type="email" class="form-control" name="e-mail" id="e-mail" required>
             <label for="wachtwoord">Wachtwoord:</label>
-            <input type="password" class="form-control" name="wachtwoord" id="wachtwoord" pattern="((?=.*\d)(?=.*[A-Z])(?=.*\W)\w.{6,18}\w)" title="Minimum of 8 characters. Should have at least one special character, one number and a capital letter    " required>
+            <input type="password" class="form-control" name="wachtwoord" id="wachtwoord" pattern="((?=.*\d)(?=.*[A-Z])(?=.*\W)\w.{6,}\w)" title="Minimum of 8 characters. Should have at least one special character, one number and a capital letter    " required>
             <label for="cwachtwoord">Confirmatie wachtwoord:</label>
             <input type="password" class="form-control" name="cwachtwoord" id="cwachtwoord" required>
 
@@ -98,7 +127,7 @@ if(isset($_POST["wachtwoord"])) {
             display: inline-block;
         }
 
-        .h2 {
+        .h1 {
             font-size: 30px;
         }
 
