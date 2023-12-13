@@ -134,22 +134,17 @@ $StockItemImage = getStockItemImage($id, $databaseConnection);
                 <div class="CenterPriceLeft">
                     <div class="CenterPriceLeftChild">
                         <p class="StockItemPriceText"><b><?php echo sprintf("€ %.2f", $StockItem['SellPrice']); ?></b></p>
-                        <h6> Inclusief BTW </h6><?php
-                                                if (isset($StockItem["IsChillerStock"])) {
-                                                    print('de stock koeling is beschikbaar');
-                                                }
-                                                $servername = "localhost";
-                                                $username = "root";
-                                                $password = "";
-
-                                                // Create connection
-                                                $conn = new mysqli($servername, $username, $password);
-
-                                                // Check connection
-                                                if ($conn->connect_error) {
-                                                    die("Connection failed: " . $conn->connect_error);
-                                                }
-                                                ?>
+                        <h6> Inclusief BTW </h6>
+                        <?php
+                        if (isset($StockItem["IsChillerStock"]) && $StockItem["IsChillerStock"] > 0) {
+                            $temperature = getCurrentTemp($databaseConnection);
+                        ?>
+                            <?php if($temperature !== null) { ?>
+                                <h6> Temperatuur: <?php print($temperature[0]["Temperature"]); ?>°C </h6>
+                            <?php } else { ?>
+                                <h6> Er is geen huidige temperatuur beschikbaar.</h6>
+                            <?php } ?>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -159,7 +154,7 @@ $StockItemImage = getStockItemImage($id, $databaseConnection);
             <h3>Artikel beschrijving</h3>
             <p><?php echo $StockItem['SearchDetails']; ?></p>
         </div>
-
+        
         <div id="StockItemSpecifications">
             <h3>Artikel specificaties</h3>
             <?php

@@ -79,6 +79,22 @@ function getStockItem($id, $databaseConnection) {
 
     return $Result;
 }
+
+function getCurrentTemp($databaseConnection): null|array {
+    $query = "SELECT * FROM coldroomtemperatures WHERE ColdRoomSensorNumber = 5";
+
+    $statement = mysqli_prepare($databaseConnection, $query);
+    mysqli_stmt_execute($statement);
+    $returnableResult = mysqli_stmt_get_result($statement);
+    $returnableResult = mysqli_fetch_all($returnableResult, MYSQLI_ASSOC);;
+
+    if(empty($returnableResult)) {
+        return null;
+    }
+
+    return $returnableResult;
+}
+
 function getStockItemImage($id, $databaseConnection) {
 
     $Query = "
