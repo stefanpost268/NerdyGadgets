@@ -1,4 +1,5 @@
 sensehatdetect = True;
+coldroomtemeratureNumber = 5
 
 if(sensehatdetect == False):
     print("SenseHat not detected")
@@ -27,7 +28,15 @@ else:
         with conn.cursor() as cursor:
             # Create a new record
             sql = "INSERT INTO `coldroomtemperatures_archive` (`ColdRoomSensorNumber`, `RecordedWhen`, `Temperature`, `ValidFrom`, `ValidTo`) VALUES (%s, %s, %s, %s, %s)"
-            cursor.execute(sql, (5, now, temperature, now, now))
+            cursor.execute(sql, (coldroomtemeratureNumber, now, temperature, now, '9999-12-31 23:59:59'))
+
+            # Delete old coldroomtemeratures record
+            sql = "DELETE FROM `coldroomtemperatures` WHERE `ColdRoomSensorNumber`=%s"
+            cursor.execute(sql, (coldroomtemeratureNumber))
+
+            # Add new coldroomtemeratures record
+            sql = "INSERT INTO `coldroomtemperatures` (`ColdRoomSensorNumber`, `RecordedWhen`, `Temperature`, `ValidFrom`, `ValidTo`) VALUES (%s, %s, %s, %s, %s)"
+            cursor.execute(sql, (coldroomtemeratureNumber, now, temperature, now, now))
 
         # Commit changes
         conn.commit()
