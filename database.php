@@ -1,4 +1,3 @@
-<!-- dit bestand bevat alle code die verbinding maakt met de database -->
 <?php
 
 function connectToDatabase() {
@@ -6,7 +5,7 @@ function connectToDatabase() {
 
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // Set MySQLi to throw exceptions
     try {
-        $Connection = mysqli_connect("localhost", "root", "", "nerdygadgets");
+        $Connection = mysqli_connect($_ENV["DATABASE_URL"], $_ENV["DATABASE_USER"], $_ENV["DATABASE_PASSWORD"], $_ENV["DATABASE_NAME"]);
         mysqli_set_charset($Connection, 'latin1');
         $DatabaseAvailable = true;
     } catch (mysqli_sql_exception $e) {
@@ -58,7 +57,7 @@ function getStockItem($id, $databaseConnection) {
            SELECT SI.StockItemID, 
             (RecommendedRetailPrice*(1+(TaxRate/100))) AS SellPrice, 
             StockItemName,
-            CONCAT('Voorraad: ',QuantityOnHand)AS QuantityOnHand,
+            QuantityOnHand,
             SearchDetails, 
             (CASE WHEN (RecommendedRetailPrice*(1+(TaxRate/100))) > 50 THEN 0 ELSE 6.95 END) AS SendCosts, MarketingComments, CustomFields, SI.Video,
             (SELECT ImagePath FROM stockgroups JOIN stockitemstockgroups USING(StockGroupID) WHERE StockItemID = SI.StockItemID LIMIT 1) as BackupImagePath   
@@ -171,4 +170,69 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
         'data' => $returnableResult,
         'count' => $count
     ];
+}
+
+function getProductImage($id, $databaseConnection, $item): string
+{
+    $stockImage = getStockItemImage($id, $databaseConnection);
+
+    if (isset($stockImage[0]["ImagePath"])) {
+        return "Public/StockItemIMG/" . getStockItemImage($id, $databaseConnection)[0]["ImagePath"];
+    } else {
+        return "Public/StockGroupIMG/" . $item["BackupImagePath"];
+    }
+}
+
+function getShoppingCartItems($databaseConnection): array {
+    $products = [];
+    foreach ($_SESSION["shoppingcart"] as $id => $amount) {
+        $item = getStockItem($id, $databaseConnection);
+        $imagePath = getProductImage($id, $databaseConnection, $item);
+        $subtotal = round($amount * $item['SellPrice'], 2);
+
+        $products[] = [
+            "item" => $item,
+            "image" => $imagePath,
+            "amount" => $amount,
+            'subtotal' => $subtotal,
+        ];
+    }
+
+    return $products;
+}
+
+function getTotalPriceShoppingCart($products): float {
+    $totalPrice = 0;
+    foreach ($products as $product) {
+        $totalPrice += $product['subtotal'];
+    }
+
+    return $totalPrice;
+}
+
+function getVoorraadTekst($actueleVoorraad) {
+    if ($actueleVoorraad > 1000) {
+        return "Ruime voorraad beschikbaar.";
+    } else {
+        return "Voorraad: $actueleVoorraad";
+    }
+}
+
+function loadenv(string $envFile = '.env') {
+    if (file_exists($envFile)) {
+        $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            if (strpos(trim($line), '#') === 0) {
+                continue;
+            }
+
+            list($key, $value) = explode('=', $line, 2) + [NULL, NULL];
+            if ($key !== NULL && $value !== NULL) {
+                $_ENV[$key] = $value;
+                putenv("$key=$value");
+            }
+        }
+    } else {
+        throw new Exception('.env file not found');
+    }
 }

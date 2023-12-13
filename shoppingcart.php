@@ -2,17 +2,6 @@
 include 'header.php';
 $config = json_decode(file_get_contents("config.json"));
 
-function getProductImage($id, $databaseConnection, $item): string
-{
-    $stockImage = getStockItemImage($id, $databaseConnection);
-
-    if (isset($stockImage[0]["ImagePath"])) {
-        return "Public/StockItemIMG/" . getStockItemImage($id, $databaseConnection)[0]["ImagePath"];
-    } else {
-        return "Public/StockGroupIMG/" . $item["BackupImagePath"];
-    }
-}
-
 if(isset($_POST["productAmount"])) {
     if($_POST["productAmount"] != $_SESSION["shoppingcart"]) {
         $items = $_POST["productAmount"];
@@ -29,81 +18,58 @@ if(isset($_POST["productAmount"])) {
     }
 }
 
-// Check if the "Clear Session" button was clicked
-if (isset($_POST['clear_session'])) {
-    // Clear the session
-    session_unset();
-}
-
 $products = [];
 $totalPrice = 0;
 
 if (isset($_SESSION["shoppingcart"])) {
-    foreach ($_SESSION["shoppingcart"] as $id => $amount) {
-        $item = getStockItem($id, $databaseConnection);
-        $imagePath = getProductImage($id, $databaseConnection, $item);
-        $subtotal = round($amount * $item['SellPrice'], 2);
-
-        $products[] = [
-            "item" => $item,
-            "image" => $imagePath,
-            "amount" => $amount,
-            'subtotal' => $subtotal,
-        ];
-
-        $totalPrice += $subtotal;
-    }
+    $products = getShoppingCartItems($databaseConnection);
+    $totalPrice = getTotalPriceShoppingCart($products);
 }
 ?>
 
 <div class="container">
-<h1 class="pb-5">Winkelwagen</h1>
+    <h1 class="pb-5">Winkelwagen</h1>
     <div class="row">
         <div class="col-lg-7">
             <form method="POST">
-            <table class="table" style="color:white;">
-                <thead>
-                    <tr>
-                        <th>Artikel</th>
-                        <th>Prijs</th>
-                        <th>Aantal</th>
-                        <th>Subtotaal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($products)) : ?>
-                        <?php foreach ($products as $product) : ?>
+                <div class="table-responsive"> <!-- Add this class for responsive tables -->
+                    <table class="table" style="color:white;">
+                        <thead>
                             <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img width='100' src='<?php echo $product["image"]; ?>' class="img-thumbnail">
-                                        <div class="ml-3 color:red;">
-                                            <p><a href="./productpage.php?id=<?php print($product["item"]["StockItemID"]); ?>"><?php print($product["item"]["StockItemName"]); ?></a></p>
-                                            <p><?php  print("Article ID: " . $product["item"]["StockItemID"]); ?></p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>€<?php echo number_format($product["item"]["SellPrice"], 2); ?></td>
-                                <td>
-                                    <input
-                                        type="number"
-                                        max="100"
-                                        min="0"
-                                        name="productAmount[<?php print($product["item"]["StockItemID"]); ?>]"
-                                        value="<?php print($product['amount']) ?>"
-                                        onchange="this.form.submit()"
-                                    />
-                                </td>
-                                <td>€ <?php echo number_format($product["subtotal"], 2); ?></td>
+                                <th>Artikel</th>
+                                <th>Prijs</th>
+                                <th>Aantal</th>
+                                <th>Subtotaal</th>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php else : ?>
-                        <tr>
-                            <td colspan='4'>Winkelmand is leeg</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($products)) : ?>
+                                <?php foreach ($products as $product) : ?>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img width='100' src='<?php echo $product["image"]; ?>' class="img-thumbnail">
+                                                <div class="ml-3 color:red;">
+                                                    <p><a href="./productpage.php?id=<?php print($product["item"]["StockItemID"]); ?>"><?php print($product["item"]["StockItemName"]); ?></a></p>
+                                                    <p><?php print("Article ID: " . $product["item"]["StockItemID"]); ?></p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>€<?php echo number_format($product["item"]["SellPrice"], 2); ?></td>
+                                        <td>
+                                            <input type="number" max="100" min="0" name="productAmount[<?php print($product["item"]["StockItemID"]); ?>]" value="<?php print($product['amount']) ?>" onchange="this.form.submit()" />
+                                        </td>
+                                        <td>€ <?php echo number_format($product["subtotal"], 2); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <tr>
+                                    <td colspan='4'>Winkelmand is leeg</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </form>
         </div>
 
@@ -112,20 +78,22 @@ if (isset($_SESSION["shoppingcart"])) {
                 <div class="card-body">
                     <h2>Overzicht van je bestelling</h2>
                     <div style="border-style: solid; border-color: white; padding: 5px;">
-                        <h3>Totaal: € <?php print($totalPrice); ?></h3>
-                        <form method="post">
-                            <button
-                                class="btn btn-primary"
-                                style="width: 100%;"
-                                type="submit"
-                                name="clear_session"
-                            >
-                                Legen Winkelmand
-                            </button>
-                        </form>
+                        <h3>Totaal: € <?php print(number_format($totalPrice, 2)); ?></h3>
+                        <button class="btn btn-primary" style="width: 100%;" type="submit">
+                            <?php if (empty($products)) { ?>
+                                <a style="color: white;" href="./browse.php">
+                                    Ga naar de winkel
+                                </a>
+                            <?php } else { ?>
+                                <a style="color: white;" href="./checkout.php">
+                                    Bestelling plaatsen
+                                </a>
+                            <?php } ?>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+

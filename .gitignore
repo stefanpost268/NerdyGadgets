@@ -1,4 +1,6 @@
 .DS_Store
-Database/**
 .idea/**
 .env
+
+Database/Nerdygadgets_database.sql
+Database/.gitkeep

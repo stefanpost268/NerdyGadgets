@@ -126,7 +126,7 @@
         <h2 class="StockItemNameViewSize StockItemName">
             <?php echo $StockItem['StockItemName']; ?>
         </h2>
-        <div class="QuantityText"><?php echo $StockItem['QuantityOnHand']; ?></div>
+        <div class="QuantityText">Voorraad: <?php echo $StockItem['QuantityOnHand']; ?></div>
         <div id="StockItemHeaderLeft">
             <div class="CenterPriceLeft">
                 <div class="CenterPriceLeftChild">
