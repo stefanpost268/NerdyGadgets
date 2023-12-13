@@ -5,35 +5,7 @@ loadenv();
 
 $databaseConnection = connectToDatabase();
 
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST["naam"];
-    $email = $_POST["e-mail"];
-    $wachtwoord = $_POST["wachtwoord"];
-    $cwachtwoord = $_POST["cwachtwoord"];
-
-    if($wachtwoord === $cwachtwoord) {
-    $hash = hash("sha256", $wachtwoord);
-
-    $checkQuery = "SELECT * FROM user WHERE email = '$email'";
-    $result = $databaseConnection->query($checkQuery);
-
-    if ($result->num_rows > 0) {
-        echo "Email already exists!";
-    } else {
-
-    $sql = "INSERT INTO user (email, name, password) VALUES ('$email', '$name', '$hash')";
-
-    if ($databaseConnection->query($sql) === TRUE) {
-        echo "Account is succesvol geregistreerd!";
-    } else {    
-        echo "Account is niet geregistreerd, probeer het opnieuw.";
-    }
-        }
-    } else {
-        echo "Wachtwoorden komen niet overheen!";
-    }
-}
+$register = registerAccount($databaseConnection);
 
 $databaseConnection->close();
 session_destroy();
@@ -53,20 +25,6 @@ session_destroy();
 
 <body>
 
-
-    <!-- Javascript -->
-    <!-- <script src="Public/JS/fontawesome.js"></script>
-    <script src="Public/JS/jquery.min.js"></script>
-    <script src="Public/JS/bootstrap.min.js"></script>
-    <script src="Public/JS/popper.min.js"></script>
-    <script src="Public/JS/resizer.js"></script> -->
-
-    <!-- Style sheets-->
-    <!-- <link rel="stylesheet" href="Public/CSS/style.css" type="text/css">
-    <link rel="stylesheet" href="Public/CSS/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="Public/CSS/typekit.css"> -->
-
-
     <a onclick="history.back()" class="cursor">
         <svg fill="#000000" width="50px" height="50px" viewBox="0 0 52 52" data-name="Layer 1" id="Layer_1"
             xmlns="http://www.w3.org/2000/svg">
@@ -76,29 +34,38 @@ session_destroy();
     </a>
 
     <img src="Public/ProductIMGHighRes/NerdyGadgetsLogo.png" alt="logo" class="center1">
-<form method="post">
-    <div class="center">
-        <h1 class="h1">Registreer je account.</h1>
-        <div class="row">
-            <label for="naam">Naam:</label>
-            <input type="text" class="form-control" name="naam" id="naam" maxlength="50" required>
-            <label for="e-mail">E-mail:</label>
-            <input type="email" class="form-control" name="e-mail" id="e-mail" required>
-            <label for="wachtwoord">Wachtwoord:</label>
-            <input type="password" class="form-control" name="wachtwoord" id="wachtwoord" pattern="((?=.*\d)(?=.*[A-Z])(?=.*\W)\w.{6,}\w)" title="Minimum of 8 characters. Should have at least one special character, one number and a capital letter    " required>
-            <label for="cwachtwoord">Confirmatie wachtwoord:</label>
-            <input type="password" class="form-control" name="cwachtwoord" id="cwachtwoord" required>
+    <form method="post">
+        <div class="center">
+            <h1 class="h1">Registreer je account.</h1>
+            <div class="row">
+                <label for="name">Naam:</label>
+                <input type="text" class="form-control" name="name" id="name" maxlength="50" required>
+                <label for="e-mail">E-mail:</label>
+                <input type="email" class="form-control" name="e-mail" id="e-mail" required>
+                <label for="password">Wachtwoord:</label>
+                <input type="password" class="form-control" name="password" id="password"
+                    pattern="((?=.*\d)(?=.*[A-Z])(?=.*\W)\w.{6,}\w)"
+                    title="Minimum of 8 characters. Should have at least one special character, one number and a capital letter"
+                    required>
+                <label for="confirm-password">Confirmatie wachtwoord:</label>
+                <input type="password" class="form-control" name="confirm-password" id="confirm-password" required>
 
-            <div class="pt-5">
-                <input type="checkbox" name="checkbox" id="checkbox" required>
-                <label for="checkbox">Ik ga akkoord met de servicevoorwaarden.</label>
-            </div>
-            <div>
-                <button type="submit" class="centerbutton" onclick=>Registreer account</button>
+                <div class="pt-5">
+                    <input type="checkbox" name="checkbox" id="checkbox" required>
+                    <label for="checkbox">Ik ga akkoord met de servicevoorwaarden.</label>
+                </div>
+                <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                    role="alert">
+                    <span class="font-medium">
+                        <?= $register ?>
+                    </span>
+                </div>
+                <div>
+                    <button type="submit" class="centerbutton" onclick=>Registreer account</button>
+                </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
 
     <style>
         .center {
@@ -122,7 +89,7 @@ session_destroy();
 
         .cursor {
             margin-left: 2%;
-            margin-top: 40px !important;
+            margin-top: 40px;
             cursor: pointer;
             display: inline-block;
         }

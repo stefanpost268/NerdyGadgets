@@ -287,3 +287,35 @@ function getRandomProducts($databaseConnection) {
 
     return $Result;
 }
+
+function registerAccount($databaseConnection) {
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $name = $_POST["name"];
+        $email = $_POST["e-mail"];
+        $password = $_POST["password"];
+        $confirmPassword = $_POST["confirm-password"];
+    
+        if($password === $confirmPassword) {
+        $hash = hash("sha256", $password);
+    
+        $checkQuery = "SELECT * FROM user WHERE email = '$email'";
+        $result = $databaseConnection->query($checkQuery);
+    
+        if ($result->num_rows > 0) {
+            return "Email already exists!";
+        } else {
+    
+        $sql = "INSERT INTO user (email, name, password) VALUES ('$email', '$name', '$hash')";
+    
+        if ($databaseConnection->query($sql) === TRUE) {
+            return "Account is succesvol geregistreerd!";
+        } else {    
+            return "Account is niet geregistreerd, probeer het opnieuw.";
+        }
+            }
+        } else {
+            return "Wachtwoorden komen niet overheen!";
+        }
+    }
+    
+}
