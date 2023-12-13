@@ -1,6 +1,7 @@
 <!-- This file contains all the code for the page that displays a single product -->
 <?php
     include __DIR__ . "/header.php";
+    $config = json_decode(file_get_contents("config.json"));
 
     // Add to shopping bag
     if (isset($_POST["articleid"]) && isset($_POST["amount"])){
@@ -185,7 +186,7 @@
     <div id="addToShoppingCart">
         <form method="post" action="productpage.php"> 
         <input type="hidden" name="articleid" value="<?php print($id);?>"> 
-        <input type="number" id="amount" name="amount" value="<?php print($amount); ?>" min="0" max="100">
+        <input type="number" id="amount" name="amount" value="<?php print($amount); ?>" min="0" max="<?php print($config->maxInShoppingBasket); ?>">
         <br><br> 
         <input type="submit" value="In Winkelwagen"> 
         </form> 
