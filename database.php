@@ -21,18 +21,25 @@ function connectToDatabase() {
 
 function getHeaderStockGroups($databaseConnection) {
     $Query = "
-                SELECT StockGroupID, StockGroupName, ImagePath
-                FROM stockgroups 
-                WHERE StockGroupID IN (
-                                        SELECT StockGroupID 
-                                        FROM stockitemstockgroups
-                                        ) AND ImagePath IS NOT NULL
-                ORDER BY StockGroupID ASC";
+        SELECT StockGroupID, StockGroupName, ImagePath
+        FROM stockgroups 
+        WHERE StockGroupID IN (
+            SELECT StockGroupID 
+            FROM stockitemstockgroups
+        ) AND ImagePath IS NOT NULL
+        ORDER BY StockGroupID ASC";
     $Statement = mysqli_prepare($databaseConnection, $Query);
     mysqli_stmt_execute($Statement);
-    $HeaderStockGroups = mysqli_stmt_get_result($Statement);
+    
+    // Fetch all rows as an associative array
+    $HeaderStockGroups = mysqli_fetch_all(mysqli_stmt_get_result($Statement), MYSQLI_ASSOC);
+
+    // Close the statement
+    mysqli_stmt_close($Statement);
+
     return $HeaderStockGroups;
 }
+
 
 function getStockGroups($databaseConnection) {
     $Query = "
@@ -79,7 +86,14 @@ function getStockItem($id, $databaseConnection) {
     return $Result;
 }
 
-function getStockItemImage($id, $databaseConnection) {
+/**
+ * Return the images of a stock item or return group image.
+ * 
+ * @param int $id The id of the stock item
+ * @param mysqli $databaseConnection The database connection
+ * @return array The images of the stock item
+ */
+function getStockItemImage($id, $databaseConnection, $backupImagePath) {
 
     $Query = "
                 SELECT ImagePath
@@ -89,10 +103,25 @@ function getStockItemImage($id, $databaseConnection) {
     $Statement = mysqli_prepare($databaseConnection, $Query);
     mysqli_stmt_bind_param($Statement, "i", $id);
     mysqli_stmt_execute($Statement);
-    $R = mysqli_stmt_get_result($Statement);
-    $R = mysqli_fetch_all($R, MYSQLI_ASSOC);
+    $r = mysqli_stmt_get_result($Statement);
+    $r = mysqli_fetch_all($r, MYSQLI_ASSOC);
 
-    return $R;
+    if(!empty($r)) {
+        foreach ($r as $key => $value) {
+            $r[$key]["ImagePath"] = "Public/StockItemIMG/".$value["ImagePath"];
+        }
+        return $r;
+    } else {
+        return array(
+            array(
+                "ImagePath" => "Public/StockGroupIMG/".$backupImagePath
+            )
+        );
+    }
+
+    die(var_dump($r));
+
+    return $r;
 }
 
 function getProductsOnPage() {
@@ -168,22 +197,16 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
     ];
 }
 
-function getProductImage($id, $databaseConnection, $item): string
+function getStockImage($id, $databaseConnection, $item, $backupImagePath): string
 {
-    $stockImage = getStockItemImage($id, $databaseConnection);
-
-    if (isset($stockImage[0]["ImagePath"])) {
-        return "Public/StockItemIMG/" . getStockItemImage($id, $databaseConnection)[0]["ImagePath"];
-    } else {
-        return "Public/StockGroupIMG/" . $item["BackupImagePath"];
-    }
+    return getStockItemImage($id, $databaseConnection, $backupImagePath)[0]["ImagePath"];
 }
 
 function getShoppingCartItems($databaseConnection): array {
     $products = [];
     foreach ($_SESSION["shoppingcart"] as $id => $amount) {
         $item = getStockItem($id, $databaseConnection);
-        $imagePath = getProductImage($id, $databaseConnection, $item);
+        $imagePath = getStockImage($id, $databaseConnection, $item, $item["BackupImagePath"]);
         $subtotal = round($amount * $item['SellPrice'], 2);
 
         $products[] = [
@@ -231,4 +254,36 @@ function loadenv(string $envFile = '.env') {
     } else {
         throw new Exception('.env file not found');
     }
+}
+
+/**
+ * Return a list of random products
+ */
+function getRandomProducts($databaseConnection) {
+    $Result = null;
+
+    $Query = " 
+            SELECT SI.StockItemID, 
+            (RecommendedRetailPrice*(1+(TaxRate/100))) AS SellPrice, 
+            StockItemName,
+            QuantityOnHand,
+            SearchDetails, 
+            (CASE WHEN (RecommendedRetailPrice*(1+(TaxRate/100))) > 50 THEN 0 ELSE 6.95 END) AS SendCosts, MarketingComments, CustomFields, SI.Video,
+            (SELECT ImagePath FROM stockgroups JOIN stockitemstockgroups USING(StockGroupID) WHERE StockItemID = SI.StockItemID LIMIT 1) as BackupImagePath   
+            FROM stockitems SI 
+            JOIN stockitemholdings SIH USING(stockitemid)
+            JOIN stockitemstockgroups ON SI.StockItemID = stockitemstockgroups.StockItemID
+            JOIN stockgroups USING(StockGroupID)
+            GROUP BY StockItemID
+            ORDER BY RAND()
+            LIMIT 10";
+
+    $Statement = mysqli_prepare($databaseConnection, $Query);
+    mysqli_stmt_execute($Statement);
+    $ReturnableResult = mysqli_stmt_get_result($Statement);
+    if ($ReturnableResult) {
+        $Result = mysqli_fetch_all($ReturnableResult, MYSQLI_ASSOC);
+    }
+
+    return $Result;
 }
