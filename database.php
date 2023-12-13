@@ -134,8 +134,6 @@ function getStockItemImage($id, $databaseConnection, $backupImagePath) {
         );
     }
 
-    die(var_dump($r));
-
     return $r;
 }
 
