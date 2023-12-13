@@ -1,9 +1,17 @@
 sensehatdetect = True;
 coldroomtemeratureNumber = 5
 
-if(sensehatdetect == False):
-    print("SenseHat not detected")
-else:
+
+
+while(True) :
+    # Get current datetime in ISO format
+    import datetime
+    now = datetime.datetime.now()
+
+    # Generate a random number between 0 and 15
+    import random
+    temperature = random.randint(0, 15)
+
     # Connect to database
     import pymysql
 
@@ -15,14 +23,6 @@ else:
         charset='utf8mb4'
 
     );
-
-    # Generate a random number between 0 and -15
-    import random
-    temperature = random.randint(0, 15)
-
-    # Get current datetime in ISO format
-    import datetime
-    now = datetime.datetime.now()
 
     try:
         with conn.cursor() as cursor:
@@ -44,3 +44,7 @@ else:
         print("Record inserted successfully")
     finally:
         conn.close()
+
+    # Wait 5 seconds
+    import time
+    time.sleep(3)
