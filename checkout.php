@@ -7,6 +7,7 @@ if (!isset($_SESSION["shoppingcart"]) || empty($_SESSION["shoppingcart"])) {
 
 $products = getShoppingCartItems($databaseConnection);
 $totalPrice = getTotalPriceShoppingCart($products);
+$shippingCost = getShippingCost($totalPrice);
 
 if (!empty($_POST)) {
     include './Validator/CheckoutValidator.php';
@@ -19,7 +20,7 @@ if (!empty($_POST)) {
         $checkoutController = new Controller\CheckoutController($databaseConnection);
 
         try {
-            $checkoutController->getTransaction("Bestelling bij NerdyGadgets", $_POST, $totalPrice, $databaseConnection);
+            $checkoutController->getTransaction("Bestelling bij NerdyGadgets", $_POST, $totalPrice, $shippingCost, $databaseConnection);
         } catch (Exception $e) {
             $errors[] = $e->getMessage();
         }
@@ -90,10 +91,19 @@ if (!empty($_POST)) {
                 <?php } ?>
                 <hr class="my-3">
                 <div class="flex items-center justify-between">
-                    <p class="text-lg font-semibold">Totaal:</p>
-                    <p class="text-lg font-semibold">€<?php echo number_format($totalPrice, 2); ?></p>
+                    <p class="font-semibold">Subtotaal:</p>
+                    <p class="font-semibold">€<?php echo number_format(($totalPrice), 2); ?></p>
                 </div>
-                <p class="text-sm">Inclusief BTW</p>
+                <div class="flex items-center justify-between">
+                    <p class="font-semibold">Verzendkosten:</p>
+                    <p class="font-semibold">€<?php echo number_format(($shippingCost), 2); ?></p>
+                </div>
+                <hr class="my-3">
+                <div class="flex items-center justify-between">
+                    <p class="font-semibold">Totaal:</p>
+                    <p class="font-semibold">€<?php echo number_format(($totalPrice + $shippingCost), 2); ?></p>
+                </div>
+                <p class="text-sm pb-2">Inclusief BTW</p>
                 <button class="bg-blue-500 text-white py-3 px-4 rounded-md w-full">Afrekenen</button>
             </div>
         </div>

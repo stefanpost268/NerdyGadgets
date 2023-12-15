@@ -19,15 +19,16 @@ class CheckoutController
      * 
      * @param string $description
      * @param float $price
+     * @param float $shippingCost
      * @return array
      */
-    private function paymentData(string $description, float $price, int $dbId): array {
+    private function paymentData(string $description, float $price, float $shippingCost, int $dbId): array {
         $appUrl = $_ENV["APP_URL"];
 
         return [
             "amount" => [
                 "currency" => "EUR",
-                "value" => strval(number_format($price, 2, '.', ''))
+                "value" => strval(number_format($price+$shippingCost, 2, '.', ''))
             ],
             "description" => $description,
             "redirectUrl" => $appUrl . "status.php?id=".$dbId,
@@ -38,17 +39,19 @@ class CheckoutController
     /**
      * Create a payment at mollie
      * 
-     * @param array $selectedProducts
      * @param string $description
+     * @param float $price
+     * @param float $shippingCost
+     * @param int $dbId
      * @return array
      */
-    private function createPayment(string $description, float $price, int $dbId): array
+    private function createPayment(string $description, float $price, float $shippingCost, int $dbId): array
     {
         return HTTP::post(self::MOLLIE_URL . "payments", [
                 "Content-Type: application/json",
                 "Authorization: Bearer ".$_ENV["MOLLIE_API_KEY"]
             ],
-            $this->paymentData($description, $price, $dbId)
+            $this->paymentData($description, $price, $shippingCost, $dbId)
         );
     }
 
@@ -56,15 +59,17 @@ class CheckoutController
      * Create a transaction in the database and a payment at mollie.
      * 
      * @param string $description
+     * @param array $formData
      * @param float $price
+     * @param float $shippingCost
      * @param mysqli $databaseConnection
      * @return void
      */
-    public function getTransaction(string $description, array $formData, float $price, mysqli $databaseConnection): void
+    public function getTransaction(string $description, array $formData, float $price, float $shippingCost, mysqli $databaseConnection): void
     {
         $userId = $this->updateOrCreateUser($databaseConnection, $formData);
 
-        $databaseId = $this->createTransaction($price, $formData, $userId, $databaseConnection);
+        $databaseId = $this->createTransaction($price, $shippingCost, $formData, $userId, $databaseConnection);
         if($databaseId === 0) {
             throw new \Exception("Failed to create transaction");
         }
@@ -90,7 +95,7 @@ class CheckoutController
             }
         }
 
-        $molliePayment = $this->createPayment($description, $price, $databaseId);
+        $molliePayment = $this->createPayment($description, $price, $shippingCost, $databaseId);
 
         if(!isset($molliePayment["response"]->id)) {
             throw new \Exception("Failed to create payment");
@@ -129,11 +134,12 @@ class CheckoutController
      * 
      * @param string $description
      * @param float $price
+     * @param float $shippingCost
      * @param array $formData
      * @param mysqli $databaseConnection
      * @return int returns the last inserted ID and 0 when failed.
      */
-    private function createTransaction(float $price, array $formData, int $userId, mysqli $databaseConnection): int
+    private function createTransaction(float $price, float $shippingCost, array $formData, int $userId, mysqli $databaseConnection): int
     {
         $query = "INSERT INTO `Transaction` (
             `userId`,
@@ -146,7 +152,7 @@ class CheckoutController
         (   
             '".$userId."',
             'open',
-            ".$price.",
+            ".$price+$shippingCost.",
             '".$formData['postalcode']."',
             '".$formData['housenr']."',
             '".$formData['residence']."'

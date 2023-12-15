@@ -220,6 +220,15 @@ function getShoppingCartItems($databaseConnection): array {
     return $products;
 }
 
+function getShippingCost($totalPrice): float {
+    $config = json_decode(file_get_contents("Config/main.json"), true);
+    if ($totalPrice > $config["freeShippingThreshold"]) {
+        return 0;
+    } else {
+        return $config["shippingCost"];
+    }
+}
+
 function getTotalPriceShoppingCart($products): float {
     $totalPrice = 0;
     foreach ($products as $product) {

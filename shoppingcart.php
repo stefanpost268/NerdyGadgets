@@ -1,5 +1,6 @@
 <?php
 include 'header.php';
+$lang = json_decode(file_get_contents("./Lang/nl.json"))->shoppingCart;
 
 if (isset($_POST["productAmount"])) {
     if ($_POST["productAmount"] != $_SESSION["shoppingcart"]) {
@@ -21,10 +22,12 @@ if (isset($_POST["productAmount"])) {
 
 $products = [];
 $totalPrice = 0;
+$shippingCost = 0;
 
 if (isset($_SESSION["shoppingcart"])) {
     $products = getShoppingCartItems($databaseConnection);
     $totalPrice = getTotalPriceShoppingCart($products);
+    $shippingCost = getShippingCost($totalPrice);
 }
 ?>
 
@@ -49,13 +52,13 @@ if (isset($_SESSION["shoppingcart"])) {
                                                 <?php echo $product["item"]["StockItemName"]; ?>
                                             </a>
                                         </p>
-                                        <p class="text-gray-400"><?php echo "Article ID: " . $product["item"]["StockItemID"]; ?></p>
+                                        <p class="text-gray-400"><?php print($lang->articleId.": " . $product["item"]["StockItemID"]); ?></p>
                                         <p class="text-green-500 font-semibold text-xl">€<?php echo number_format($product["item"]["SellPrice"], 2); ?></p>
                                         <div class="flex items-center mt-2">
-                                            <label class="mr-2 text-gray-400">Quantity:</label>
+                                            <label class="mr-2 text-gray-400"><?php print($lang->quantity); ?>:</label>
                                             <input type="number" max="100" min="0" name="productAmount[<?php echo $product["item"]["StockItemID"]; ?>]" value="<?php echo $product['amount']; ?>" onchange="this.form.submit()" class="w-16 rounded-md border py-1 px-2 text-white bg-gray-700 text-black bg-gray-300">
                                         </div>
-                                        <p class="text-green-500 font-semibold mt-2">Subtotal: € <?php echo number_format($product["subtotal"], 2); ?></p>
+                                        <p class="text-green-500 font-semibold mt-2"><?php print($lang->subtotal); ?>: € <?php echo number_format($product["subtotal"], 2); ?></p>
                                     </div>
                                 </div>
                             </div>
@@ -64,11 +67,11 @@ if (isset($_SESSION["shoppingcart"])) {
                 <?php else : ?>
                     <!-- Empty Cart Message -->
                     <div class="flex flex-col items-center justify-center text-center bg-gray-800 p-8 rounded-lg shadow-md">
-                        <h1 class="text-white text-4xl font-bold mb-4">Your shopping cart is empty</h1>
+                        <h1 class="text-white text-4xl font-bold mb-4"><?php print($lang->emptyCart); ?></h1>
                         <img class="bg-white rounded-xl shadow-md" src="./Public/SVG/shopping-cart-empty.svg" alt="Empty Cart" width="150" height="150">
-                        <p class="text-gray-300 mt-4">Looks like you haven't added anything to your cart yet.</p>
-                        <p class="text-gray-300 pt-5 md:pt-0">Explore our products and find something you like!</p>
-                        <a href="./browse.php" class="text-blue-500 underline mt-4 hover:text-blue-700">Continue shopping</a>
+                        <p class="text-gray-300 mt-4"><?php print($lang->emptyCartDescription1); ?></p>
+                        <p class="text-gray-300 pt-5 md:pt-0"><?php print($lang->emptyCartDescription2); ?></p>
+                        <a href="./browse.php" class="text-blue-500 underline mt-4 hover:text-blue-700"><?php print($lang->continueShopping); ?></a>
                     </div>
                 <?php endif; ?>
             </form>
@@ -77,30 +80,30 @@ if (isset($_SESSION["shoppingcart"])) {
         <!-- Shopping Cart Info -->
         <div id="shoppingcartinfo" class="w-full md:w-5/12">
             <div class="bg-gray-800 text-white p-4 rounded-md">
-                <h2 class="text-xl font-bold mb-4">Shopping Cart</h2>
+                <h2 class="text-xl font-bold mb-4"><?php print($lang->shoppingCardTitle); ?></h2>
                 <?php if (!empty($products)) : ?>
                     <div class="mb-4">
                         <div class="flex justify-between mb-2">
-                            <span class="text-gray-300">Subtotal:</span>
+                            <span class="text-gray-300"><?php print($lang->subtotal); ?>:</span>
                             <span class="text-white">€ <?php echo number_format($totalPrice, 2); ?></span>
                         </div>
                         <div class="flex justify-between mb-2">
-                            <span class="text-gray-300">Shipping Cost:</span>
-                            <span class="text-white">€ 0.00</span>
+                            <span class="text-gray-300"><?php print($lang->shippingcost); ?>:</span>
+                            <span class="text-white">€ <?php echo number_format($shippingCost, 2); ?></span>
                         </div>
                         <hr class="border-gray-600 my-2">
                         <div class="flex justify-between font-bold">
-                            <span class="text-gray-300">Total:</span>
-                            <span class="text-white">€ <?php echo number_format($totalPrice, 2); ?></span>
+                            <span class="text-gray-300"><?php print($lang->total); ?>:</span>
+                            <span class="text-white">€ <?php echo number_format(($totalPrice + $shippingCost), 2); ?></span>
                         </div>
                     </div>
                     <button class="bg-blue-500 text-white py-2 px-4 rounded-md w-full">
                         <a class="text-white" href="<?php echo empty($products) ? './browse.php' : './checkout.php'; ?>">
-                            <?php echo empty($products) ? 'Go to the Store' : 'Place Order'; ?>
+                            <?php print($lang->toCheckout); ?>
                         </a>
                     </button>
                 <?php else : ?>
-                    <p>Your shopping cart is empty.</p>
+                    <p><?php print($lang->emptyCart); ?></p>
                 <?php endif; ?>
             </div>
         </div>
