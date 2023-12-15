@@ -1,0 +1,11 @@
+{
+    "productPage": {
+        "stockSpecs": {
+            "CountryOfManufacture": "Gemaakt in",
+            "Tags": "Label",
+            "Range": "Voor leeftijd",
+            "stockSpecs": "Specificaties",
+            "ShelfLife": "Houdbaarheid"
+        }
+    }
+}
