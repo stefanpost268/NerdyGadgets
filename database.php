@@ -119,23 +119,24 @@ function getStockItemImage($id, $databaseConnection, $backupImagePath) {
         );
     }
 
-    die(var_dump($r));
-
     return $r;
 }
 
 function getProductsOnPage() {
     if (isset($_GET['products_on_page'])) {
-        $ProductsOnPage = $_GET['products_on_page'];
-        $_SESSION['products_on_page'] = $_GET['products_on_page'];
+        $config = json_decode(file_get_contents(__DIR__ . "/Config/main.json"));
+        $validOption = in_array($_GET['products_on_page'], $config->productsOnPageOptions);
+        
+        $productsOnPage = $validOption ? $_GET['products_on_page'] : $config->productsOnPageOptions[0];
+        $_SESSION['products_on_page'] = $productsOnPage;
     } else if (isset($_SESSION['products_on_page'])) {
-        $ProductsOnPage = $_SESSION['products_on_page'];
+        $productsOnPage = $_SESSION['products_on_page'];
     } else {
-        $ProductsOnPage = 25;
+        $productsOnPage = 25;
         $_SESSION['products_on_page'] = 25;
     }
 
-    return $ProductsOnPage;
+    return $productsOnPage;
 }
 
 function getProducts($databaseConnection, $categoryID, $queryBuildResult, $search, $Sort, $orderBy, $ProductsOnPage, $offset) {

@@ -14,9 +14,9 @@
 
         <label class="block text-sm" for="products_on_page">Selecteer het aantal producten:</label>
         <select name="products_on_page" onchange="this.form.submit()" class="w-full p-2 bg-gray-700 text-white rounded">
-            <option value="25" <?php print($productsOnPage == 25 ? "selected" : ""); ?>>25</option>
-            <option value="50" <?php print($productsOnPage == 50 ? "selected" : ""); ?>>50</option>
-            <option value="100" <?php print($productsOnPage == 100 ? "selected" : ""); ?>>100</option>
+        <?php foreach ($config->productsOnPageOptions as $products) { ?>
+            <option value="<?= $products ?>" <?php print($productsOnPage == $products ? "selected" : ""); ?>><?= $products ?></option>
+        <?php } ?>
         </select>
     </div>
 </form>

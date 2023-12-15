@@ -1,4 +1,9 @@
 {
     "freeShippingThreshold": 50,
-    "shippingCost": 5.00
+    "shippingCost": 5.00,
+    "productsOnPageOptions": [
+        25,
+        50,
+        200
+    ]
 }

@@ -2,6 +2,8 @@
 <?php
 include __DIR__ . "/header.php";
 
+$config = json_decode(file_get_contents(__DIR__ . "/Config/main.json"));
+
 function berekenVerkoopPrijs($adviesPrijs, $btw)
 {
     return $btw * $adviesPrijs / 100 + $adviesPrijs;
