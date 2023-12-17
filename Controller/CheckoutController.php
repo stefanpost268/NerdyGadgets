@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
-require_once __DIR__ . "/../Service/http.php";
+require_once 'vendor/autoload.php';
 
 use mysqli;
 use Service\HTTP;
@@ -24,7 +24,6 @@ class CheckoutController
      */
     private function paymentData(string $description, float $price, float $shippingCost, int $dbId): array {
         $appUrl = $_ENV["APP_URL"];
-
         return [
             "amount" => [
                 "currency" => "EUR",
