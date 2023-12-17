@@ -9,7 +9,7 @@ use Service\HTTP;
 
 class CheckoutController
 {
-    CONST MOLLIE_URL = "https://api.mollie.com/v2/";
+    const MOLLIE_URL = "https://api.mollie.com/v2/";
     public $databaseConnection;
 
     /**
@@ -20,15 +20,16 @@ class CheckoutController
      * @param float $shippingCost
      * @return array
      */
-    private function paymentData(string $description, float $price, float $shippingCost, int $dbId): array {
+    private function paymentData(string $description, float $price, float $shippingCost, int $dbId): array
+    {
         $appUrl = $_ENV["APP_URL"];
         return [
             "amount" => [
                 "currency" => "EUR",
-                "value" => strval(number_format($price+$shippingCost, 2, '.', ''))
+                "value" => strval(number_format($price + $shippingCost, 2, '.', ''))
             ],
             "description" => $description,
-            "redirectUrl" => $appUrl . "status.php?id=".$dbId,
+            "redirectUrl" => $appUrl . "status.php?id=" . $dbId,
             "webhookUrl" => $appUrl . "Webhooks/MollieWebhook.php"
         ];
     }
@@ -44,9 +45,11 @@ class CheckoutController
      */
     private function createPayment(string $description, float $price, float $shippingCost, int $dbId): array
     {
-        return HTTP::post(self::MOLLIE_URL . "payments", [
+        return HTTP::post(
+            self::MOLLIE_URL . "payments",
+            [
                 "Content-Type: application/json",
-                "Authorization: Bearer ".$_ENV["MOLLIE_API_KEY"]
+                "Authorization: Bearer " . $_ENV["MOLLIE_API_KEY"]
             ],
             $this->paymentData($description, $price, $shippingCost, $dbId)
         );
@@ -67,44 +70,44 @@ class CheckoutController
         $userId = $this->updateOrCreateUser($databaseConnection, $formData);
 
         $databaseId = $this->createTransaction($price, $shippingCost, $formData, $userId, $databaseConnection);
-        if($databaseId === 0) {
+        if ($databaseId === 0) {
             throw new \Exception("Failed to create transaction");
         }
 
         $shoppingCart = $_SESSION["shoppingcart"] ?? [];
-        
+
         $bindProducts = $this->bindProductsOnTransaction(
             $databaseId,
             $shoppingCart,
             $databaseConnection
         );
 
-        if(!$bindProducts) {
+        if (!$bindProducts) {
             throw new \Exception("Failed to bind products to transaction");
         }
 
-        foreach($shoppingCart as $productId => $amount) {
+        foreach ($shoppingCart as $productId => $amount) {
 
-          $status = $this->updateStockQuantityOnProduct($productId, (int) $amount, $databaseConnection);
+            $status = $this->updateStockQuantityOnProduct($productId, (int) $amount, $databaseConnection);
 
-            if(!$status) {
+            if (!$status) {
                 throw new \Exception("Failed to update stock price");
             }
         }
 
         $molliePayment = $this->createPayment($description, $price, $shippingCost, $databaseId);
 
-        if(!isset($molliePayment["response"]->id)) {
+        if (!isset($molliePayment["response"]->id)) {
             throw new \Exception("Failed to create payment");
         }
 
         $status = $this->updateTransaction($databaseId, $molliePayment["response"]->id, $databaseConnection);
 
-        if(!$status) {
+        if (!$status) {
             throw new \Exception("Failed to update database transaction");
         }
-        
-        header('Location: '.$molliePayment["response"]->_links->checkout->href);
+
+        header('Location: ' . $molliePayment["response"]->_links->checkout->href);
     }
 
     /**
@@ -138,6 +141,8 @@ class CheckoutController
      */
     private function createTransaction(float $price, float $shippingCost, array $formData, int $userId, mysqli $databaseConnection): int
     {
+        $totalCost = $price + $shippingCost;
+
         $query = "INSERT INTO `Transaction` (
             `userId`,
             `status`,
@@ -145,17 +150,13 @@ class CheckoutController
             `postalcode`,
             `housenr`,
             `residence`
-        ) VALUES 
-        (   
-            '".$userId."',
-            'open',
-            ".$price+$shippingCost.",
-            '".$formData['postalcode']."',
-            '".$formData['housenr']."',
-            '".$formData['residence']."'
-        );";
+        ) 
+        VALUES (?,'open',?,?,?,?);";
 
         $statement = mysqli_prepare($databaseConnection, $query);
+
+        mysqli_stmt_bind_param($statement, 'idsss', $userId, $totalCost, $formData['postalcode'], $formData['housenr'], $formData['residence']);
+
         $success = mysqli_stmt_execute($statement);
         $insertedId = ($success) ? mysqli_insert_id($databaseConnection) : 0;
         mysqli_stmt_close($statement);
@@ -170,7 +171,8 @@ class CheckoutController
      * @param array $formData
      * @return int returns id of user.
      */
-    private function updateOrCreateUser($databaseConnection, $formData): int {
+    private function updateOrCreateUser($databaseConnection, $formData): int
+    {
         $query = "SELECT `id` FROM `User` WHERE `email` = ?;";
 
         $statement = mysqli_prepare($databaseConnection, $query);
@@ -180,14 +182,14 @@ class CheckoutController
         mysqli_stmt_fetch($statement);
         mysqli_stmt_close($statement);
 
-        if($userId === null) {
+        if ($userId === null) {
             $query = "INSERT INTO `User` (
                 `name`,
                 `email`
             ) VALUES 
             (   
-                '".$formData['name']."',
-                '".$formData['email']."'
+                '" . $formData['name'] . "',
+                '" . $formData['email'] . "'
             );";
 
             $statement = mysqli_prepare($databaseConnection, $query);
@@ -195,7 +197,7 @@ class CheckoutController
             $userId = ($success) ? mysqli_insert_id($databaseConnection) : 0;
             mysqli_stmt_close($statement);
         } else {
-            $query = "UPDATE `User` SET `name` = '".$formData['name']."' WHERE `id` = $userId;";
+            $query = "UPDATE `User` SET `name` = '" . $formData['name'] . "' WHERE `id` = $userId;";
 
             $statement = mysqli_prepare($databaseConnection, $query);
             $success = mysqli_stmt_execute($statement);
@@ -205,19 +207,20 @@ class CheckoutController
         return $userId;
     }
 
-    private function bindProductsOnTransaction(int $databaseId, array $shoppingCart, $databaseConnection): bool {
-        foreach($shoppingCart as $productId => $amount) {
+    private function bindProductsOnTransaction(int $databaseId, array $shoppingCart, $databaseConnection): bool
+    {
+        foreach ($shoppingCart as $productId => $amount) {
             $query = "INSERT INTO `TransactionBind` (
                 `transactionId`,
                 `stockitemId`,
                 `amount`
             ) VALUES 
             (   
-                '".$databaseId."',
-                '".$productId."',
-                '".$amount."'
+                '" . $databaseId . "',
+                '" . $productId . "',
+                '" . $amount . "'
             );";
-    
+
             $statement = mysqli_prepare($databaseConnection, $query);
             mysqli_stmt_execute($statement);
             mysqli_stmt_close($statement);
@@ -233,7 +236,8 @@ class CheckoutController
      * @param mysqli $databaseConnection
      * @return bool
      */
-    private function updateStockQuantityOnProduct(int $productId, int $amount, mysqli $databaseConnection): bool {
+    private function updateStockQuantityOnProduct(int $productId, int $amount, mysqli $databaseConnection): bool
+    {
         $query = "UPDATE `stockitemholdings` SET `QuantityOnHand` = `QuantityOnHand` - $amount WHERE `StockItemID` = $productId;";
 
         $statement = mysqli_prepare($databaseConnection, $query);
