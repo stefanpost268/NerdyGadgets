@@ -10,12 +10,12 @@ $totalPrice = getTotalPriceShoppingCart($products);
 $shippingCost = getShippingCost($totalPrice);
 
 if (!empty($_POST)) {
-    include './Validator/CheckoutValidator.php';
+    include "vendor/autoload.php";
+    
     $checkoutValidator = new Validator\CheckoutValidator();
     $errors = $checkoutValidator->validate($products);
 
     if (empty($errors)) {
-        include './Controller/CheckoutController.php';
         $checkoutController = new Controller\CheckoutController($databaseConnection);
 
         try {

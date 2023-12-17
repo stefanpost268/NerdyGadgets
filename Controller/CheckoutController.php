@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Controller;
 
-require_once 'vendor/autoload.php';
-
 use mysqli;
 use Service\HTTP;
 

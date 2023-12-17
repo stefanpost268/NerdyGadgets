@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once '../vendor/autoload.php';
+
 use Service\HTTP;
 use Controller\CheckoutController;
 
@@ -50,9 +52,6 @@ if(mysqli_num_rows($result) === 0) {
 
 $dbTransaction = mysqli_fetch_all($result, MYSQLI_ASSOC)[0];
 
-// Get transacion status.
-require_once __DIR__ . "/../Service/http.php";
-require_once __DIR__ . "/../Controller/CheckoutController.php";
 
 $molliePayment = HTTP::get(CheckoutController::MOLLIE_URL."payments/".$id, [
     "Content-Type: application/json",

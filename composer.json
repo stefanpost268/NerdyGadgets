@@ -1,7 +1,9 @@
 {
     "autoload": {
         "psr-4": {
-            "Service\\": "Service/"
+            "Service\\": "Service/",
+            "Validator\\": "Validator/",
+            "Controller\\": "Controller/"
         }
     }
 }
