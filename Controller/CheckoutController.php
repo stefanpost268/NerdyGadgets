@@ -120,9 +120,10 @@ class CheckoutController
      */
     private function updateTransaction(int $databaseId, string $mollieId, mysqli $databaseConnection): bool
     {
-        $query = "UPDATE `Transaction` SET `transaction_id` = '$mollieId' WHERE `id` = $databaseId;";
+        $query = "UPDATE `Transaction` SET `transaction_id` = ? WHERE `id` = ?";
 
         $statement = mysqli_prepare($databaseConnection, $query);
+        mysqli_stmt_bind_param($statement, 'ss', $mollieId, $databaseId);
         $success = mysqli_stmt_execute($statement);
         mysqli_stmt_close($statement);
 
@@ -173,16 +174,11 @@ class CheckoutController
      */
     private function updateOrCreateUser(mysqli $databaseConnection, array $userData): int
     {
-        $query = "INSERT INTO `User` (
-            `email`,
-            `name`
-        ) VALUES 
-        (
-            ?,
-            ?
-        ) ON DUPLICATE KEY UPDATE 
+        $query = "INSERT INTO `User` (`email`,`name`) VALUES (?, ?) 
+            ON DUPLICATE KEY UPDATE 
             `email` = VALUES(`email`),
-            `name` = VALUES(`name`);";
+            `name` = VALUES(`name`);
+        ";
 
         $statement = mysqli_prepare($databaseConnection, $query);
 
