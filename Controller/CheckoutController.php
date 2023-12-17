@@ -191,24 +191,32 @@ class CheckoutController
         return $insertedOrUpdatedId;
     }
 
+    /**
+     * Bind products to transaction in database.
+     * 
+     * @param int $databaseId
+     * @param array $shoppingCart
+     * @param mysqli $databaseConnection
+     * @return bool
+     */
     private function bindProductsOnTransaction(int $databaseId, array $shoppingCart, $databaseConnection): bool
     {
-        foreach ($shoppingCart as $productId => $amount) {
-            $query = "INSERT INTO `TransactionBind` (
-                `transactionId`,
-                `stockitemId`,
-                `amount`
-            ) VALUES 
-            (   
-                '" . $databaseId . "',
-                '" . $productId . "',
-                '" . $amount . "'
-            );";
+        $query = "INSERT INTO `TransactionBind` (
+            `transactionId`,
+            `stockitemId`,
+            `amount`
+        ) VALUES (?,?,?);
+        ";
 
-            $statement = mysqli_prepare($databaseConnection, $query);
+        $statement = mysqli_prepare($databaseConnection, $query);
+
+        foreach ($shoppingCart as $productId => $amount) {
+            mysqli_stmt_bind_param($statement, 'iii', $databaseId, $productId, $amount);
             mysqli_stmt_execute($statement);
-            mysqli_stmt_close($statement);
         }
+
+        mysqli_stmt_close($statement);
+
         return true;
     }
 
