@@ -6,18 +6,21 @@ namespace Controller;
 
 use mysqli;
 use Service\Mollie;
+use Service\product;
 use Service\User;
 
 class CheckoutController
 {
     public Mollie $mollie;
     public User $user;
+    public product $product;
     
     public function __construct(
         public mysqli $databaseConnection,
     ){
         $this->mollie = new Mollie();
         $this->user = new User();
+        $this->product = new product();
     }
 
     /**
@@ -41,7 +44,7 @@ class CheckoutController
 
         $shoppingCart = $_SESSION["shoppingcart"] ?? [];
 
-        $bindProducts = $this->bindProductsOnTransaction(
+        $bindProducts = $this->product->bindProductsOnTransaction(
             $databaseId,
             $shoppingCart,
             $databaseConnection
@@ -53,7 +56,7 @@ class CheckoutController
 
         foreach ($shoppingCart as $productId => $amount) {
 
-            $status = $this->updateStockQuantityOnProduct($productId, (int) $amount, $databaseConnection);
+            $status = $this->product->updateStockQuantityOnProduct($productId, (int) $amount, $databaseConnection);
 
             if (!$status) {
                 throw new \Exception("Failed to update stock price");
@@ -75,52 +78,5 @@ class CheckoutController
         header('Location: ' . $molliePayment["response"]->_links->checkout->href);
     }
 
-    /**
-     * Bind products to transaction in database.
-     * 
-     * @param int $databaseId
-     * @param array $shoppingCart
-     * @param mysqli $databaseConnection
-     * @return bool
-     */
-    private function bindProductsOnTransaction(int $databaseId, array $shoppingCart, $databaseConnection): bool
-    {
-        $query = "INSERT INTO `TransactionBind` (
-            `transactionId`,
-            `stockitemId`,
-            `amount`
-        ) VALUES (?,?,?);
-        ";
-
-        $statement = mysqli_prepare($databaseConnection, $query);
-
-        foreach ($shoppingCart as $productId => $amount) {
-            mysqli_stmt_bind_param($statement, 'iii', $databaseId, $productId, $amount);
-            mysqli_stmt_execute($statement);
-        }
-
-        mysqli_stmt_close($statement);
-
-        return true;
-    }
-
-    /**
-     * Removes items from stock of a product.
-     * 
-     * @param int $productId
-     * @param int $amount
-     * @param mysqli $databaseConnection
-     * @return bool
-     */
-    private function updateStockQuantityOnProduct(int $productId, int $amount, mysqli $databaseConnection): bool
-    {
-        $query = "UPDATE `stockitemholdings` SET `QuantityOnHand` = `QuantityOnHand` - ? WHERE `StockItemID` = ?;";
-
-        $statement = mysqli_prepare($databaseConnection, $query);
-        mysqli_stmt_bind_param($statement, 'ii', $amount, $productId);
-        $success = mysqli_stmt_execute($statement);
-        mysqli_stmt_close($statement);
-
-        return $success;
-    }
+    
 }
