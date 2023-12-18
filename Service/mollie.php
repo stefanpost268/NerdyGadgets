@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Service;
 
 class Mollie {
+    
     const MOLLIE_URL = "https://api.mollie.com/v2/";
     const MOLLIE_WEBHOOK_URL = "Webhooks/MollieWebhook.php";
 
@@ -16,7 +17,7 @@ class Mollie {
      * @param float $shippingCost
      * @return array
      */
-    public function paymentData(string $description, float $price, float $shippingCost, int $dbId): array
+    private function paymentData(string $description, float $price, float $shippingCost, int $dbId): array
     {
         $appUrl = $_ENV["APP_URL"];
         return [
@@ -26,7 +27,28 @@ class Mollie {
             ],
             "description" => $description,
             "redirectUrl" => $appUrl . "status.php?id=" . $dbId,
-            "webhookUrl" => $appUrl . Mollie::MOLLIE_WEBHOOK_URL
+            "webhookUrl" => $appUrl . self::MOLLIE_WEBHOOK_URL
         ];
+    }
+
+    /**
+     * Create a payment at mollie
+     * 
+     * @param string $description
+     * @param float $price
+     * @param float $shippingCost
+     * @param int $dbId
+     * @return array
+     */
+    public function createPayment(string $description, float $price, float $shippingCost, int $dbId): array
+    {
+        return HTTP::post(
+            self::MOLLIE_URL . "payments",
+            [
+                "Content-Type: application/json",
+                "Authorization: Bearer " . $_ENV["MOLLIE_API_KEY"]
+            ],
+            $this->paymentData($description, $price, $shippingCost, $dbId)
+        );
     }
 }

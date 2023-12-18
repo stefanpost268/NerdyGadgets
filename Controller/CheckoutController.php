@@ -19,27 +19,6 @@ class CheckoutController
     }
 
     /**
-     * Create a payment at mollie
-     * 
-     * @param string $description
-     * @param float $price
-     * @param float $shippingCost
-     * @param int $dbId
-     * @return array
-     */
-    private function createPayment(string $description, float $price, float $shippingCost, int $dbId): array
-    {
-        return HTTP::post(
-            Mollie::MOLLIE_URL . "payments",
-            [
-                "Content-Type: application/json",
-                "Authorization: Bearer " . $_ENV["MOLLIE_API_KEY"]
-            ],
-            $this->mollie->paymentData($description, $price, $shippingCost, $dbId)
-        );
-    }
-
-    /**
      * Create a transaction in the database and a payment at mollie.
      * 
      * @param string $description
@@ -53,7 +32,6 @@ class CheckoutController
     {
         $userId = $this->updateOrCreateUser($databaseConnection, $formData);
 
-        die(var_dump($userId));
         $databaseId = $this->createTransaction($price, $shippingCost, $formData, $userId, $databaseConnection);
         if ($databaseId === 0) {
             throw new \Exception("Failed to create transaction");
@@ -80,7 +58,7 @@ class CheckoutController
             }
         }
 
-        $molliePayment = $this->createPayment($description, $price, $shippingCost, $databaseId);
+        $molliePayment = $this->mollie->createPayment($description, $price, $shippingCost, $databaseId);
 
         if (!isset($molliePayment["response"]->id)) {
             throw new \Exception("Failed to create payment");
