@@ -6,32 +6,16 @@ namespace Controller;
 
 use mysqli;
 use Service\HTTP;
+use Service\Mollie;
 
 class CheckoutController
 {
-    const MOLLIE_URL = "https://api.mollie.com/v2/";
-    public $databaseConnection;
-
-    /**
-     * Get payment data
-     * 
-     * @param string $description
-     * @param float $price
-     * @param float $shippingCost
-     * @return array
-     */
-    private function paymentData(string $description, float $price, float $shippingCost, int $dbId): array
-    {
-        $appUrl = $_ENV["APP_URL"];
-        return [
-            "amount" => [
-                "currency" => "EUR",
-                "value" => strval(number_format($price + $shippingCost, 2, '.', ''))
-            ],
-            "description" => $description,
-            "redirectUrl" => $appUrl . "status.php?id=" . $dbId,
-            "webhookUrl" => $appUrl . "Webhooks/MollieWebhook.php"
-        ];
+    public Mollie $mollie;
+    
+    public function __construct(
+        public mysqli $databaseConnection,
+    ){
+        $this->mollie = new Mollie();
     }
 
     /**
@@ -46,12 +30,12 @@ class CheckoutController
     private function createPayment(string $description, float $price, float $shippingCost, int $dbId): array
     {
         return HTTP::post(
-            self::MOLLIE_URL . "payments",
+            Mollie::MOLLIE_URL . "payments",
             [
                 "Content-Type: application/json",
                 "Authorization: Bearer " . $_ENV["MOLLIE_API_KEY"]
             ],
-            $this->paymentData($description, $price, $shippingCost, $dbId)
+            $this->mollie->paymentData($description, $price, $shippingCost, $dbId)
         );
     }
 
@@ -69,6 +53,7 @@ class CheckoutController
     {
         $userId = $this->updateOrCreateUser($databaseConnection, $formData);
 
+        die(var_dump($userId));
         $databaseId = $this->createTransaction($price, $shippingCost, $formData, $userId, $databaseConnection);
         if ($databaseId === 0) {
             throw new \Exception("Failed to create transaction");
@@ -177,7 +162,8 @@ class CheckoutController
         $query = "INSERT INTO `User` (`email`,`name`) VALUES (?, ?) 
             ON DUPLICATE KEY UPDATE 
             `email` = VALUES(`email`),
-            `name` = VALUES(`name`);
+            `name` = VALUES(`name`),
+            `id` = LAST_INSERT_ID(`id`);
         ";
 
         $statement = mysqli_prepare($databaseConnection, $query);
@@ -230,9 +216,10 @@ class CheckoutController
      */
     private function updateStockQuantityOnProduct(int $productId, int $amount, mysqli $databaseConnection): bool
     {
-        $query = "UPDATE `stockitemholdings` SET `QuantityOnHand` = `QuantityOnHand` - $amount WHERE `StockItemID` = $productId;";
+        $query = "UPDATE `stockitemholdings` SET `QuantityOnHand` = `QuantityOnHand` - ? WHERE `StockItemID` = ?;";
 
         $statement = mysqli_prepare($databaseConnection, $query);
+        mysqli_stmt_bind_param($statement, 'ii', $amount, $productId);
         $success = mysqli_stmt_execute($statement);
         mysqli_stmt_close($statement);
 
