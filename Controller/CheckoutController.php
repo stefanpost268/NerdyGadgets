@@ -35,6 +35,8 @@ class CheckoutController
      */
     public function getTransaction(string $description, array $formData, float $price, float $shippingCost, mysqli $databaseConnection): void
     {
+        $databaseConnection->begin_transaction();
+
         $userId = $this->user->updateOrCreateUser($databaseConnection, $formData);
 
         $databaseId = $this->mollie->createTransaction($price, $shippingCost, $formData, $userId, $databaseConnection);
@@ -74,6 +76,8 @@ class CheckoutController
         if (!$status) {
             throw new \Exception("Failed to update database transaction");
         }
+
+        $databaseConnection->commit();
 
         header('Location: ' . $molliePayment["response"]->_links->checkout->href);
     }

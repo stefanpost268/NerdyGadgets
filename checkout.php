@@ -21,6 +21,7 @@ if (!empty($_POST)) {
         try {
             $checkoutController->getTransaction("Bestelling bij NerdyGadgets", $_POST, $totalPrice, $shippingCost, $databaseConnection);
         } catch (Exception $e) {
+            $databaseConnection->rollback();
             $errors[] = $e->getMessage();
         }
     }
