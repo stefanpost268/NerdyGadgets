@@ -9,7 +9,8 @@ class CheckoutValidator
     public function validate(array $formData, array $products): array {
         return [
             ...$this->productStockAvailable($products),
-            ...$this->validateEmail($formData)
+            ...$this->validateEmail($formData),
+            ...$this->validateHouseNumer($formData)
         ];
     }
 
@@ -38,6 +39,16 @@ class CheckoutValidator
         $errors = [];
         if(!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
             $errors[] = "Email is niet geldig";
+        }
+        return $errors;
+    }
+
+    private function validateHouseNumer(): array {
+        $errors = [];
+        if(!isset($_POST["housenr"]) || $_POST["housenr"] == "") {
+            $errors[] = "Huisnummer is verplicht";
+        } else if(!preg_match("/^\s*\d{1,3}\s*[A-Za-z]{0,1}\s*$/", $_POST["housenr"])) {
+            $errors[] = "Huisnummer is niet geldig";
         }
         return $errors;
     }

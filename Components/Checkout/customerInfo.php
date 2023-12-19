@@ -15,7 +15,7 @@
     </div>
     <div class="mb-4">
         <label for="housenr" class="block text-sm">Huisnummer</label>
-        <input type="text" class="form-input w-full py-2 px-3 rounded bg-gray-700 text-white" name="housenr" id="housenr" pattern=".*\d+.*" title="Voer een geldig huis nummer in" required>
+        <input type="text" class="form-input w-full py-2 px-3 rounded bg-gray-700 text-white" name="housenr" id="housenr" pattern="\d{1,3}\s?[A-Za-z]{0,1}" title="Voer een geldig huis nummer in (bijv, 24 B)" required>
     </div>
     <div class="mb-4">
         <label for="residence" class="block text-sm">Woonplaats</label>
