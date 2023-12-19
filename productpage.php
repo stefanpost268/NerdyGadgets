@@ -4,6 +4,20 @@ include __DIR__ . "/header.php";
 
 $lang = json_decode(file_get_contents("Lang/nl.json"))->productPage;
 
+if(isset($_POST["articleid"]) && isset($_POST["amount"])) {
+    $id = $_POST["articleid"];
+} else {
+    $id = $_GET["id"] ?? NULL;
+}
+
+$stockItem = getStockItem($id, $databaseConnection);
+
+if($stockItem !== null) {
+    $stockItemImage = getStockItemImage($id, $databaseConnection, $stockItem['BackupImagePath']);
+}
+
+$max = $stockItem['QuantityOnHand'] > 100 ? 100 : $stockItem['QuantityOnHand'];
+
 // Add to shopping bag
 if (isset($_POST["articleid"]) && isset($_POST["amount"])) {
     $amount = intval($_POST["amount"]);
@@ -12,7 +26,6 @@ if (isset($_POST["articleid"]) && isset($_POST["amount"])) {
         $_SESSION["shoppingcart"] = array();
     }
 
-    $id = $_POST["articleid"];
     if (isset($_SESSION["shoppingcart"][$id])) {
         if ($amount < 1) {
             unset($_SESSION["shoppingcart"][$id]);
@@ -20,16 +33,22 @@ if (isset($_POST["articleid"]) && isset($_POST["amount"])) {
             $succesfull = true;
         } else {
             $status = "updated";
+            if($max < $amount) {
+                $amount = $max;
+            }
+
             $succesfull = $_SESSION["shoppingcart"][$id] = $amount;
         }
     } else {
         if ($amount >= 1) {
+            if($max < $amount) {
+                $amount = $max;
+            }
+            
             $status = "added";
             $succesfull = $_SESSION["shoppingcart"][$id] = $amount;
         }
     }
-} else {
-    $id = $_GET["id"] ?? NULL;
 }
 
 // Get current shopping bag amount of product.
@@ -37,12 +56,6 @@ if (isset($_SESSION["shoppingcart"][$id])) {
     $amount = $_SESSION["shoppingcart"][$id];
 } else {
     $amount = 0;
-}
-
-$stockItem = getStockItem($id, $databaseConnection);
-
-if($stockItem !== null) {
-    $stockItemImage = getStockItemImage($id, $databaseConnection, $stockItem['BackupImagePath']);
 }
 
 ?>
@@ -76,7 +89,7 @@ if($stockItem !== null) {
                     <form class="bg-gray-800 mt-5 p-4 rounded-lg" method="POST" action="productpage.php?id=<?php print($stockItem["StockItemID"]); ?>">
                         <div class="flex items-center mb-4">
                             <input type="hidden" name="articleid" value="<?php print($id); ?>">
-                            <input class="border rounded-md px-3 py-2 w-full text-black bg-white focus:outline-none" type="number" id="amount" name="amount" value="<?php print($amount); ?>" min="0" max="<?php print($stockItem['QuantityOnHand'] > 100 ? 100 : $stockItem['QuantityOnHand']); ?>">
+                            <input class="border rounded-md px-3 py-2 w-full text-black bg-white focus:outline-none" type="number" id="amount" name="amount" value="<?php print($amount); ?>" min="0" max="<?php print($max); ?>">
                         </div>
                         <input type="submit" value="In winkelwagen" class="bg-blue-500 text-white px-6 py-2 rounded-md w-full hover:bg-blue-600 focus:outline-none transform transition-transform hover:scale-103" />
                     </form>
