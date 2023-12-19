@@ -41,7 +41,7 @@ class CheckoutController
 
         $databaseId = $this->mollie->createTransaction($price, $shippingCost, $formData, $userId, $databaseConnection);
         if ($databaseId === 0) {
-            throw new \Exception("Failed to create transaction");
+            throw new \Exception("Er ging iets mis met het maken van de tranactie");
         }
 
         $shoppingCart = $_SESSION["shoppingcart"] ?? [];
@@ -53,7 +53,7 @@ class CheckoutController
         );
 
         if (!$bindProducts) {
-            throw new \Exception("Failed to bind products to transaction");
+            throw new \Exception("Er ging iets mis met het koppelen van je producten aan een transactie.");
         }
 
         foreach ($shoppingCart as $productId => $amount) {
@@ -61,20 +61,20 @@ class CheckoutController
             $status = $this->product->updateStockQuantityOnProduct($productId, (int) $amount, $databaseConnection);
 
             if (!$status) {
-                throw new \Exception("Failed to update stock price");
+                throw new \Exception("Er ging iets mis met het updaten van de voorraad");
             }
         }
 
         $molliePayment = $this->mollie->createPayment($description, $price, $shippingCost, $databaseId);
 
         if (!isset($molliePayment["response"]->id)) {
-            throw new \Exception("Failed to create payment");
+            throw new \Exception("Er ging iets mis met het maken van je betaling");
         }
 
         $status = $this->mollie->updateTransaction($databaseId, $molliePayment["response"]->id, $databaseConnection);
 
         if (!$status) {
-            throw new \Exception("Failed to update database transaction");
+            throw new \Exception("Er ging iets mis met het updaten van je transactie.");
         }
 
         $databaseConnection->commit();

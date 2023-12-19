@@ -26,30 +26,31 @@ if (!empty($_POST)) {
         }
     }
 }
+
 ?>
 
-<div class="container mx-auto mt-5 mb-5 p-8 rounded shadow-lg text-white bg-gradient-to-b from-gray-800 to-black --geist-foreground:#000"">
-    <?php if (!empty($errors)) { ?>
-        <div class=" alert alert-danger" role="alert">
-    <?php foreach ($errors as $error) { ?>
-        <p><?php echo $error; ?></p>
-    <?php } ?>
-</div>
-<?php } ?>
-<form method="POST" id="checkout-create">
-    <div class="flex justify-between items-center">
-        <div>
-            <h1 class="text-3xl font-bold">Voltooi uw bestelling</h1>
-            <h2 class="text-xl">Vul uw gegevens in voordat u bestelt</h2>
+<div class="container mx-auto">
+    <?php
+        if (!empty($errors)) {
+            foreach ($errors as $error) {
+                include "./Components/Checkout/errorMessage.php";
+            }
+        }
+    ?>
+    <form method="POST" id="checkout-create" class="mt-5 mb-5 p-8 rounded shadow-lg text-white bg-gradient-to-b from-gray-800 to-black --geist-foreground:#000">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold">Voltooi uw bestelling</h1>
+                <h2 class="text-xl">Vul uw gegevens in voordat u bestelt</h2>
+            </div>
+            <a class="btn btn-primary" href="./shoppingcart.php">Terug</a>
         </div>
-        <a class="btn btn-primary" href="./shoppingcart.php">Terug</a>
-    </div>
-    <hr class="my-4">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <?php include "Components/Checkout/customerInfo.php"; ?>
-        <?php include "Components/Checkout/shoppingCartInfo.php"; ?>
-    </div>
-</form>
+        <hr class="my-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <?php include "Components/Checkout/customerInfo.php"; ?>
+            <?php include "Components/Checkout/shoppingCartInfo.php"; ?>
+        </div>
+    </form>
 </div>
 
 <?php include "footer.php"; ?>
