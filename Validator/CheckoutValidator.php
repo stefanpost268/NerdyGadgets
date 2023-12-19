@@ -6,9 +6,10 @@ namespace Validator;
 
 class CheckoutValidator
 {
-    public function validate(array $products): array {
+    public function validate(array $formData, array $products): array {
         return [
-            ...$this->productStockAvailable($products)
+            ...$this->productStockAvailable($products),
+            ...$this->validateEmail($formData)
         ];
     }
 
@@ -30,6 +31,14 @@ class CheckoutValidator
             }
         }
         
+        return $errors;
+    }
+
+    private function validateEmail(): array {
+        $errors = [];
+        if(!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "Email is niet geldig";
+        }
         return $errors;
     }
 }

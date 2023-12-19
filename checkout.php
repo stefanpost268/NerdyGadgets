@@ -13,7 +13,7 @@ if (!empty($_POST)) {
     include "vendor/autoload.php";
     
     $checkoutValidator = new Validator\CheckoutValidator();
-    $errors = $checkoutValidator->validate($products);
+    $errors = $checkoutValidator->validate($_POST, $products);
 
     if (empty($errors)) {
         $checkoutController = new Controller\CheckoutController($databaseConnection);
