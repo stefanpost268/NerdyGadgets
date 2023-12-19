@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-use Service\HTTP;
+require_once '../vendor/autoload.php';
+
 use Controller\CheckoutController;
+use Service\HTTP;
+use Service\Mollie;
 
 // check if method is POST
 if($_SERVER["REQUEST_METHOD"] !== "POST") {
@@ -50,11 +53,8 @@ if(mysqli_num_rows($result) === 0) {
 
 $dbTransaction = mysqli_fetch_all($result, MYSQLI_ASSOC)[0];
 
-// Get transacion status.
-require_once __DIR__ . "/../Service/http.php";
-require_once __DIR__ . "/../Controller/CheckoutController.php";
 
-$molliePayment = HTTP::get(CheckoutController::MOLLIE_URL."payments/".$id, [
+$molliePayment = HTTP::get(Mollie::MOLLIE_URL."payments/".$id, [
     "Content-Type: application/json",
     "Authorization: Bearer ".$_ENV["MOLLIE_API_KEY"]
 ]);

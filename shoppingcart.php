@@ -33,9 +33,6 @@ if (isset($_SESSION["shoppingcart"])) {
 
 <div class="container mx-auto p-4">
     <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-
-
-        <!-- Products -->
         <div id="products" class="w-full md:w-7/12 overflow-y-hidden md:overflow-y-auto md:max-h-screen">
             <form method="POST">
                 <?php if (!empty($products)) : ?>
