@@ -44,6 +44,9 @@ class Mollie {
      */
     public function createPayment(string $description, float $price, float $shippingCost, int $dbId): array
     {
+        if($_SERVER['SERVER_NAME'] == "localhost") throw new \Exception("Transacties werken niet op localhost.");
+        if(!isset($_ENV["MOLLIE_API_KEY"]) || $_ENV["MOLLIE_API_KEY"] === "") throw new \Exception("Mollie is niet ingesteld.");
+        
         return HTTP::post(
             self::MOLLIE_URL . "payments",
             [
