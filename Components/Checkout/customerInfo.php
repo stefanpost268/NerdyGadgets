@@ -11,7 +11,7 @@
     <h3 class="text-xl mt-4">Aflever adres</h3>
     <div class="mb-4">
         <label for="postalcode" class="block text-sm">Postcode</label>
-        <input type="text" class="form-input w-full py-2 px-3 rounded bg-gray-700 text-white" name="postalcode" id="postalcode" pattern="\d{4} [A-Za-z]{2}" title="Voer een geldige postocode in (bijv, 8302 BB)" required>
+        <input type="text" class="form-input w-full py-2 px-3 rounded bg-gray-700 text-white" name="postalcode" id="postalcode" pattern="\d{4} [A-Za-z]{2}" title="Voer een geldige postcode in (bijv, 8302 BB)" required>
     </div>
     <div class="mb-4">
         <label for="housenr" class="block text-sm">Huisnummer</label>
