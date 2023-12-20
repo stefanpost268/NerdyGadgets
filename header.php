@@ -1,11 +1,18 @@
 <!-- de inhoud van dit bestand wordt bovenaan elke pagina geplaatst -->
 <?php
+
+use Service\product;
+
 session_start();
 include "database.php";
+include "vendor/autoload.php";
 loadenv();
 
+
 $databaseConnection = connectToDatabase();
-$HeaderStockGroups = getHeaderStockGroups($databaseConnection);
+$productService = new product();
+
+$stockGroups = $productService->getHeaderStockGroups($databaseConnection);
 
 ?>
 <!DOCTYPE html>
@@ -30,6 +37,7 @@ $HeaderStockGroups = getHeaderStockGroups($databaseConnection);
     <script src="https://cdn.tailwindcss.com"></script>
 
     <?php
+        // Used for multiple header error on checkout.
         $currentFile = basename($_SERVER["PHP_SELF"]);
         $method = $_SERVER["REQUEST_METHOD"];
     ?>
@@ -43,9 +51,9 @@ $HeaderStockGroups = getHeaderStockGroups($databaseConnection);
             </a>
             <div class="flex gap-5">
                 <?php if(!($currentFile === "checkout.php" && $method === "POST")) { ?>
-                    <?php foreach ($HeaderStockGroups as $HeaderStockGroup) { ?>
-                        <a class="text-white hover:text-gray-300 flex hidden lg:block" href="browse.php?category_id=<?php print($HeaderStockGroup['StockGroupID']); ?>">
-                            <?php print($HeaderStockGroup["StockGroupName"]); ?>
+                    <?php foreach ($stockGroups as $stockGroup) { ?>
+                        <a class="text-white hover:text-gray-300 flex hidden lg:block" href="browse.php?category_id=<?php print($stockGroup['StockGroupID']); ?>">
+                            <?php print($stockGroup["StockGroupName"]); ?>
                         </a>
                     <?php } ?>
                 <?php } ?>

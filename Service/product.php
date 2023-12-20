@@ -55,4 +55,29 @@ class product {
 
         return $success;
     }
+
+    /**
+     * Get all products from database.
+     * 
+     * @param mysqli $databaseConnection
+     * @return array
+     */
+    function getHeaderStockGroups(mysqli $databaseConnection): array {
+        $Query = "
+            SELECT StockGroupID, StockGroupName, ImagePath
+            FROM stockgroups 
+            WHERE StockGroupID IN (
+                SELECT StockGroupID 
+                FROM stockitemstockgroups
+            ) AND ImagePath IS NOT NULL
+            ORDER BY StockGroupID ASC";
+        $Statement = mysqli_prepare($databaseConnection, $Query);
+        mysqli_stmt_execute($Statement);
+        
+        $HeaderStockGroups = mysqli_fetch_all(mysqli_stmt_get_result($Statement), MYSQLI_ASSOC);
+    
+        mysqli_stmt_close($Statement);
+    
+        return $HeaderStockGroups;
+    }
 }
