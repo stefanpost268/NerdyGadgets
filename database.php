@@ -132,17 +132,31 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
         JOIN stockitemstockgroups USING(StockItemID)
         JOIN stockgroups ON stockitemstockgroups.StockGroupID = stockgroups.StockGroupID
         WHERE {$whereClause}
-        " . (empty($search) ? "" : "AND SI.StockItemName LIKE '%" . $search . "%'") . "
-        GROUP BY StockItemID
+    ";
+
+    if (!empty($search)) {
+        $search = '%' . $search . '%';
+        $query .= " AND SI.StockItemName LIKE ?";
+    }
+
+    $query .= " GROUP BY StockItemID
         ORDER BY " . $Sort . " " . $orderBy . "
         LIMIT ? OFFSET ?
     ";
 
     $statement = mysqli_prepare($databaseConnection, $query);
     if (!empty($categoryID)) {
-        mysqli_stmt_bind_param($statement, "iii", $categoryID, $ProductsOnPage, $offset);
+        if (!empty($search)) {
+            mysqli_stmt_bind_param($statement, "isii", $categoryID, $search, $ProductsOnPage, $offset);
+        } else {
+            mysqli_stmt_bind_param($statement, "iii", $categoryID, $ProductsOnPage, $offset);
+        }
     } else {
-        mysqli_stmt_bind_param($statement, "ii", $ProductsOnPage, $offset);
+        if (!empty($search)) {
+            mysqli_stmt_bind_param($statement, "sii", $search, $ProductsOnPage, $offset);
+        } else {
+            mysqli_stmt_bind_param($statement, "ii", $ProductsOnPage, $offset);
+        }
     }
     mysqli_stmt_execute($statement);
     $returnableResult = mysqli_stmt_get_result($statement);
