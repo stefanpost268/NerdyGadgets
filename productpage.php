@@ -1,6 +1,7 @@
 <!-- This file contains all the code for the page that displays a single product -->
 <?php
-include __DIR__ . "/header.php";
+    include __DIR__ . "/header.php";
+    $config = json_decode(file_get_contents("Config/main.json"));
 
 $lang = json_decode(file_get_contents("Lang/nl.json"))->productPage;
 
@@ -139,4 +140,3 @@ if (isset($_SESSION["shoppingcart"][$id])) {
         <?php } ?>
     </div>
 </main>
-

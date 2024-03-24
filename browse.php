@@ -1,8 +1,7 @@
 <!-- dit bestand bevat alle code voor het productoverzicht -->
 <?php
 include __DIR__ . "/header.php";
-
-$config = json_decode(file_get_contents(__DIR__ . "/Config/main.json"));
+$config = json_decode(file_get_contents("Config/main.json"));
 
 function berekenVerkoopPrijs($adviesPrijs, $btw)
 {
@@ -12,8 +11,7 @@ function berekenVerkoopPrijs($adviesPrijs, $btw)
 $returnableResult = null;
 $queryBuildResult = "";
 
-$productsOnPage = getProductsOnPage();
-
+$productsOnPage = getProductsOnPage($config->productsOnPage);
 $categoryID = isset($_GET['category_id']) ? $_GET['category_id'] : NULL;
 $pageNumber = isset($_GET['page_number']) ? $_GET['page_number'] : 0;
 $orderByLabel = $_GET['order_by'] ?? "name-ASC";
