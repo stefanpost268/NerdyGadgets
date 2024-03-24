@@ -19,20 +19,6 @@ function connectToDatabase() {
     return $Connection;
 }
 
-function getHeaderStockGroups($databaseConnection) {
-    $Query = "
-                SELECT StockGroupID, StockGroupName, ImagePath
-                FROM stockgroups 
-                WHERE StockGroupID IN (
-                                        SELECT StockGroupID 
-                                        FROM stockitemstockgroups
-                                        ) AND ImagePath IS NOT NULL
-                ORDER BY StockGroupID ASC";
-    $Statement = mysqli_prepare($databaseConnection, $Query);
-    mysqli_stmt_execute($Statement);
-    $HeaderStockGroups = mysqli_stmt_get_result($Statement);
-    return $HeaderStockGroups;
-}
 
 function getStockGroups($databaseConnection) {
     $Query = "
@@ -79,7 +65,14 @@ function getStockItem($id, $databaseConnection) {
     return $Result;
 }
 
-function getStockItemImage($id, $databaseConnection) {
+/**
+ * Return the images of a stock item or return group image.
+ * 
+ * @param int $id The id of the stock item
+ * @param mysqli $databaseConnection The database connection
+ * @return array The images of the stock item
+ */
+function getStockItemImage($id, $databaseConnection, $backupImagePath) {
 
     $Query = "
                 SELECT ImagePath
@@ -89,27 +82,40 @@ function getStockItemImage($id, $databaseConnection) {
     $Statement = mysqli_prepare($databaseConnection, $Query);
     mysqli_stmt_bind_param($Statement, "i", $id);
     mysqli_stmt_execute($Statement);
-    $R = mysqli_stmt_get_result($Statement);
-    $R = mysqli_fetch_all($R, MYSQLI_ASSOC);
+    $r = mysqli_stmt_get_result($Statement);
+    $r = mysqli_fetch_all($r, MYSQLI_ASSOC);
 
-    return $R;
+    if(!empty($r)) {
+        foreach ($r as $key => $value) {
+            $r[$key]["ImagePath"] = "Public/StockItemIMG/".$value["ImagePath"];
+        }
+        return $r;
+    } else {
+        return array(
+            array(
+                "ImagePath" => "Public/StockGroupIMG/".$backupImagePath
+            )
+        );
+    }
+
+    return $r;
 }
 
 function getProductsOnPage($options) {
     if (isset($_GET['products_on_page'])) {
-        $ProductsOnPage = $_GET['products_on_page'];
-        if(!in_array($ProductsOnPage, $options)) {
-            $ProductsOnPage = 25;
-        }
-        $_SESSION['products_on_page'] = $_GET['products_on_page'];
+        $config = json_decode(file_get_contents(__DIR__ . "/Config/main.json"));
+        $validOption = in_array($_GET['products_on_page'], $config->productsOnPageOptions);
+        
+        $productsOnPage = $validOption ? $_GET['products_on_page'] : $config->productsOnPageOptions[0];
+        $_SESSION['products_on_page'] = $productsOnPage;
     } else if (isset($_SESSION['products_on_page'])) {
-        $ProductsOnPage = $_SESSION['products_on_page'];
+        $productsOnPage = $_SESSION['products_on_page'];
     } else {
-        $ProductsOnPage = 25;
+        $productsOnPage = 25;
         $_SESSION['products_on_page'] = 25;
     }
 
-    return $ProductsOnPage;
+    return $productsOnPage;
 }
 
 function getProducts($databaseConnection, $categoryID, $queryBuildResult, $search, $Sort, $orderBy, $ProductsOnPage, $offset) {
@@ -127,17 +133,31 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
         JOIN stockitemstockgroups USING(StockItemID)
         JOIN stockgroups ON stockitemstockgroups.StockGroupID = stockgroups.StockGroupID
         WHERE {$whereClause}
-        " . $searchQuery . " OR SI.StockItemId = '$search'
-        GROUP BY StockItemID
+    ";
+
+    if (!empty($search)) {
+        $search = '%' . $search . '%';
+        $query .= " AND SI.StockItemName LIKE ?";
+    }
+
+    $query .= " GROUP BY StockItemID
         ORDER BY " . $Sort . " " . $orderBy . "
         LIMIT ? OFFSET ?
     ";
 
     $statement = mysqli_prepare($databaseConnection, $query);
     if (!empty($categoryID)) {
-        mysqli_stmt_bind_param($statement, "iii", $categoryID, $ProductsOnPage, $offset);
+        if (!empty($search)) {
+            mysqli_stmt_bind_param($statement, "isii", $categoryID, $search, $ProductsOnPage, $offset);
+        } else {
+            mysqli_stmt_bind_param($statement, "iii", $categoryID, $ProductsOnPage, $offset);
+        }
     } else {
-        mysqli_stmt_bind_param($statement, "ii", $ProductsOnPage, $offset);
+        if (!empty($search)) {
+            mysqli_stmt_bind_param($statement, "sii", $search, $ProductsOnPage, $offset);
+        } else {
+            mysqli_stmt_bind_param($statement, "ii", $ProductsOnPage, $offset);
+        }
     }
     mysqli_stmt_execute($statement);
     $returnableResult = mysqli_stmt_get_result($statement);
@@ -172,22 +192,16 @@ function getProducts($databaseConnection, $categoryID, $queryBuildResult, $searc
     ];
 }
 
-function getProductImage($id, $databaseConnection, $item): string
+function getStockImage($id, $databaseConnection, $item, $backupImagePath): string
 {
-    $stockImage = getStockItemImage($id, $databaseConnection);
-
-    if (isset($stockImage[0]["ImagePath"])) {
-        return "Public/StockItemIMG/" . getStockItemImage($id, $databaseConnection)[0]["ImagePath"];
-    } else {
-        return "Public/StockGroupIMG/" . $item["BackupImagePath"];
-    }
+    return getStockItemImage($id, $databaseConnection, $backupImagePath)[0]["ImagePath"];
 }
 
 function getShoppingCartItems($databaseConnection): array {
     $products = [];
     foreach ($_SESSION["shoppingcart"] as $id => $amount) {
         $item = getStockItem($id, $databaseConnection);
-        $imagePath = getProductImage($id, $databaseConnection, $item);
+        $imagePath = getStockImage($id, $databaseConnection, $item, $item["BackupImagePath"]);
         $subtotal = round($amount * $item['SellPrice'], 2);
 
         $products[] = [
@@ -199,6 +213,15 @@ function getShoppingCartItems($databaseConnection): array {
     }
 
     return $products;
+}
+
+function getShippingCost($totalPrice): float {
+    $config = json_decode(file_get_contents("Config/main.json"), true);
+    if ($totalPrice > $config["freeShippingThreshold"]) {
+        return 0;
+    } else {
+        return $config["shippingCost"];
+    }
 }
 
 function getTotalPriceShoppingCart($products): float {
@@ -235,4 +258,36 @@ function loadenv(string $envFile = '.env') {
     } else {
         throw new Exception('.env file not found');
     }
+}
+
+/**
+ * Return a list of random products
+ */
+function getRandomProducts($databaseConnection) {
+    $Result = null;
+
+    $Query = " 
+            SELECT SI.StockItemID, 
+            (RecommendedRetailPrice*(1+(TaxRate/100))) AS SellPrice, 
+            StockItemName,
+            QuantityOnHand,
+            SearchDetails, 
+            (CASE WHEN (RecommendedRetailPrice*(1+(TaxRate/100))) > 50 THEN 0 ELSE 6.95 END) AS SendCosts, MarketingComments, CustomFields, SI.Video,
+            (SELECT ImagePath FROM stockgroups JOIN stockitemstockgroups USING(StockGroupID) WHERE StockItemID = SI.StockItemID LIMIT 1) as BackupImagePath   
+            FROM stockitems SI 
+            JOIN stockitemholdings SIH USING(stockitemid)
+            JOIN stockitemstockgroups ON SI.StockItemID = stockitemstockgroups.StockItemID
+            JOIN stockgroups USING(StockGroupID)
+            GROUP BY StockItemID
+            ORDER BY RAND()
+            LIMIT 10";
+
+    $Statement = mysqli_prepare($databaseConnection, $Query);
+    mysqli_stmt_execute($Statement);
+    $ReturnableResult = mysqli_stmt_get_result($Statement);
+    if ($ReturnableResult) {
+        $Result = mysqli_fetch_all($ReturnableResult, MYSQLI_ASSOC);
+    }
+
+    return $Result;
 }

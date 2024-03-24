@@ -1,0 +1,24 @@
+{
+    "productPage": {
+        "stockSpecs": {
+            "CountryOfManufacture": "Gemaakt in",
+            "Tags": "Label",
+            "Range": "Voor leeftijd",
+            "stockSpecs": "Specificaties",
+            "ShelfLife": "Houdbaarheid"
+        }
+    },
+    "shoppingCart": {
+        "articleId": "Artikel ID",
+        "quantity": "Aantal",
+        "subtotal": "Subtotaal",
+        "shippingcost": "Verzendkosten",
+        "total": "Totaal",
+        "toCheckout": "Bestelling plaatsen",
+        "shoppingCardTitle": "Winkelwagen",
+        "emptyCart": "Je winkelwagen is leeg",
+        "emptyCartDescription1": "Het lijkt erop dat je nog niets aan je winkelwagen hebt toegevoegd.",
+        "emptyCartDescription2": "Bekijk onze producten en vind iets wat je leuk vindt!",
+        "continueShopping": "Verder winkelen"
+    }
+}

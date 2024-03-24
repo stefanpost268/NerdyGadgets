@@ -41,13 +41,6 @@ CREATE TABLE `Transaction` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
--- Gegevens worden geëxporteerd voor tabel `Transaction`
---
-
-INSERT INTO `Transaction` (`id`, `transaction_id`, `status`, `payment`, `postalcode`, `housenr`, `residence`, `created_at`, `updated_at`, `UserId`) VALUES
-(133, 'tr_q923Y2GoHJ', 'open', '49824.35', '7681 AD', '6', 'Vroomshoop', '2023-11-28 10:02:22', '2023-11-28 10:02:22', 1);
-
---
 -- Indexen voor geëxporteerde tabellen
 --
 

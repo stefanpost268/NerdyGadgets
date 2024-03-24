@@ -34,13 +34,6 @@ CREATE TABLE `TransactionBind` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
--- Gegevens worden geëxporteerd voor tabel `TransactionBind`
---
-
-INSERT INTO `TransactionBind` (`transactionId`, `stockitemId`, `amount`) VALUES
-(138, 78, 50);
-
---
 -- Indexen voor geëxporteerde tabellen
 --
 

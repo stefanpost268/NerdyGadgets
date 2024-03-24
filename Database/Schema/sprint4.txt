@@ -1,0 +1,807 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table follows {
+  following_user_id integer
+  followed_user_id integer
+  created_at timestamp 
+}
+
+Table users {
+  id integer [primary key]
+  username varchar
+  role varchar
+  created_at timestamp
+}
+
+Table posts {
+  id integer [primary key]
+  title varchar
+  body text [note: 'Content of the post']
+  user_id integer
+  status varchar
+  created_at timestamp
+}
+
+Ref: posts.user_id > users.id // many-to-one
+
+Ref: users.id < follows.following_user_id
+
+Ref: users.id < follows.followed_user_id
+
+Enum "Transaction_status_enum" {
+  "open"
+  "canceled"
+  "failed"
+  "paid"
+}
+
+Table "buyinggroups" {
+  "BuyingGroupID" int(11) [not null]
+  "BuyingGroupName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "buyinggroups_archive" {
+  "BuyingGroupID" int(11) [not null]
+  "BuyingGroupName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "cities" {
+  "CityID" int(11) [not null]
+  "CityName" varchar(50) [not null]
+  "StateProvinceID" int(11) [not null]
+  "Location" varchar(100) [default: NULL]
+  "LatestRecordedPopulation" bigint(20) [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "cities_archive" {
+  "CityID" int(11) [not null]
+  "CityName" varchar(50) [not null]
+  "StateProvinceID" int(11) [not null]
+  "Location" varchar(100) [default: NULL]
+  "LatestRecordedPopulation" bigint(20) [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "coldroomtemperatures" {
+  "ColdRoomTemperatureID" bigint(20) [not null]
+  "ColdRoomSensorNumber" int(11) [not null]
+  "RecordedWhen" datetime [not null]
+  "Temperature" decimal(10,2) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "coldroomtemperatures_archive" {
+  "ColdRoomTemperatureID" bigint(20) [not null]
+  "ColdRoomSensorNumber" int(11) [not null]
+  "RecordedWhen" datetime [not null]
+  "Temperature" decimal(10,2) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "colors" {
+  "ColorID" int(11) [not null]
+  "ColorName" varchar(20) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "colors_archive" {
+  "ColorID" int(11) [not null]
+  "ColorName" varchar(20) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "countries" {
+  "CountryID" int(11) [not null]
+  "CountryName" varchar(60) [not null]
+  "FormalName" varchar(60) [not null]
+  "IsoAlpha3Code" varchar(3) [default: NULL]
+  "IsoNumericCode" int(11) [default: NULL]
+  "CountryType" varchar(20) [default: NULL]
+  "LatestRecordedPopulation" bigint(20) [default: NULL]
+  "Continent" varchar(30) [not null]
+  "Region" varchar(30) [not null]
+  "Subregion" varchar(30) [not null]
+  "Border" varchar(100) [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "countries_archive" {
+  "CountryID" int(11) [not null]
+  "CountryName" varchar(60) [not null]
+  "FormalName" varchar(60) [not null]
+  "IsoAlpha3Code" varchar(3) [default: NULL]
+  "IsoNumericCode" int(11) [default: NULL]
+  "CountryType" varchar(20) [default: NULL]
+  "LatestRecordedPopulation" bigint(20) [default: NULL]
+  "Continent" varchar(30) [not null]
+  "Region" varchar(30) [not null]
+  "Subregion" varchar(30) [not null]
+  "Border" varchar(100) [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "customercategories" {
+  "CustomerCategoryID" int(11) [not null]
+  "CustomerCategoryName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "customercategories_archive" {
+  "CustomerCategoryID" int(11) [not null]
+  "CustomerCategoryName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "customers" {
+  "CustomerID" int(11) [not null]
+  "CustomerName" varchar(100) [not null]
+  "BillToCustomerID" int(11) [not null]
+  "CustomerCategoryID" int(11) [not null]
+  "BuyingGroupID" int(11) [default: NULL]
+  "PrimaryContactPersonID" int(11) [not null]
+  "AlternateContactPersonID" int(11) [default: NULL]
+  "DeliveryMethodID" int(11) [not null]
+  "DeliveryCityID" int(11) [not null]
+  "PostalCityID" int(11) [not null]
+  "CreditLimit" decimal(18,2) [default: NULL]
+  "AccountOpenedDate" date [not null]
+  "StandardDiscountPercentage" decimal(18,3) [not null]
+  "IsStatementSent" tinyint(1) [not null]
+  "IsOnCreditHold" tinyint(1) [not null]
+  "PaymentDays" int(11) [not null]
+  "PhoneNumber" varchar(20) [not null]
+  "FaxNumber" varchar(20) [not null]
+  "DeliveryRun" varchar(5) [default: NULL]
+  "RunPosition" varchar(5) [default: NULL]
+  "WebsiteURL" varchar(256) [not null]
+  "DeliveryAddressLine1" varchar(60) [not null]
+  "DeliveryAddressLine2" varchar(60) [default: NULL]
+  "DeliveryPostalCode" varchar(10) [not null]
+  "DeliveryLocation" varchar(100) [default: NULL]
+  "PostalAddressLine1" varchar(60) [not null]
+  "PostalAddressLine2" varchar(60) [default: NULL]
+  "PostalPostalCode" varchar(10) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "customers_archive" {
+  "CustomerID" int(11) [not null]
+  "CustomerName" varchar(100) [not null]
+  "BillToCustomerID" int(11) [not null]
+  "CustomerCategoryID" int(11) [not null]
+  "BuyingGroupID" int(11) [default: NULL]
+  "PrimaryContactPersonID" int(11) [not null]
+  "AlternateContactPersonID" int(11) [default: NULL]
+  "DeliveryMethodID" int(11) [not null]
+  "DeliveryCityID" int(11) [not null]
+  "PostalCityID" int(11) [not null]
+  "CreditLimit" decimal(18,2) [default: NULL]
+  "AccountOpenedDate" date [not null]
+  "StandardDiscountPercentage" decimal(18,3) [not null]
+  "IsStatementSent" tinyint(1) [not null]
+  "IsOnCreditHold" tinyint(1) [not null]
+  "PaymentDays" int(11) [not null]
+  "PhoneNumber" varchar(20) [not null]
+  "FaxNumber" varchar(20) [not null]
+  "DeliveryRun" varchar(5) [default: NULL]
+  "RunPosition" varchar(5) [default: NULL]
+  "WebsiteURL" varchar(256) [not null]
+  "DeliveryAddressLine1" varchar(60) [not null]
+  "DeliveryAddressLine2" varchar(60) [default: NULL]
+  "DeliveryPostalCode" varchar(10) [not null]
+  "DeliveryLocation" varchar(100) [default: NULL]
+  "PostalAddressLine1" varchar(60) [not null]
+  "PostalAddressLine2" varchar(60) [default: NULL]
+  "PostalPostalCode" varchar(10) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "customertransactions" {
+  "CustomerTransactionID" int(11) [not null]
+  "CustomerID" int(11) [not null]
+  "TransactionTypeID" int(11) [not null]
+  "InvoiceID" int(11) [default: NULL]
+  "PaymentMethodID" int(11) [default: NULL]
+  "TransactionDate" date [not null]
+  "AmountExcludingTax" decimal(18,2) [not null]
+  "TaxAmount" decimal(18,2) [not null]
+  "TransactionAmount" decimal(18,2) [not null]
+  "OutstandingBalance" decimal(18,2) [not null]
+  "FinalizationDate" date [default: NULL]
+  "IsFinalized" tinyint(1) [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "LastEditedWhen" datetime [not null]
+}
+
+Table "deliverymethods" {
+  "DeliveryMethodID" int(11) [not null]
+  "DeliveryMethodName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "deliverymethods_archive" {
+  "DeliveryMethodID" int(11) [not null]
+  "DeliveryMethodName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "invoicelines" {
+  "InvoiceLineID" int(11) [not null]
+  "InvoiceID" int(11) [not null]
+  "StockItemID" int(11) [not null]
+  "Description" varchar(100) [not null]
+  "PackageTypeID" int(11) [not null]
+  "Quantity" int(11) [not null]
+  "UnitPrice" decimal(18,2) [default: NULL]
+  "TaxRate" decimal(18,3) [not null]
+  "TaxAmount" decimal(18,2) [not null]
+  "LineProfit" decimal(18,2) [not null]
+  "ExtendedPrice" decimal(18,2) [not null]
+  "LastEditedBy" int(11) [not null]
+  "LastEditedWhen" datetime [not null]
+}
+
+Table "invoices" {
+  "InvoiceID" int(11) [not null]
+  "CustomerID" int(11) [not null]
+  "BillToCustomerID" int(11) [not null]
+  "OrderID" int(11) [default: NULL]
+  "DeliveryMethodID" int(11) [not null]
+  "ContactPersonID" int(11) [not null]
+  "AccountsPersonID" int(11) [not null]
+  "SalespersonPersonID" int(11) [not null]
+  "PackedByPersonID" int(11) [not null]
+  "InvoiceDate" date [not null]
+  "CustomerPurchaseOrderNumber" varchar(20) [default: NULL]
+  "IsCreditNote" tinyint(1) [not null]
+  "CreditNoteReason" longtext [default: NULL]
+  "Comments" longtext [default: NULL]
+  "DeliveryInstructions" longtext [default: NULL]
+  "InternalComments" longtext [default: NULL]
+  "TotalDryItems" int(11) [not null]
+  "TotalChillerItems" int(11) [not null]
+  "DeliveryRun" varchar(5) [default: NULL]
+  "RunPosition" varchar(5) [default: NULL]
+  "ReturnedDeliveryData" longtext [default: NULL]
+  "ConfirmedDeliveryTime" datetime [default: NULL]
+  "ConfirmedReceivedBy" varchar(4000) [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "LastEditedWhen" datetime [not null]
+}
+
+Table "orderlines" {
+  "OrderLineID" int(11) [not null]
+  "OrderID" int(11) [not null]
+  "StockItemID" int(11) [not null]
+  "Description" varchar(100) [not null]
+  "PackageTypeID" int(11) [not null]
+  "Quantity" int(11) [not null]
+  "UnitPrice" decimal(18,2) [default: NULL]
+  "TaxRate" decimal(18,3) [not null]
+  "PickedQuantity" int(11) [not null]
+  "PickingCompletedWhen" datetime [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "LastEditedWhen" datetime [not null]
+}
+
+Table "orders" {
+  "OrderID" int(11) [not null]
+  "CustomerID" int(11) [not null]
+  "SalespersonPersonID" int(11) [not null]
+  "PickedByPersonID" int(11) [default: NULL]
+  "ContactPersonID" int(11) [not null]
+  "BackorderOrderID" int(11) [default: NULL]
+  "OrderDate" date [not null]
+  "ExpectedDeliveryDate" date [not null]
+  "CustomerPurchaseOrderNumber" varchar(20) [default: NULL]
+  "IsUndersupplyBackordered" tinyint(1) [not null]
+  "Comments" longtext [default: NULL]
+  "DeliveryInstructions" longtext [default: NULL]
+  "InternalComments" longtext [default: NULL]
+  "PickingCompletedWhen" datetime [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "LastEditedWhen" datetime [not null]
+}
+
+Table "packagetypes" {
+  "PackageTypeID" int(11) [not null]
+  "PackageTypeName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "packagetypes_archive" {
+  "PackageTypeID" int(11) [not null]
+  "PackageTypeName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "paymentmethods" {
+  "PaymentMethodID" int(11) [not null]
+  "PaymentMethodName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "paymentmethods_archive" {
+  "PaymentMethodID" int(11) [not null]
+  "PaymentMethodName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "people" {
+  "PersonID" int(11) [not null]
+  "FullName" varchar(50) [not null]
+  "PreferredName" varchar(50) [not null]
+  "SearchName" varchar(101) [not null]
+  "IsPermittedToLogon" tinyint(1) [not null]
+  "LogonName" varchar(50) [default: NULL]
+  "IsExternalLogonProvider" tinyint(1) [not null]
+  "HashedPassword" longblob [default: NULL]
+  "IsSystemUser" tinyint(1) [not null]
+  "IsEmployee" tinyint(1) [not null]
+  "IsSalesperson" tinyint(1) [not null]
+  "UserPreferences" longtext [default: NULL]
+  "PhoneNumber" varchar(20) [default: NULL]
+  "FaxNumber" varchar(20) [default: NULL]
+  "EmailAddress" varchar(256) [default: NULL]
+  "Photo" longblob [default: NULL]
+  "CustomFields" longtext [default: NULL]
+  "OtherLanguages" longtext [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "people_archive" {
+  "PersonID" int(11) [not null]
+  "FullName" varchar(50) [not null]
+  "PreferredName" varchar(50) [not null]
+  "SearchName" varchar(101) [not null]
+  "IsPermittedToLogon" tinyint(1) [not null]
+  "LogonName" varchar(50) [default: NULL]
+  "IsExternalLogonProvider" tinyint(1) [not null]
+  "HashedPassword" longblob [default: NULL]
+  "IsSystemUser" tinyint(1) [not null]
+  "IsEmployee" tinyint(1) [not null]
+  "IsSalesperson" tinyint(1) [not null]
+  "UserPreferences" longtext [default: NULL]
+  "PhoneNumber" varchar(20) [default: NULL]
+  "FaxNumber" varchar(20) [default: NULL]
+  "EmailAddress" varchar(256) [default: NULL]
+  "Photo" longblob [default: NULL]
+  "CustomFields" longtext [default: NULL]
+  "OtherLanguages" longtext [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "purchaseorderlines" {
+  "PurchaseOrderLineID" int(11) [not null]
+  "PurchaseOrderID" int(11) [not null]
+  "StockItemID" int(11) [not null]
+  "OrderedOuters" int(11) [not null]
+  "Description" varchar(100) [not null]
+  "ReceivedOuters" int(11) [not null]
+  "PackageTypeID" int(11) [not null]
+  "ExpectedUnitPricePerOuter" decimal(18,2) [default: NULL]
+  "LastReceiptDate" date [default: NULL]
+  "IsOrderLineFinalized" tinyint(1) [not null]
+  "LastEditedBy" int(11) [not null]
+  "LastEditedWhen" datetime [not null]
+}
+
+Table "purchaseorders" {
+  "PurchaseOrderID" int(11) [not null]
+  "SupplierID" int(11) [not null]
+  "OrderDate" date [not null]
+  "DeliveryMethodID" int(11) [not null]
+  "ContactPersonID" int(11) [not null]
+  "ExpectedDeliveryDate" date [default: NULL]
+  "SupplierReference" varchar(20) [default: NULL]
+  "IsOrderFinalized" tinyint(1) [not null]
+  "Comments" longtext [default: NULL]
+  "InternalComments" longtext [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "LastEditedWhen" datetime [not null]
+}
+
+Table "specialdeals" {
+  "SpecialDealID" int(11) [not null]
+  "StockItemID" int(11) [default: NULL]
+  "CustomerID" int(11) [default: NULL]
+  "BuyingGroupID" int(11) [default: NULL]
+  "CustomerCategoryID" int(11) [default: NULL]
+  "StockGroupID" int(11) [default: NULL]
+  "DealDescription" varchar(30) [not null]
+  "StartDate" date [not null]
+  "EndDate" date [not null]
+  "DiscountAmount" decimal(18,2) [default: NULL]
+  "DiscountPercentage" decimal(18,3) [default: NULL]
+  "UnitPrice" decimal(18,2) [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "LastEditedWhen" datetime [not null]
+}
+
+Table "stateprovinces" {
+  "StateProvinceID" int(11) [not null]
+  "StateProvinceCode" varchar(5) [not null]
+  "StateProvinceName" varchar(50) [not null]
+  "CountryID" int(11) [not null]
+  "SalesTerritory" varchar(50) [not null]
+  "Border" varchar(100) [default: NULL]
+  "LatestRecordedPopulation" bigint(20) [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "stateprovinces_archive" {
+  "StateProvinceID" int(11) [not null]
+  "StateProvinceCode" varchar(5) [not null]
+  "StateProvinceName" varchar(50) [not null]
+  "CountryID" int(11) [not null]
+  "SalesTerritory" varchar(50) [not null]
+  "Border" varchar(100) [default: NULL]
+  "LatestRecordedPopulation" bigint(20) [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "stockgroups" {
+  "StockGroupID" int(11) [not null]
+  "StockGroupName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+  "ImagePath" varchar(255) [default: NULL]
+}
+
+Table "stockgroups_archive" {
+  "StockGroupID" int(11) [not null]
+  "StockGroupName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "stockitemholdings" {
+  "StockItemID" int(11) [not null]
+  "QuantityOnHand" int(11) [not null]
+  "BinLocation" varchar(20) [not null]
+  "LastStocktakeQuantity" int(11) [not null]
+  "LastCostPrice" decimal(18,2) [not null]
+  "ReorderLevel" int(11) [not null]
+  "TargetStockLevel" int(11) [not null]
+  "LastEditedBy" int(11) [not null]
+  "LastEditedWhen" datetime [not null]
+}
+
+Table "stockitemimages" {
+  "StockItemID" int(11) [not null]
+  "ImagePath" varchar(45) [not null]
+
+Indexes {
+  (StockItemID, ImagePath) [pk]
+}
+}
+
+Table "stockitems" {
+  "StockItemID" int(11) [not null]
+  "StockItemName" varchar(100) [not null]
+  "SupplierID" int(11) [not null]
+  "ColorID" int(11) [default: NULL]
+  "UnitPackageID" int(11) [not null]
+  "OuterPackageID" int(11) [not null]
+  "Brand" varchar(50) [default: NULL]
+  "Size" varchar(20) [default: NULL]
+  "LeadTimeDays" int(11) [not null]
+  "QuantityPerOuter" int(11) [not null]
+  "IsChillerStock" tinyint(1) [not null]
+  "Barcode" varchar(50) [default: NULL]
+  "TaxRate" decimal(18,3) [not null]
+  "UnitPrice" decimal(18,2) [not null]
+  "RecommendedRetailPrice" decimal(18,2) [default: NULL]
+  "TypicalWeightPerUnit" decimal(18,3) [not null]
+  "MarketingComments" longtext [default: NULL]
+  "InternalComments" longtext [default: NULL]
+  "CustomFields" longtext [default: NULL]
+  "Tags" longtext [default: NULL]
+  "SearchDetails" longtext [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+  "Video" varchar(255) [default: NULL]
+}
+
+Table "stockitemstockgroups" {
+  "StockItemStockGroupID" int(11) [not null]
+  "StockItemID" int(11) [not null]
+  "StockGroupID" int(11) [not null]
+  "LastEditedBy" int(11) [not null]
+  "LastEditedWhen" datetime [not null]
+}
+
+Table "stockitems_archive" {
+  "StockItemID" int(11) [not null]
+  "StockItemName" varchar(100) [not null]
+  "SupplierID" int(11) [not null]
+  "ColorID" int(11) [default: NULL]
+  "UnitPackageID" int(11) [not null]
+  "OuterPackageID" int(11) [not null]
+  "Brand" varchar(50) [default: NULL]
+  "Size" varchar(20) [default: NULL]
+  "LeadTimeDays" int(11) [not null]
+  "QuantityPerOuter" int(11) [not null]
+  "IsChillerStock" tinyint(1) [not null]
+  "Barcode" varchar(50) [default: NULL]
+  "TaxRate" decimal(18,3) [not null]
+  "UnitPrice" decimal(18,2) [not null]
+  "RecommendedRetailPrice" decimal(18,2) [default: NULL]
+  "TypicalWeightPerUnit" decimal(18,3) [not null]
+  "MarketingComments" longtext [default: NULL]
+  "InternalComments" longtext [default: NULL]
+  "Photo" longblob [default: NULL]
+  "CustomFields" longtext [default: NULL]
+  "Tags" longtext [default: NULL]
+  "SearchDetails" longtext [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "stockitemtransactions" {
+  "StockItemTransactionID" int(11) [not null]
+  "StockItemID" int(11) [not null]
+  "TransactionTypeID" int(11) [not null]
+  "CustomerID" int(11) [default: NULL]
+  "InvoiceID" int(11) [default: NULL]
+  "SupplierID" int(11) [default: NULL]
+  "PurchaseOrderID" int(11) [default: NULL]
+  "TransactionOccurredWhen" datetime [not null]
+  "Quantity" decimal(18,3) [not null]
+  "LastEditedBy" int(11) [not null]
+  "LastEditedWhen" datetime [not null]
+}
+
+Table "suppliercategories" {
+  "SupplierCategoryID" int(11) [not null]
+  "SupplierCategoryName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "suppliercategories_archive" {
+  "SupplierCategoryID" int(11) [not null]
+  "SupplierCategoryName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "suppliers" {
+  "SupplierID" int(11) [not null]
+  "SupplierName" varchar(100) [not null]
+  "SupplierCategoryID" int(11) [not null]
+  "PrimaryContactPersonID" int(11) [not null]
+  "AlternateContactPersonID" int(11) [not null]
+  "DeliveryMethodID" int(11) [default: NULL]
+  "DeliveryCityID" int(11) [not null]
+  "PostalCityID" int(11) [not null]
+  "SupplierReference" varchar(20) [default: NULL]
+  "BankAccountName" varchar(50) [default: NULL]
+  "BankAccountBranch" varchar(50) [default: NULL]
+  "BankAccountCode" varchar(20) [default: NULL]
+  "BankAccountNumber" varchar(20) [default: NULL]
+  "BankInternationalCode" varchar(20) [default: NULL]
+  "PaymentDays" int(11) [not null]
+  "InternalComments" longtext [default: NULL]
+  "PhoneNumber" varchar(20) [not null]
+  "FaxNumber" varchar(20) [not null]
+  "WebsiteURL" varchar(256) [not null]
+  "DeliveryAddressLine1" varchar(60) [not null]
+  "DeliveryAddressLine2" varchar(60) [default: NULL]
+  "DeliveryPostalCode" varchar(10) [not null]
+  "DeliveryLocation" varchar(100) [default: NULL]
+  "PostalAddressLine1" varchar(60) [not null]
+  "PostalAddressLine2" varchar(60) [default: NULL]
+  "PostalPostalCode" varchar(10) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "suppliers_archive" {
+  "SupplierID" int(11) [not null]
+  "SupplierName" varchar(100) [not null]
+  "SupplierCategoryID" int(11) [not null]
+  "PrimaryContactPersonID" int(11) [not null]
+  "AlternateContactPersonID" int(11) [not null]
+  "DeliveryMethodID" int(11) [default: NULL]
+  "DeliveryCityID" int(11) [not null]
+  "PostalCityID" int(11) [not null]
+  "SupplierReference" varchar(20) [default: NULL]
+  "BankAccountName" varchar(50) [default: NULL]
+  "BankAccountBranch" varchar(50) [default: NULL]
+  "BankAccountCode" varchar(20) [default: NULL]
+  "BankAccountNumber" varchar(20) [default: NULL]
+  "BankInternationalCode" varchar(20) [default: NULL]
+  "PaymentDays" int(11) [not null]
+  "InternalComments" longtext [default: NULL]
+  "PhoneNumber" varchar(20) [not null]
+  "FaxNumber" varchar(20) [not null]
+  "WebsiteURL" varchar(256) [not null]
+  "DeliveryAddressLine1" varchar(60) [not null]
+  "DeliveryAddressLine2" varchar(60) [default: NULL]
+  "DeliveryPostalCode" varchar(10) [not null]
+  "DeliveryLocation" varchar(100) [default: NULL]
+  "PostalAddressLine1" varchar(60) [not null]
+  "PostalAddressLine2" varchar(60) [default: NULL]
+  "PostalPostalCode" varchar(10) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "suppliertransactions" {
+  "SupplierTransactionID" int(11) [not null]
+  "SupplierID" int(11) [not null]
+  "TransactionTypeID" int(11) [not null]
+  "PurchaseOrderID" int(11) [default: NULL]
+  "PaymentMethodID" int(11) [default: NULL]
+  "SupplierInvoiceNumber" varchar(20) [default: NULL]
+  "TransactionDate" date [not null]
+  "AmountExcludingTax" decimal(18,2) [not null]
+  "TaxAmount" decimal(18,2) [not null]
+  "TransactionAmount" decimal(18,2) [not null]
+  "OutstandingBalance" decimal(18,2) [not null]
+  "FinalizationDate" date [default: NULL]
+  "IsFinalized" tinyint(1) [default: NULL]
+  "LastEditedBy" int(11) [not null]
+  "LastEditedWhen" datetime [not null]
+}
+
+Table "sysdiagrams" {
+  "name" varchar(160) [not null]
+  "principal_id" int(11) [not null]
+  "diagram_id" int(11) [not null]
+  "version" int(11) [default: NULL]
+  "definition" longblob [default: NULL]
+}
+
+Table "systemparameters" {
+  "SystemParameterID" int(11) [not null]
+  "DeliveryAddressLine1" varchar(60) [not null]
+  "DeliveryAddressLine2" varchar(60) [default: NULL]
+  "DeliveryCityID" int(11) [not null]
+  "DeliveryPostalCode" varchar(10) [not null]
+  "DeliveryLocation" varchar(100) [not null]
+  "PostalAddressLine1" varchar(60) [not null]
+  "PostalAddressLine2" varchar(60) [default: NULL]
+  "PostalCityID" int(11) [not null]
+  "PostalPostalCode" varchar(10) [not null]
+  "ApplicationSettings" longtext [not null]
+  "LastEditedBy" int(11) [not null]
+  "LastEditedWhen" datetime [not null]
+}
+
+Table "Transaction" {
+  "id" int(11) [not null]
+  "transaction_id" varchar(255) [default: NULL]
+  "status" Transaction_status_enum [not null, default: "open"]
+  "payment" decimal(10,2) [not null]
+  "postalcode" varchar(255) [not null]
+  "housenr" varchar(255) [not null]
+  "residence" varchar(255) [not null]
+  "created_at" timestamp [not null, default: `current_timestamp()`]
+  "updated_at" timestamp [not null, default: `current_timestamp()`]
+  "UserId" int(11) [default: NULL]
+}
+
+Table "TransactionBind" {
+  "transactionId" int(11) [not null]
+  "stockitemId" int(11) [not null]
+  "amount" int(11) [not null]
+}
+
+Table "transactiontypes" {
+  "TransactionTypeID" int(11) [not null]
+  "TransactionTypeName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "transactiontypes_archive" {
+  "TransactionTypeID" int(11) [not null]
+  "TransactionTypeName" varchar(50) [not null]
+  "LastEditedBy" int(11) [not null]
+  "ValidFrom" datetime [not null]
+  "ValidTo" datetime [not null]
+}
+
+Table "User" {
+  "id" int(11) [not null]
+  "email" varchar(255) [not null]
+  "name" varchar(255) [not null]
+}
+
+Table "vehicletemperatures" {
+  "VehicleTemperatureID" bigint(20) [pk, not null]
+  "VehicleRegistration" varchar(20) [not null]
+  "ChillerSensorNumber" int(11) [not null]
+  "RecordedWhen" datetime [not null]
+  "Temperature" decimal(10,2) [not null]
+  "FullSensorData" varchar(1000) [default: NULL]
+  "IsCompressed" tinyint(1) [not null]
+  "CompressedSensorData" longblob [default: NULL]
+}
+
+Ref:"people"."PersonID" < "buyinggroups"."LastEditedBy" [update: no action, delete: no action]
+
+Ref:"people"."PersonID" < "colors"."LastEditedBy" [update: no action, delete: no action]
+
+Ref:"people"."PersonID" < "countries"."LastEditedBy" [update: no action, delete: no action]
+
+Ref:"people"."PersonID" < "customercategories"."LastEditedBy" [update: no action, delete: no action]
+
+Ref:"people"."PersonID" < "deliverymethods"."LastEditedBy" [update: no action, delete: no action]
+
+Ref:"people"."PersonID" < "packagetypes"."LastEditedBy" [update: no action, delete: no action]
+
+Ref:"people"."PersonID" < "paymentmethods"."LastEditedBy" [update: no action, delete: no action]
+
+Ref:"people"."PersonID" < "people"."LastEditedBy" [update: no action, delete: no action]
+
+Ref:"people"."PersonID" < "stockgroups"."LastEditedBy" [update: no action, delete: no action]
+
+Ref:"stockitems"."StockItemID" < "stockitemimages"."StockItemID" [update: no action, delete: no action]
+
+Ref:"people"."PersonID" < "suppliercategories"."LastEditedBy" [update: no action, delete: no action]
+
+Ref:"User"."id" < "Transaction"."UserId"
+
+Ref:"people"."PersonID" < "transactiontypes"."LastEditedBy" [update: no action, delete: no action]

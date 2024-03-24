@@ -1,202 +1,142 @@
 <!-- This file contains all the code for the page that displays a single product -->
 <?php
     include __DIR__ . "/header.php";
-    $config = json_decode(file_get_contents("config.json"));
+    $config = json_decode(file_get_contents("Config/main.json"));
 
-    // Add to shopping bag
-    if (isset($_POST["articleid"]) && isset($_POST["amount"])){
-        $amount = intval($_POST["amount"]);
+$lang = json_decode(file_get_contents("Lang/nl.json"))->productPage;
 
-        if(!isset($_SESSION["shoppingcart"])) {
-            $_SESSION["shoppingcart"] = array();
-        }
+if(isset($_POST["articleid"]) && isset($_POST["amount"])) {
+    $id = $_POST["articleid"];
+} else {
+    $id = $_GET["id"] ?? NULL;
+}
 
-        $id = $_POST["articleid"];
-        if(isset($_SESSION["shoppingcart"][$id])) {
-            if($amount < 1) {
-                unset($_SESSION["shoppingcart"][$id]);
-                $status = "deleted";
-                $succesfull = true;
-            } else {
-                $status = "updated";
-                $succesfull = $_SESSION["shoppingcart"][$id] = $amount;
-            }
+$stockItem = getStockItem($id, $databaseConnection);
+
+if($stockItem !== null) {
+    $stockItemImage = getStockItemImage($id, $databaseConnection, $stockItem['BackupImagePath']);
+}
+
+$max = $stockItem['QuantityOnHand'] > 100 ? 100 : $stockItem['QuantityOnHand'];
+
+// Add to shopping bag
+if (isset($_POST["articleid"]) && isset($_POST["amount"])) {
+    $amount = intval($_POST["amount"]);
+
+    if (!isset($_SESSION["shoppingcart"])) {
+        $_SESSION["shoppingcart"] = array();
+    }
+
+    if (isset($_SESSION["shoppingcart"][$id])) {
+        if ($amount < 1) {
+            unset($_SESSION["shoppingcart"][$id]);
+            $status = "deleted";
+            $succesfull = true;
         } else {
-            if($amount >= 1) {
-                $status = "added";
-                $succesfull = $_SESSION["shoppingcart"][$id] = $amount;
+            $status = "updated";
+            if($max < $amount) {
+                $amount = $max;
             }
+
+            $succesfull = $_SESSION["shoppingcart"][$id] = $amount;
         }
     } else {
-        $id = $_GET["id"] ?? NULL;
+        if ($amount >= 1) {
+            if($max < $amount) {
+                $amount = $max;
+            }
+            
+            $status = "added";
+            $succesfull = $_SESSION["shoppingcart"][$id] = $amount;
+        }
     }
+}
 
-    // Get current shopping bag amount of product.
-    if(isset($_SESSION["shoppingcart"][$id])) {
-        $amount = $_SESSION["shoppingcart"][$id];
-    } else {
-        $amount = 0;
-    }
+// Get current shopping bag amount of product.
+if (isset($_SESSION["shoppingcart"][$id])) {
+    $amount = $_SESSION["shoppingcart"][$id];
+} else {
+    $amount = 0;
+}
 
-    $StockItem = getStockItem($id, $databaseConnection);
-    $StockItemImage = getStockItemImage($id, $databaseConnection);
 ?>
 
-<div id="CenteredContent">
-    <?php if(isset($succesfull)) { ?>
-        <?php if($succesfull) { ?>
-            <div class="alert alert-success" role="alert">
-                <?php
-                    switch($status) {
-                        case "added": echo "Uw product is toegevoegd aan de winkelmand!"; break;
-                        case "updated": echo "Uw product aantal is in de winkelmand aangepast!"; break;
-                        case "deleted": echo "Uw product is uit de winkelmand verwijderd!"; break;
-                    }
-                ?>
+<main class="relative flex flex-col items-center justify-start w-full overflow-hidden min-h-screen bg-gradient-to-b from-gray-800 to-black --geist-foreground:#000">
+    <div class="container mx-auto p-8 text-white">
+        <?php if (isset($status) && isset($succesfull)) { include 'Components/Productpage/message.php'; } ?>
+
+        <?php if($stockItem !== null) { ?>
+            <?php if (isset($stockItem['Video'])) { ?>
+                <div class="mb-8 h-96">
+                    <?php print($stockItem['Video']); ?>
+                </div>
+            <?php } ?>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="col-span-1 md:col-span-2 lg:col-span-1">
+                    <div id="controls-carousel" class="relative overflow-hidden">
+                        <div class="h-96 bg-gradient-to-b from-gray-800 to-gray-900">
+                            <?php foreach ($stockItemImage as $image) { ?>
+                                <img src="<?php echo $image['ImagePath']; ?>" class="w-full h-full object-cover" alt="<?php print($stockItem['StockItemName']); ?>">
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-span-1 md:col-span-1 lg:col-span-1">
+                    <h1 class="font-bold text-3xl mb-2"><?php echo $stockItem['StockItemName']; ?></h1>
+                    <h2 class="mb-4 text-xl">Artikelnummer: <?php echo $stockItem["StockItemID"]; ?></h2>
+                    <p class="mb-2"><?php printf("€ %.2f", $stockItem['SellPrice']) ?> <b>Inclusief BTW</b></p>
+                    <p class="mb-4 text-green-500"><?php print(getVoorraadTekst($stockItem["QuantityOnHand"])); ?></p>
+                    <form class="bg-gray-800 mt-5 p-4 rounded-lg" method="POST" action="productpage.php?id=<?php print($stockItem["StockItemID"]); ?>">
+                        <div class="flex items-center mb-4">
+                            <input type="hidden" name="articleid" value="<?php print($id); ?>">
+                            <input class="border rounded-md px-3 py-2 w-full text-black bg-white focus:outline-none" type="number" id="amount" name="amount" value="<?php print($amount); ?>" min="0" max="<?php print($max); ?>">
+                        </div>
+                        <input type="submit" value="In winkelwagen" class="bg-blue-500 text-white px-6 py-2 rounded-md w-full hover:bg-blue-600 focus:outline-none transform transition-transform hover:scale-103" />
+                    </form>
+                </div>
+                <div class="col-span-1">
+                    <div id="productDescription" class="pt-5">
+                        <h2 class="font-bold text-2xl mb-2">Product beschrijving</h2>
+                        <p class="mb-4"><?php echo $stockItem['SearchDetails']; ?></p>
+                    </div>
+                    <div id="stockSpecs" class="pt-5">
+                        <h2 class="font-bold text-2xl mb-2">Product specificaties</h2>
+                        <?php
+                        $customFields = json_decode($stockItem['CustomFields'], true);
+                        if (is_array($customFields)) {
+                        ?>
+                            <ul class="list-disc pl-4">
+                                <?php foreach ($customFields as $specName => $specText) { ?>
+                                    <?php
+                                    $specNameTranslated = isset($lang->stockSpecs->$specName) ? $lang->stockSpecs->$specName : $specName;
+                                    if (!is_array($specText)) {
+                                        echo "<li>{$specNameTranslated}: {$specText}</li>";
+                                    } else if (count($specText) > 0) {
+                                        echo "<li>{$specNameTranslated}: ";
+                                        foreach ($specText as $specTextItem) {
+                                            echo "{$specTextItem} ";
+                                        }
+                                        echo "</li>";
+                                    }
+                                    ?>
+                                <?php } ?>
+                            </ul>
+                        <?php } ?>
+                    </div>
+                </div>
             </div>
         <?php } else { ?>
-            <div class="alert alert-danger" role="alert">
-                Helaas, we kunnen dit product niet in uw winkelmand zetten!
+            <div class="flex flex-col items-center justify-center text-center bg-gray-800 p-8 rounded-lg shadow-md">
+                <h1 class="text-white text-4xl font-bold mb-4">Product niet gevonden</h1>
+                <img class="bg-white rounded-xl shadow-md" src="./Public/SVG/not-found.svg" alt="Empty Cart" width="150" height="150">
+                <p class="text-gray-300 mt-4">
+                    Helaas, we konden uw product niet vinden.
+                </p>
+                <button class="bg-blue-500 text-white px-6 py-2 mt-5 rounded-md hover:bg-blue-600 focus:outline-none transform transition-transform hover:scale-103" onclick="window.location = 'browse.php'">
+                    Terug naar producten
+                </button>
             </div>
         <?php } ?>
-    <?php } ?>
-    <?php
-    if ($StockItem != null) {
-    ?>
-    <?php
-    if (isset($StockItem['Video'])) {
-    ?>
-    <div id="VideoFrame">
-        <?php echo $StockItem['Video']; ?>
     </div>
-    <?php
-    }
-    ?>
-
-    <div id="ArticleHeader">
-        <?php
-        if (!empty($StockItemImage)) {
-            // Show a single image
-            if (count($StockItemImage) == 1) {
-        ?>
-        <div id="ImageFrame" style="background-image: url('Public/StockItemIMG/<?php echo $StockItemImage[0]['ImagePath']; ?>'); background-size: 300px; background-repeat: no-repeat; background-position: center;"></div>
-        <?php
-            } elseif (count($StockItemImage) >= 2) {
-        ?>
-        <!-- Show a carousel of multiple images -->
-        <div id="ImageFrame">
-            <div id="ImageCarousel" class="carousel slide" data-interval="false">
-                <!-- Indicators -->
-                <ul class="carousel-indicators">
-                    <?php for ($i = 0; $i < count($StockItemImage); $i++) { ?>
-                    <li data-target="#ImageCarousel" data-slide-to="<?php echo $i ?>" <?php echo ($i == 0) ? 'class="active"' : ''; ?>></li>
-                    <?php } ?>
-                </ul>
-
-                <!-- Slideshow -->
-                <div class="carousel-inner">
-                    <?php for ($i = 0; $i < count($StockItemImage); $i++) { ?>
-                    <div
-                        class="carousel-item <?php echo ($i == 0) ? 'active' : ''; ?>"
-                    >
-                        <img src="Public/StockItemIMG/<?php echo $StockItemImage[$i]['ImagePath']; ?>">
-                    </div>
-                    <?php } ?>
-                </div>
-
-                <!-- Previous and Next buttons -->
-                <a class="carousel-control-prev" href="#ImageCarousel" data-slide="prev">
-                    <span class="carousel-control-prev-icon"></span>
-                </a>
-                <a class="carousel-control-next" href="#ImageCarousel" data-slide="next">
-                    <span class="carousel-control-next-icon"></span>
-                </a>
-            </div>
-        </div>
-        <?php
-            }
-        } else {
-        ?>
-        <div id="ImageFrame" style="background-image: url('Public/StockGroupIMG/<?php echo $StockItem['BackupImagePath']; ?>'); background-size: cover;"></div>
-        <?php
-        }
-        ?>
-
-        <h1 class="StockItemID">Artikelnummer: <?php echo $StockItem["StockItemID"]; ?></h1>
-        <h2 class="StockItemNameViewSize StockItemName">
-            <?php echo $StockItem['StockItemName']; ?>
-        </h2>
-        <div class="QuantityText">Voorraad: <?php echo $StockItem['QuantityOnHand']; ?></div>
-        <div id="StockItemHeaderLeft">
-            <div class="CenterPriceLeft">
-                <div class="CenterPriceLeftChild">
-                    <p class="StockItemPriceText"><b><?php echo sprintf("€ %.2f", $StockItem['SellPrice']); ?></b></p>
-                    <h6> Inclusief BTW </h6>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="StockItemDescription">
-        <h3>Artikel beschrijving</h3>
-        <p><?php echo $StockItem['SearchDetails']; ?></p>
-    </div>
-
-    <div id="StockItemSpecifications">
-        <h3>Artikel specificaties</h3>
-        <?php
-        $CustomFields = json_decode($StockItem['CustomFields'], true);
-        if (is_array($CustomFields)) {
-        ?>
-        <table>
-            <thead>
-                <th>Naam</th>
-                <th>Data</th>
-            </thead>
-            <?php
-            foreach ($CustomFields as $SpecName => $SpecText) {
-            ?>
-            <tr>
-                <td><?php echo $SpecName; ?></td>
-                <td>
-                    <?php
-                    if (is_array($SpecText)) {
-                        foreach ($SpecText as $SubText) {
-                            echo $SubText . " ";
-                        }
-                    } else {
-                        echo $SpecText;
-                    }
-                    ?>
-                </td>
-            </tr>
-            <?php
-            }
-            ?>
-        </table>
-        <?php
-        } else {
-        ?>
-        <p><?php echo $StockItem['CustomFields']; ?>.</p>
-        <?php
-        }
-        ?>
-    </div>
-
-    <div id="addToShoppingCart">
-        <form method="post" action="productpage.php"> 
-        <input type="hidden" name="articleid" value="<?php print($id);?>"> 
-        <input type="number" id="amount" name="amount" value="<?php print($amount); ?>" min="0" max="<?php print($config->maxInShoppingBasket); ?>">
-        <br><br> 
-        <input type="submit" value="In Winkelwagen"> 
-        </form> 
-    </div>
-        
-    <?php
-    } else {
-    ?>
-        <h2 id="ProductNotFound">Het opgevraagde product is niet gevonden.</h2>
-    <?php
-    }
-    ?>
-</div>
+</main>
