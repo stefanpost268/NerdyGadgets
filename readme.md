@@ -71,3 +71,7 @@ ngrok.exe http 80
 
 **A:** This message is displayed when the application cannot connect to the database or retrieve products correctly. To resolve this, ensure that your database is set up correctly as per the instructions in the "Getting Started" section. Make sure that the database connection details in your `.env` file are correct and that the necessary tables and data exist in your database.
 
+### Q: Why am i getting the message "Table 'nerdygadgets.user' doesn't exist" on the checkout page?
+
+**A:** This message is displayed because the website is missing the required database migrations to run the checkout system. To run the migrations go to Database/Migrations/readme.md for moore info.
+
